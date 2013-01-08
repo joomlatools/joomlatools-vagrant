@@ -1,0 +1,5 @@
+zend_extension = <%= %x[ php -i | grep extension_dir | awk '{print $(NF)}' ].strip %>/xdebug.so
+
+<% node['php']['xdebug']['directives'].each do |directive, value| -%>
+<%= "xdebug.#{directive} = \"#{value}\"" %>
+<% end -%>
