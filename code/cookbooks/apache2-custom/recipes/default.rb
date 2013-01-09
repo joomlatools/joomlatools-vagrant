@@ -4,7 +4,7 @@ node['apache']['sites'].each do |site|
     group 'root'
     cwd "#{node['apache']['sites_dir']}/#{site['name']}"
     code <<-EOH
-      [ -L public ] || ([ -d source/code ] && (ln -s source/code public) || (ln -s source public))
+      [ -L public ] || ln -s source public
     EOH
   end
   
