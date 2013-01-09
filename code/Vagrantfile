@@ -4,8 +4,9 @@ Vagrant::Config.run do |config|
   config.vm.box = 'precise64'
   config.vm.box_url = 'http://files.vagrantup.com/precise64.box'
   config.vm.host_name = 'development'
+  config.vm.network :hostonly, '192.168.51.10'
   config.vm.customize ['modifyvm', :id, '--name', 'Joomlatools Development']
-  config.vm.customize ["modifyvm", :id, "--memory", 512]
+  config.vm.customize ['modifyvm', :id, '--memory', 512]
   config.vm.share_folder 'vagrant', '/tmp/vagrant', File.expand_path(File.dirname(__FILE__))
   
   # Load custom configuration file
@@ -13,7 +14,6 @@ Vagrant::Config.run do |config|
   
   if v_config.has_key?('hosts')
     v_config['hosts'].each do |host|
-      config.vm.network :hostonly, host['ip']
       config.vm.share_folder host['name'], "/var/www/#{host['name']}/source", File.expand_path(host['path'])
     end
   end
