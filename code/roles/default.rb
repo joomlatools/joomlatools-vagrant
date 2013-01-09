@@ -1,12 +1,12 @@
+require '/tmp/vagrant/config.rb'
+
 name 'default'
 description 'Default server for Joomlatools development.'
 
 run_list %w(
   recipe[apt]
   recipe[apache2]
-  recipe[mysql::server]
-  recipe[php]
-  recipe[php-custom]
+  recipe[apache2-custom]
 )
 
 override_attributes(
@@ -31,3 +31,14 @@ override_attributes(
     }
   }
 )
+
+# Load custom configuration file
+v_config = parse_vagrant_config
+
+if v_config.has_key?('hosts')
+  override_attributes(
+    :apache => {
+      :sites => v_config['hosts']
+    }
+  )
+end
