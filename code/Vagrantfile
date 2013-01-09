@@ -1,21 +1,13 @@
-def parse_vagrant_config
-  require 'yaml'
-  config = {}
-  
-  config_file = File.expand_path(File.join(File.dirname(__FILE__), 'config.yaml'))
-  if File.exists?(config_file)
-    overrides = YAML.load_file(config_file)
-    config.merge!(overrides)
-  end
-  config
-end
+require File.expand_path(File.join(File.dirname(__FILE__), 'config.rb'))
 
 Vagrant::Config.run do |config|
   config.vm.box = 'precise64'
   config.vm.box_url = 'http://files.vagrantup.com/precise64.box'
   config.vm.host_name = 'development'
   config.vm.customize ['modifyvm', :id, '--name', 'Joomlatools Development']
+  config.vm.share_folder 'vagrant', '/tmp/vagrant', File.expand_path(File.dirname(__FILE__))
   
+  # Load custom configuration file
   v_config = parse_vagrant_config
   
   if v_config.has_key?('hosts')
