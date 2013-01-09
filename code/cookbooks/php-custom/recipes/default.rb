@@ -19,22 +19,9 @@
 #
 
 # Install PHP packages
-pkgs = %w( php-apc php5-curl php5-fpm php5-gd php5-imagick php5-mcrypt php5-mysql php5-xdebug )
+pkgs = %w( php-apc php5-curl php5-gd php5-imagick php5-mcrypt php5-mysql php5-xdebug )
 pkgs.each do |pkg|
   package pkg
-end
-
-# Configure PHP-FPM
-service 'php5-fpm' do
-  action [:enable, :start]
-end
-
-template "#{node['php']['fpm_conf_dir']}/php.ini" do
-  source 'php.ini.erb'
-  owner 'root'
-  group 'root'
-  mode '0644'
-  notifies :restart, 'service[php5-fpm]'
 end
 
 # Configure Xdebug
@@ -43,5 +30,4 @@ template "#{node['php']['ext_conf_dir']}/xdebug.ini" do
   owner 'root'
   group 'root'
   mode '0644'
-  notifies :restart, 'service[php5-fpm]'
 end
