@@ -1,0 +1,1 @@
+default['apache']['sites_dir'] = '/var/www'
