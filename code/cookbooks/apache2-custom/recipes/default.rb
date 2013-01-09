@@ -16,7 +16,6 @@ node['apache']['sites'].each do |site|
     notifies :restart, 'service[apache2]'
     action :create_if_missing
     variables(
-      :ip => site['ip'],
       :name => site['name']
     )
   end
