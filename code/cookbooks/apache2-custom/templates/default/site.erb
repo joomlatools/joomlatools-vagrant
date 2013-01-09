@@ -1,30 +1,18 @@
-<VirtualHost <%= @ip %>:80>
-        ServerAdmin <%= node['apache']['contact'] %>
+<VirtualHost *:80>
+  ServerAdmin <%= node['apache']['contact'] %>
+  ServerName <%= @name %>
+  
+  DocumentRoot /var/www/<%= @name %>/public
+  
+  <Directory /var/www/<%= @name %>/public>
+    AllowOverride All
+    Order Allow,Deny
+    Allow from all
+  </Directory>
 
-        DocumentRoot /var/www/<%= @name %>/public
-        <Directory />
-                Options FollowSymLinks
-                AllowOverride None
-        </Directory>
-        <Directory /var/www/<%= @name %>/public>
-                Options Indexes FollowSymLinks MultiViews
-                AllowOverride None
-                Order allow,deny
-                allow from all
-        </Directory>
-
-        ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
-        <Directory "/usr/lib/cgi-bin">
-                AllowOverride None
-                Options ExecCGI -MultiViews +SymLinksIfOwnerMatch
-                Order allow,deny
-                Allow from all
-        </Directory>
-
-        ErrorLog <%= node['apache']['log_dir'] %>/<%= @name %>.error.log
-        
-        LogLevel warn
-
-        CustomLog <%= node['apache']['log_dir'] %>/<%= @name %>.access.log combined
-        ServerSignature On
+  LogLevel warn
+  ErrorLog <%= node['apache']['log_dir'] %>/<%= @name %>.error.log
+  CustomLog <%= node['apache']['log_dir'] %>/<%= @name %>.access.log combined
+  
+  ServerSignature On
 </VirtualHost>
