@@ -1,0 +1,142 @@
+{
+    "provider": {
+        "type": "local",
+        "os": "ubuntu",
+        "local": {
+            "url": "http:\/\/files.vagrantup.com\/precise64.box",
+            "name": "precise64",
+            "personal_name": "joomlatools-box",
+            "ip": "192.168.51.10",
+            "memory": "1024",
+            "port_forward": {
+                "host": "",
+                "guest": ""
+            },
+            "foldertype": "nfs",
+            "synced_folder": {
+                "source": ".\/www",
+                "target": "\/var\/www"
+            }
+        },
+        "digitalocean": {
+            "name": "puphpet_digitalocean",
+            "size": "512MB",
+            "region": "New York 1",
+            "client_id": "DIGITAL_OCEAN_CLIENT_ID",
+            "api_key": "DIGITAL_OCEAN_API_KEY",
+            "private_key": "~\/.ssh\/id_rsa",
+            "synced_folder": {
+                "source": ".\/",
+                "target": "\/var\/www"
+            }
+        },
+        "rackspace": {
+            "name": "rackspace-server",
+            "size": "512MB",
+            "region": "DFW",
+            "username": "RACKSPACE_USERNAME",
+            "api_key": "RACKSPACE_API_KEY",
+            "private_key": "~\/.ssh\/id_rsa",
+            "public_key": "~\/.ssh\/id_rsa.pub",
+            "synced_folder": {
+                "source": ".\/",
+                "target": "\/var\/www"
+            }
+        }
+    },
+    "server": {
+        "packages": "build-essential,vim,curl,git-core,unzip",
+        "bashaliases": "if [ -f \/etc\/bash_completion ]; then\r\n    source \/etc\/bash_completion\r\nfi\r\n\r\n__has_parent_dir () {\r\n    # Utility function so we can test for things like .git\/.hg without firing up a\r\n    # separate process\r\n    test -d \"$1\" && return 0;\r\n\r\n    current=\".\"\r\n    while [ ! \"$current\" -ef \"$current\/..\" ]; do\r\n        if [ -d \"$current\/$1\" ]; then\r\n            return 0;\r\n        fi\r\n        current=\"$current\/..\";\r\n    done\r\n\r\n    return 1;\r\n}\r\n\r\n__vcs_name() {\r\n    if [ -d .svn ]; then\r\n        echo \"-[svn]\";\r\n    elif __has_parent_dir \".git\"; then\r\n        echo \"-[$(__git_ps1 'git %s')]\";\r\n    elif __has_parent_dir \".hg\"; then\r\n        echo \"-[hg $(hg branch)]\"\r\n    fi\r\n}\r\n\r\nblack=$(tput -Txterm setaf 0)\r\nred=$(tput -Txterm setaf 1)\r\ngreen=$(tput -Txterm setaf 2)\r\nyellow=$(tput -Txterm setaf 3)\r\ndk_blue=$(tput -Txterm setaf 4)\r\npink=$(tput -Txterm setaf 5)\r\nlt_blue=$(tput -Txterm setaf 6)\r\n\r\nbold=$(tput -Txterm bold)\r\nreset=$(tput -Txterm sgr0)\r\n\r\n# Nicely formatted terminal prompt\r\nexport PS1='\\n\\[$bold\\]\\[$black\\][\\[$dk_blue\\]\\@\\[$black\\]]-[\\[$green\\]\\u\\[$yellow\\]@\\[$green\\]\\h\\[$black\\]]-[\\[$pink\\]\\w\\[$black\\]]\\[\\033[0;33m\\]$(__vcs_name) \\[\\033[00m\\]\\[$reset\\]\\n\\[$reset\\]\\$ '\r\n\r\nalias ls='ls -F --color=always'\r\nalias dir='dir -F --color=always'\r\nalias ll='ls -l'\r\nalias cp='cp -iv'\r\nalias rm='rm -i'\r\nalias mv='mv -iv'\r\nalias grep='grep --color=auto -in'\r\nalias v='vim'\r\nalias ..='cd ..'\r\n"
+    },
+    "webserver": "apache",
+    "apache": {
+        "modules": [
+            "rewrite"
+        ],
+        "vhosts": {
+            "1": {
+                "servername": "awesome.dev",
+                "serveraliases": "www.awesome.dev",
+                "docroot": "\/var\/www\/awesome",
+                "port": "80",
+                "envvars": ""
+            }
+        }
+    },
+    "nginx": {
+        "vhosts": {
+            "1": {
+                "servername": "awesome.dev",
+                "serveraliases": "",
+                "docroot": "\/var\/www\/",
+                "port": "80",
+                "index_files": "index.html,index.htm,index.php",
+                "envvars": ""
+            }
+        }
+    },
+    "php": {
+        "version": "php54",
+        "modules": {
+            "composer": {
+                "installed": "1"
+            },
+            "php": [
+                "php5-cli",
+                "php5-curl",
+                "php5-gd",
+                "php5-imagick",
+                "php5-intl",
+                "php5-mcrypt",
+                "php5-sqlite",
+                "php5-xcache",
+                "php-apc"
+            ],
+            "pear": {
+                "installed": "1"
+            },
+            "xdebug": {
+                "installed": "1"
+            },
+            "xhprof": {
+                "installed": "1"
+            }
+        },
+        "inilist": {
+            "xdebug": "xdebug.remote_autostart = 0,xdebug.remote_connect_back = 1,xdebug.remote_enable = 1,xdebug.remote_handler = dbgp,xdebug.remote_port = 9000,xdebug.show_local_vars = 1,xdebug.profiler_enable = 0,xdebug.profiler_enable_trigger = 1,xdebug.max_nesting_level = 1000",
+            "php": {
+                "date.timezone": "Europe\/Brussels"
+            },
+            "custom": "sendmail_path = /usr/bin/env catchmail -fnoreply@example.com,display_errors = On,error_reporting = -1,display_startup_errors = On,upload_max_filesize = 256M,post_max_size = 256M,memory_limit = 64M"
+        }
+    },
+    "database": "mysql",
+    "mysql": {
+        "root": "<REMOVED>",
+        "phpmyadmin": "1",
+        "dbuser": {
+            "1": {
+                "privileges": [
+                    "ALL"
+                ],
+                "user": "root",
+                "password": "<REMOVED>",
+                "dbname": "",
+                "host": "localhost"
+            }
+        }
+    },
+    "postgresql": {
+        "root": "",
+        "dbuser": {
+            "1": {
+                "privileges": [
+                    "ALL"
+                ],
+                "user": "",
+                "password": "",
+                "dbname": ""
+            }
+        }
+    }
+}

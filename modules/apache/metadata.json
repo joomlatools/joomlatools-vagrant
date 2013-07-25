@@ -1,0 +1,57 @@
+{
+  "name": "example42-apache",
+  "version": "2.0.8",
+  "summary": "Puppet module for apache",
+  "author": "Alessandro Franceschi",
+  "description": "This module installs and manages apache. Check README.rdoc for details. Puppi is required for some common functions: you can install them without using the whole module. Monitor and firewall dependencies are needed only if the relevant features are enabled",
+  "dependencies": [
+    {
+      "name": "example42/puppi",
+      "version_requirement": "\u003e\u003d2.0.0"
+    },
+    {
+      "name": "example42/yum",
+      "version_requirement": "\u003e\u003d2.0.0"
+    },
+    {
+      "name": "example42/firewall",
+      "version_requirement": "\u003e\u003d2.0.0"
+    },
+    {
+      "name": "example42/monitor",
+      "version_requirement": "\u003e\u003d2.0.0"
+    }
+  ],
+  "types": [],
+  "checksums": {
+    ".fixtures.yml": "eab5bc29338f9cbe4b19eff3db0a475a",
+    ".gemfile": "0d74e18ad1f532bef6a3ad50c101d38d",
+    ".travis.yml": "84a6f3c356cb0e9993fae5eed96d8555",
+    "Modulefile": "76403257168126287a5c507770652beb",
+    "README.md": "4139ccc910b5e6ec6075dd39254bdaa5",
+    "Rakefile": "e90d68823ff237c89224eb139f8926ad",
+    "manifests/dotconf.pp": "3fac576a2499b9831be01863cf70da14",
+    "manifests/htpasswd.pp": "34f7ca7822af5b9e58e49fb8bd716da9",
+    "manifests/init.pp": "d8c1a828e78bd32ee35aacc519022edc",
+    "manifests/module.pp": "d9ee097cfa5ae87cbf0f1d104097b7ba",
+    "manifests/params.pp": "b0ccbe9bda5edefe844d7aff6cd4e9ac",
+    "manifests/passenger.pp": "471b18ed8769eb16b1fbeb955e3d28c9",
+    "manifests/redhat.pp": "7bf95178474b51eb75a37931e4ec4d2f",
+    "manifests/spec.pp": "27b6dcd653caef771ac053e2df3260e9",
+    "manifests/ssl.pp": "85c5ec4c506f58d9a9019b55ae182fd0",
+    "manifests/vhost.pp": "a86225cafe9fa3d107a6c3e2b526dbaa",
+    "manifests/virtualhost.pp": "8d80b67c616560209728af7e13f2f45a",
+    "spec/classes/apache_spec.rb": "3022fae3e6700785cdb063c0a0c60deb",
+    "spec/defines/apache_virtualhost_spec.rb": "b21d44a66c262561f3db5dc063813f7a",
+    "spec/spec_helper.rb": "0db89c9a486df193c0e40095422e19dc",
+    "templates/00-NameVirtualHost.conf.erb": "a410a82e9c65d36c7537bfb36a7a3041",
+    "templates/module/proxy.conf.erb": "2eccd5a67ff4070bdd6ed8cd98b4bbda",
+    "templates/spec.erb": "055d4f22a02a677753cf922108b6e50c",
+    "templates/virtualhost/vhost.conf.erb": "92d2a35280fb7971876eb7b5816d1fb3",
+    "templates/virtualhost/virtualhost.conf.erb": "a6f72c70e83bec34a85071b9bbef3b3d",
+    "tests/vhost.pp": "a2ee77862630ba4f7e0fdfb10a8dca79"
+  },
+  "source": "https://github.com/example42/puppet-apache",
+  "project_page": "http://www.example42.com",
+  "license": "Apache2"
+}
