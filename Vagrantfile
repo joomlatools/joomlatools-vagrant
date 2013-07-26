@@ -1,3 +1,5 @@
+require 'yaml'
+
 Vagrant.configure("2") do |config|
   config.vm.box = "precise64"
   config.vm.box_url = "http://files.vagrantup.com/precise64.box"
@@ -13,8 +15,15 @@ Vagrant.configure("2") do |config|
   end
 
   nfs_setting = RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/
-  config.vm.synced_folder "./www", "/var/www", id: "vagrant-root" , :nfs => nfs_setting
-  config.vm.synced_folder "./Projects", "/home/vagrant/Projects", id: "vagrant-projects" , :nfs => nfs_setting, :create => true
+
+  custom_config_file = File.expand_path(File.join(File.dirname(__FILE__), 'config.yaml'))
+  custom_config = YAML.load_file(custom_config_file)
+
+  if custom_config and custom_config.has_key?('synced_folders')
+    custom_config['synced_folders'].each { |from, to|
+      config.vm.synced_folder from, to, :nfs => true, :create => true
+    }
+  end
 
   config.vm.provision :shell, :inline => "sudo apt-get update"
   config.vm.provision :shell, :inline => 'echo -e "mysql_root_password=root
