@@ -189,3 +189,6 @@ apache::vhost { 'default':
   directory_allow_override   => 'All',
   directory_options => 'Indexes FollowSymLinks MultiViews',
 }
+
+class { 'scripts': 
+}
