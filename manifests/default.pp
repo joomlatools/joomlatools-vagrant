@@ -177,3 +177,13 @@ apache::vhost { 'webgrind':
   priority    => '10',
   require     => Class['webgrind'],
 }
+
+apache::vhost { 'default':
+  server_admin => 'webmaster@localhost',
+  port         => 80,
+  priority     => '',
+  docroot      => '/var/www',
+  directory    => '/var/www',
+  directory_allow_override   => 'All',
+  directory_options => 'Indexes FollowSymLinks MultiViews',
+}
