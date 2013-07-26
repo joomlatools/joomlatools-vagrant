@@ -9,7 +9,7 @@ class scripts::install {
   }
   
   exec { 'make-scripts-executable': 
-    command => 'chmod +x /home/vagrant/scripts/create_site',
+    command => 'chmod +x /home/vagrant/scripts/create_site; chmod +x /home/vagrant/scripts/symlinker',
     require => File['/home/vagrant/scripts']
   }
 
