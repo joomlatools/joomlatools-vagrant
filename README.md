@@ -30,9 +30,11 @@ Go to the repository folder and launch the box
 
 Add the following line into /etc/hosts
     
-    192.168.51.10 webgrind xhprof phpmyadmin
+    192.168.56.66 webgrind xhprof phpmyadmin
 
-Apache serves files from the www/ folder in the repository root
+Apache serves files from the www/ folder in the repository root from the IP
+
+    http://192.168.56.66/
 
 You can reach the box by using the command:
 
