@@ -77,7 +77,9 @@ class { 'php::pear':
   require => Class['php'],
 }
 
-
+php::pear::module { 'Console_CommandLine':
+  use_package => false 
+}
 
 php::pecl::module { 'xhprof':
   use_package     => false,
