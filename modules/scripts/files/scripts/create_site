@@ -1,11 +1,13 @@
 #!/usr/bin/env php
 <?php
 
+require_once 'Console/CommandLine.php';
+
 CreateSite::fromInput();
 
 class CreateSite
 {
-    public $templates = './create_site';
+    public $templates = './create_site_files';
 
     public $site;
     public $template;
@@ -16,7 +18,7 @@ class CreateSite
     public $target_dir;
     public $target_db;
 
-    public function __construct($site, $template)
+    public function __construct($site, $template, $symlink)
     {
         $this->site = $site;
         $this->template = $template;
@@ -30,15 +32,40 @@ class CreateSite
 
     public static function fromInput()
     {
-        $options = getopt('', array('site:', 'template:'));
+        $parser = new Console_CommandLine();
+        $parser->description = "Install Joomla sites from templates";
 
-        if (empty($options['site']) || empty($options['template'])) {
-            fwrite(STDERR, "Invalid arguments supplied.\nExample usage:\n./create_site --site=sitename --template=joomla3\n");
-            return;
+        $parser->addArgument('site', array(
+            'description' => 'Site name (used in the site URL as site.dev)',
+            'help_name'   => 'SITE'
+        ));
+
+        $parser->addOption('template', array(
+            'long_name'   => 'template',
+            'default'     => 'joomla3',
+            'description' => "Site template to build from (e.g. joomla25,joomla3)",
+            'help_name'   => 'TEMPLATE'
+        ));
+
+        $parser->addOption('symlink', array(
+            'long_name'   => 'symlink',
+            'description' => "A comma separated list of folders to symlink from projects folder",
+            'help_name'   => 'SYMLINK'
+        ));
+
+        try
+        {
+            $result   = $parser->parse();
+            $site     = $result->args['site'];
+            $template = $result->args['template'];
+
+            $symlink  = $result->options['symlink'];
+
+            $instance = new self($site, $template, $symlink);
+            $instance->create();
+        } catch (Exception $e) {
+            $parser->displayError($e->getMessage());
         }
-
-        $instance = new self($options['site'], $options['template']);
-        $instance->create();
     }
 
     public function create()
