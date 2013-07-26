@@ -5,8 +5,8 @@ class webgrind {
   }
 
   exec { 'php-extract-webgrind':
-    cwd => '/var/www',
+    cwd => '/usr/share',
     command => "unzip /tmp/webgrind.zip",
-    creates => '/var/www/webgrind',
+    creates => '/usr/share/webgrind',
   }
 }

@@ -172,7 +172,7 @@ class { 'webgrind':
 
 apache::vhost { 'webgrind':
   server_name => 'webgrind',
-  docroot     => '/var/www/webgrind',
+  docroot     => '/usr/share/webgrind',
   port        => 80,
   priority    => '10',
   require     => Class['webgrind'],
