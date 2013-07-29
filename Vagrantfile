@@ -30,8 +30,8 @@ Vagrant.configure("2") do |config|
 controluser_password=awesome" > /etc/phpmyadmin.facts;'
 
   config.vm.provision :puppet do |puppet|
-    puppet.manifests_path = "manifests"
-    puppet.module_path = "modules"
+    puppet.manifests_path = "puppet/manifests"
+    puppet.module_path = "puppet/modules"
     puppet.options = ['--verbose']
   end
 end
