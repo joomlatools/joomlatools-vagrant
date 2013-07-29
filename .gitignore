@@ -1,4 +1,4 @@
 .vagrant/*
 www/*
 !www/index.html
-config.local.yaml
+config.custom.yaml

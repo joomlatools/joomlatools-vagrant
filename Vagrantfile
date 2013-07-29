@@ -13,9 +13,9 @@ _config = {
     }
 }
 
-# Local-specific/not-git-managed config -- config.local.yaml
+# Local-specific/not-git-managed config -- config.custom.yaml
 begin
-  deep_merge!(_config, YAML.load(File.open(File.join(File.dirname(__FILE__), "config.local.yaml"), File::RDONLY).read))
+  deep_merge!(_config, YAML.load(File.open(File.join(File.dirname(__FILE__), "config.custom.yaml"), File::RDONLY).read))
 rescue Errno::ENOENT
     # No vagrantconfig_local.yaml found -- that's OK; just use the defaults.
 end

@@ -1,0 +1,265 @@
+#!/usr/bin/env php
+<?php
+
+require_once 'Console/CommandLine.php';
+require_once __DIR__.'/symlinker.php';
+
+CreateSite::fromInput();
+
+class CreateSite
+{
+    public static $templates;
+
+    public $task;
+    public $site;
+    public $template;
+    public $symlink = array();
+
+    public $source_tar;
+    public $source_db;
+
+    public $target_dir;
+    public $target_db;
+
+    public function __construct($task, $site, $template, $symlink)
+    {
+        if (!self::$templates) {
+            self::$templates = __DIR__.'/sitemanager_files';
+        }
+
+        if (!in_array($task, array('create', 'symlink'))) {
+            throw new InvalidArgumentException('Invalid task: '.$task);
+        }
+
+        $this->task       = $task;
+        $this->site       = $site;
+        $this->template   = $template;
+        $this->symlink    = explode(',', $symlink);
+
+        $this->source_tar = self::$templates.'/'.$this->template.'.tar.gz';
+        $this->source_db  = self::$templates.'/'.$this->template.'.sql';
+
+        $this->target_dir = '/var/www/'.$this->site;
+        $this->target_db  = 'sites_'.$this->site;
+    }
+
+    public static function fromInput()
+    {
+        $parser = new Console_CommandLine();
+        $parser->description = "Install Joomla sites from templates";
+
+        $parser->addArgument('task', array(
+            'description' => 'create|symlink',
+            'help_name'   => 'TASK'
+        ));
+
+        $parser->addArgument('site', array(
+            'description' => 'Alphanumeric site name. Also used in the site URL with .dev domain',
+            'help_name'   => 'SITE'
+        ));
+
+        $parser->addOption('template', array(
+            'long_name'   => '--template',
+            'default'     => 'joomla3',
+            'description' => "Site template to build from (e.g. joomla25,joomla3)",
+            'help_name'   => 'TEMPLATE'
+        ));
+
+        $parser->addOption('symlink', array(
+            'long_name'   => '--symlink',
+            'description' => "A comma separated list of folders to symlink from projects folder",
+            'help_name'   => 'SYMLINK'
+        ));
+
+        try
+        {
+            $result   = $parser->parse();
+            $task     = $result->args['task'];
+            $site     = $result->args['site'];
+
+            $template = $result->options['template'];
+            $symlink  = $result->options['symlink'];
+
+            $instance = new self($task, $site, $template, $symlink);
+            $instance->run();
+        } catch (Exception $e) {
+            $parser->displayError($e->getMessage());
+        }
+    }
+
+    public function run()
+    {
+        try {
+            $this->precheck();
+
+            $task = $this->task;
+            $this->$task();
+        }
+        catch (Exception $e) {
+            $this->error($e->getMessage());
+        }
+    }
+
+    public function create()
+    {
+        $this->createFolder();
+        $this->createDatabase();
+        $this->modifyConfiguration();
+        $this->addVirtualHost();
+        $this->symlinkProjects();
+    }
+
+    public function symlink()
+    {
+        $this->symlinkProjects();
+    }
+
+    public function precheck()
+    {
+        if ($this->task === 'create')
+        {
+            if (!is_file($this->source_tar)) {
+                throw new Exception(sprintf('Source files are missing for template %s', $this->template));
+            }
+
+            if (!is_file($this->source_db)) {
+                throw new Exception(sprintf('Database export is missing for template %s', $this->template));
+            }
+
+            if (file_exists($this->target_dir)) {
+                //throw new Exception(sprintf('A site with name %s already exists', $this->site));
+            }
+
+            $result = `echo 'SHOW DATABASES LIKE "$this->target_db"' | mysql -uroot -proot`;
+            if (!empty($result)) { // Table exists
+                throw new Exception(sprintf('A database with name %s already exists', $this->target_db));
+            }
+        }
+        elseif ($this->task === 'symlink')
+        {
+            if (!file_exists($this->target_dir)) {
+                throw new Exception(sprintf('Site not found: %s', $this->site));
+            }
+        }
+
+    }
+
+    public function createFolder()
+    {
+        `mkdir -p $this->target_dir; cd $this->target_dir; tar xzf $this->source_tar`;
+    }
+
+    public function createDatabase()
+    {
+        $result = `echo 'CREATE DATABASE $this->target_db CHARACTER SET utf8' | mysql -uroot -proot`;
+        if (!empty($result)) { // MySQL returned an error
+            throw new Exception(sprintf('Cannot create database %s. Error: %s', $this->target_db, $result));
+        }
+
+        $result = `mysql -proot -uroot $this->target_db < $this->source_db`;
+        if (!empty($result)) { // MySQL returned an error
+            throw new Exception(sprintf('Cannot import database. Error: %s', $result));
+        }
+    }
+
+    public function modifyConfiguration()
+    {
+        $file     = $this->target_dir.'/configuration.php';
+        $contents = file_get_contents($file);
+        $replace  = function($name, $value, &$contents) {
+            $pattern     = sprintf("#%s = '.*?'#", $name);
+            $replacement = sprintf("%s = '%s'", $name, $value);
+
+            $contents = preg_replace($pattern, $replacement, $contents);
+        };
+
+        $replace('db', $this->target_db, $contents);
+        $replace('tmp_path', sprintf('/var/www/%s/tmp',  $this->site), $contents);
+        $replace('log_path', sprintf('/var/www/%s/logs', $this->site), $contents);
+        $replace('sitename', $this->site, $contents);
+
+        chmod($file, 0644);
+        file_put_contents($file, $contents);
+    }
+
+    public function addVirtualHost()
+    {
+        $template = file_get_contents(self::$templates.'/vhost.conf');
+        $contents = sprintf($template, $this->site);
+
+        $tmp = self::$templates.'/.vhost.tmp';
+
+        file_put_contents($tmp, $contents);
+
+        `sudo tee /etc/apache2/sites-available/1-$this->site.conf < $tmp`;
+        `sudo a2ensite 1-$this->site.conf`;
+        `sudo /etc/init.d/apache2 restart > /dev/null 2>&1`;
+
+        @unlink($tmp);
+    }
+
+    public function symlinkProjects()
+    {
+        static $dependencies = array(
+            'docman'  => array('extman', 'koowa', 'com_files'),
+            'fileman' => array('extman', 'koowa', 'com_files'),
+            'logman'  => array('extman', 'koowa', 'com_activities')
+        );
+        $project_folder = '/home/vagrant/Projects';
+        $destination    = $this->target_dir;
+
+        $projects = array();
+        foreach ($this->symlink as $symlink)
+        {
+            $projects[] = $symlink;
+            if (array_key_exists($symlink, $dependencies)) {
+                $projects = array_merge($projects, $dependencies[$symlink]);
+            }
+        }
+
+        // If we are symlinking Koowa, we need to create this structure to allow multiple symlinks in them
+        if (in_array('koowa', $projects))
+        {
+            $dirs = array($this->target_dir.'/libraries/koowa/components', $this->target_dir.'/media/koowa');
+            foreach ($dirs as $dir)
+            {
+                if (!is_dir($dir)) {
+                    mkdir($dir, 0777, true);
+                }
+            }
+        }
+
+        foreach ($projects as $project)
+        {
+            $root = $project_folder.'/'.$project;
+            if (!is_dir($root))
+            {
+                $this->error('Project not found: '.$project);
+                continue;
+            }
+
+            if (is_dir($root.'/code')) {
+                $root = $root.'/code';
+            }
+
+            $it = new JoomlaSymlinker($root, $destination);
+            while($it->valid()) {
+                $it->next();
+            }
+        }
+    }
+
+    public function out($text = '', $nl = true)
+    {
+        fwrite(STDOUT, $text . ($nl ? "\n" : null));
+
+        return $this;
+    }
+
+    public function error($text = '', $nl = true)
+    {
+        fwrite(STDERR, $text . ($nl ? "\n" : null));
+
+        return $this;
+    }
+}
