@@ -17,7 +17,7 @@ class scripts::install {
 
   exec { 'add-scripts-to-path':
     command => 'echo "export PATH=\$PATH:/home/vagrant/scripts" >> /home/vagrant/.profile',
-    unless  => 'which sitemanager;echo $?',
+    unless  => 'grep ":/home/vagrant/scripts" /home/vagrant/.profile',
     require => Exec['make-scripts-executable']
   }
 }
