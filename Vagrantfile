@@ -1,4 +1,26 @@
-require 'yaml'
+require "yaml"
+
+# Initialize config
+def deep_merge!(target, data)
+  merger = proc{|key, v1, v2|
+    Hash === v1 && Hash === v2 ? v1.merge(v2, &merger) : v2 }
+  target.merge! data, &merger
+end
+
+_config = {
+    "synced_folders" => {
+        "/var/www" => "./www"
+    }
+}
+
+# Local-specific/not-git-managed config -- config.local.yaml
+begin
+  deep_merge!(_config, YAML.load(File.open(File.join(File.dirname(__FILE__), "config.local.yaml"), File::RDONLY).read))
+rescue Errno::ENOENT
+    # No vagrantconfig_local.yaml found -- that's OK; just use the defaults.
+end
+
+CONF = _config
 
 Vagrant.configure("2") do |config|
   config.vm.box = "precise64"
@@ -16,12 +38,9 @@ Vagrant.configure("2") do |config|
 
   nfs_setting = RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/
 
-  custom_config_file = File.expand_path(File.join(File.dirname(__FILE__), 'config.yaml'))
-  custom_config = YAML.load_file(custom_config_file)
-
-  if custom_config and custom_config.has_key?('synced_folders')
-    custom_config['synced_folders'].each { |from, to|
-      config.vm.synced_folder from, to, :nfs => true, :create => true
+  if CONF.has_key?('synced_folders')
+    CONF['synced_folders'].each { |target, source|
+      config.vm.synced_folder source, target, :nfs => nfs_setting, :create => true
     }
   end
 
