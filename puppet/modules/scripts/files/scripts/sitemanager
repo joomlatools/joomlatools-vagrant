@@ -34,7 +34,10 @@ class CreateSite
         $this->task       = $task;
         $this->site       = $site;
         $this->template   = $template;
-        $this->symlink    = explode(',', $symlink);
+
+        if ($symlink) {
+            $this->symlink = explode(',', $symlink);
+        }
 
         $this->source_tar = self::$templates.'/'.$this->template.'.tar.gz';
         $this->source_db  = self::$templates.'/'.$this->template.'.sql';
