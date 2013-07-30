@@ -9,7 +9,8 @@ end
 
 _config = {
     "synced_folders" => {
-        "/var/www" => "./www"
+        "/var/www" => "./www",
+        "/home/vagrant/Projects" => "./Projects"
     }
 }
 
