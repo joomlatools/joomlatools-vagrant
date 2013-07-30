@@ -231,6 +231,7 @@ class CreateSite
     public function symlinkProjects()
     {
         static $dependencies = array(
+            'extman'  => array('koowa'),
             'docman'  => array('extman', 'koowa', 'com_files'),
             'fileman' => array('extman', 'koowa', 'com_files'),
             'logman'  => array('extman', 'koowa', 'com_activities')
