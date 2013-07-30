@@ -40,18 +40,6 @@ apache::dotconf { 'custom':
 
 apache::module { 'rewrite': }
 
-apache::vhost { 'awesome.dev':
-  server_name   => 'awesome.dev',
-  serveraliases => [
-    'www.awesome.dev'
-  ],
-  docroot       => '/var/www/awesome',
-  port          => '80',
-  env_variables => [
-],
-  priority      => '1',
-}
-
 class { 'php':
   service       => 'apache',
   module_prefix => '',
