@@ -11,7 +11,8 @@ _config = {
     "synced_folders" => {
         "/var/www" => "./www",
         "/home/vagrant/Projects" => "./Projects"
-    }
+    },
+    "nfs" => !!(RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/)
 }
 
 # Local-specific/not-git-managed config -- config.custom.yaml
@@ -41,7 +42,7 @@ Vagrant.configure("2") do |config|
 
   if CONF.has_key?('synced_folders')
     CONF['synced_folders'].each { |target, source|
-      config.vm.synced_folder source, target, :nfs => nfs_setting, :create => true
+      config.vm.synced_folder source, target, :nfs => CONF['nfs'], :create => true
     }
   end
 
