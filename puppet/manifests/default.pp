@@ -66,7 +66,7 @@ class { 'php::pear':
 }
 
 php::pear::module { 'Console_CommandLine':
-  use_package => false 
+  use_package => false
 }
 
 php::pecl::module { 'xhprof':
@@ -135,9 +135,16 @@ puphpet::ini { 'custom':
 
 
 class { 'mysql::server':
-  config_hash   => { 'root_password' => 'root' }
+  config_hash   => {
+    'root_password' => 'root',
+    'bind_address' => false
+  }
 }
 
+exec { 'grant-all-to-root':
+  command     => "mysql --user='root' --password='root' --execute=\"GRANT ALL ON *.* TO 'root'@'%' IDENTIFIED BY 'root' WITH GRANT OPTION;\"",
+  require => Class['phpmyadmin']
+}
 
 class { 'phpmyadmin':
   require => [Class['mysql::server'], Class['mysql::config'], Class['php']],
