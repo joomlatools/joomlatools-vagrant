@@ -15,27 +15,69 @@ The setup includes:
 * Less compiler
 * UglifyJS
 
-Installation:
------------
+Installation
+------------
+
 Install [VirtualBox](http://www.virtualbox.org/)
 
 Install [Vagrant](http://downloads.vagrantup.com/)
 
-Clone this repository
+Add this vagrant box
 
-Go to the repository folder and launch the box
+    $ vagrant box add joomlatools http://ourlink
 
-    $ cd [repo]
+Go to a folder of your choice and create the box
+
+    $ cd [folder]
+    $ vagrant init joomlatools
     $ vagrant up
 
 Add the following line into /etc/hosts
-    
-    33.33.33.58 webgrind xhprof phpmyadmin
 
-Apache serves files from the www/ folder in the repository root from the IP
+    33.33.33.58 webgrind phpmyadmin
+
+There will be two folders created in that folder called www and projects.
+
+Apache
+------
+
+Apache serves files from the www/ folder using the IP:
 
     http://33.33.33.58/
 
+MySQL
+-----
+
+After you modify /etc/hosts as shown above you can use phpMyAdmin at
+
+    http://phpmyadmin
+
+You can also connect using any MySQL client with these details:
+
+    Host: 33.33.33.58
+    User: root
+    Password: root
+
+Webgrind
+--------
+
+After you modify /etc/hosts as shown above go to
+
+    http://webgrind
+
+
+SSH
+---
 You can reach the box by using the command:
 
 	$ vagrant ssh
+
+SFTP
+----
+
+Use following details to connect:
+
+    Host: 127.0.0.1
+    Port: 2222
+    User: vagrant
+    Password: vagrant
