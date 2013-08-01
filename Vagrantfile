@@ -38,8 +38,6 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--name", "joomlatools-box"]
   end
 
-  nfs_setting = RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/
-
   if CONF.has_key?('synced_folders')
     CONF['synced_folders'].each { |target, source|
       config.vm.synced_folder source, target, :nfs => CONF['nfs'], :create => true
