@@ -69,6 +69,11 @@ php::pear::module { 'Console_CommandLine':
   use_package => false
 }
 
+php::pear::module { 'Phing':
+  use_package => false,
+  repository  => 'pear.phing.info'
+}
+
 php::pecl::module { 'xhprof':
   use_package     => false,
   preferred_state => 'beta',
