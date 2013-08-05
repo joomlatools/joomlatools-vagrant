@@ -43,10 +43,9 @@ class CreateSite
         {
             $this->source_tar = self::$templates.'/'.$this->template.'.tar.gz';
             $this->source_db  = self::$templates.'/'.$this->template.'.sql';
-
-            $this->target_db  = 'sites_'.$this->site;
         }
 
+        $this->target_db  = 'sites_'.$this->site;
         $this->target_dir = '/var/www/'.$this->site;
     }
 
