@@ -52,14 +52,14 @@ You can reach the box by using the command:
 
 	$ vagrant ssh
 
-Site Manager
+Joomla Site Manager
 ------------
 
-This is a script developed by Joomlatools to ease the creation of Joomla sites.
+This is a script developed by Joomlatools to ease the management of Joomla sites from command line.
 
-To use it, SSH into the box and then run
+To create a site with it, SSH into the box and then run
 
-    sitemanager create testsite
+    joomla create testsite
 
 Add the following line into your /etc/hosts file
 
@@ -69,7 +69,7 @@ Now you can reach www/testsite folder from the domain testsite.dev
 
 For more information try running:
 
-    sitemanager --help
+    joomla --help
 
 MySQL
 -----

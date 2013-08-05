@@ -24,7 +24,7 @@ class CreateSite
     public function __construct($task, $site, $template, $symlink)
     {
         if (!self::$templates) {
-            self::$templates = __DIR__.'/sitemanager_files';
+            self::$templates = __DIR__.'/joomla_files';
         }
 
         if (!in_array($task, array('create', 'delete', 'symlink'))) {
