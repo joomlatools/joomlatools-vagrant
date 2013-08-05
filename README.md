@@ -24,7 +24,7 @@ Install [Vagrant](http://downloads.vagrantup.com/)
 
 Clone this repository
 
-    $ git clone https://github.com/joomlatools/vagrant.git
+    $ git clone https://github.com/joomlatools/joomla-vagrant.git
 
 Go to the repository folder and create the box
 
