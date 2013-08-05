@@ -28,7 +28,7 @@ Clone this repository
 
 Go to the repository folder and create the box
 
-    $ cd vagrant
+    $ cd joomla-vagrant
     $ vagrant up
 
 Add the following line into /etc/hosts
