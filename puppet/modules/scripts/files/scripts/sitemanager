@@ -39,11 +39,15 @@ class CreateSite
             $this->symlink = explode(',', $symlink);
         }
 
-        $this->source_tar = self::$templates.'/'.$this->template.'.tar.gz';
-        $this->source_db  = self::$templates.'/'.$this->template.'.sql';
+        if ($this->template)
+        {
+            $this->source_tar = self::$templates.'/'.$this->template.'.tar.gz';
+            $this->source_db  = self::$templates.'/'.$this->template.'.sql';
+
+            $this->target_db  = 'sites_'.$this->site;
+        }
 
         $this->target_dir = '/var/www/'.$this->site;
-        $this->target_db  = 'sites_'.$this->site;
     }
 
     public static function fromInput()
@@ -63,7 +67,6 @@ class CreateSite
 
         $parser->addOption('template', array(
             'long_name'   => '--template',
-            'default'     => 'joomla3',
             'description' => "Site template to build from (e.g. joomla25,joomla3)",
             'help_name'   => 'TEMPLATE'
         ));
@@ -128,21 +131,24 @@ class CreateSite
     {
         if ($this->task === 'create')
         {
-            if (!is_file($this->source_tar)) {
-                throw new Exception(sprintf('Source files are missing for template %s', $this->template));
-            }
-
-            if (!is_file($this->source_db)) {
-                throw new Exception(sprintf('Database export is missing for template %s', $this->template));
-            }
-
             if (file_exists($this->target_dir)) {
-                //throw new Exception(sprintf('A site with name %s already exists', $this->site));
+                throw new Exception(sprintf('A site with name %s already exists', $this->site));
             }
 
-            $result = `echo 'SHOW DATABASES LIKE "$this->target_db"' | mysql -uroot -proot`;
-            if (!empty($result)) { // Table exists
-                throw new Exception(sprintf('A database with name %s already exists', $this->target_db));
+            if ($this->template)
+            {
+                if (!is_file($this->source_db)) {
+                    throw new Exception(sprintf('Database export is missing for template %s', $this->template));
+                }
+
+                if (!is_file($this->source_tar)) {
+                    throw new Exception(sprintf('Source files are missing for template %s', $this->template));
+                }
+
+                $result = `echo 'SHOW DATABASES LIKE "$this->target_db"' | mysql -uroot -proot`;
+                if (!empty($result)) { // Table exists
+                    throw new Exception(sprintf('A database with name %s already exists', $this->target_db));
+                }
             }
         }
         elseif ($this->task === 'symlink')
@@ -151,12 +157,15 @@ class CreateSite
                 throw new Exception(sprintf('Site not found: %s', $this->site));
             }
         }
-
     }
 
     public function createFolder()
     {
-        `mkdir -p $this->target_dir; cd $this->target_dir; tar xzf $this->source_tar`;
+        `mkdir -p $this->target_dir`;
+
+        if ($this->template) {
+            `cd $this->target_dir; tar xzf $this->source_tar`;
+        }
     }
 
     public function deleteFolder()
@@ -166,6 +175,10 @@ class CreateSite
 
     public function createDatabase()
     {
+        if (!$this->template) {
+            return;
+        }
+
         $result = `echo 'CREATE DATABASE $this->target_db CHARACTER SET utf8' | mysql -uroot -proot`;
         if (!empty($result)) { // MySQL returned an error
             throw new Exception(sprintf('Cannot create database %s. Error: %s', $this->target_db, $result));
@@ -187,6 +200,10 @@ class CreateSite
 
     public function modifyConfiguration()
     {
+        if (!$this->template) {
+            return;
+        }
+
         $file     = $this->target_dir.'/configuration.php';
         $contents = file_get_contents($file);
         $replace  = function($name, $value, &$contents) {
