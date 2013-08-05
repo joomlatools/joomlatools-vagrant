@@ -44,9 +44,32 @@ Apache serves files from the www/ folder using the IP:
 
     http://33.33.33.58/
 
-It is advised to use virtual hosts for development. See the following link for a tutorial:
+It is advised to use virtual hosts for development. See below for our virtual host manager.
 
-    https://www.digitalocean.com/community/articles/how-to-set-up-apache-virtual-hosts-on-ubuntu-12-04-lts
+SSH
+---
+You can reach the box by using the command:
+
+	$ vagrant ssh
+
+Site Manager
+------------
+
+This is a script developed by Joomlatools to ease the creation of Joomla sites.
+
+To use it, SSH into the box and then run
+
+    sitemanager create testsite
+
+Add the following line into your /etc/hosts file
+
+    33.33.33.58 testsite.dev
+
+Now you can reach www/testsite folder from the domain testsite.dev
+
+For more information try running:
+
+    sitemanager --help
 
 MySQL
 -----
@@ -69,11 +92,6 @@ After you modify /etc/hosts as shown above go to
     http://webgrind
 
 
-SSH
----
-You can reach the box by using the command:
-
-	$ vagrant ssh
 
 SFTP
 ----
