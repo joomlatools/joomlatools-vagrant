@@ -22,14 +22,13 @@ Install [VirtualBox](http://www.virtualbox.org/)
 
 Install [Vagrant](http://downloads.vagrantup.com/)
 
-Add this vagrant box
+Clone this repository
 
-    $ vagrant box add joomlatools http://ourlink
+    $ git clone https://github.com/joomlatools/vagrant.git
 
-Go to a folder of your choice and create the box
+Go to the repository folder and create the box
 
-    $ cd [folder]
-    $ vagrant init joomlatools
+    $ cd vagrant
     $ vagrant up
 
 Add the following line into /etc/hosts
@@ -44,6 +43,10 @@ Apache
 Apache serves files from the www/ folder using the IP:
 
     http://33.33.33.58/
+
+It is advised to use virtual hosts for development. See the following link for a tutorial:
+
+    https://www.digitalocean.com/community/articles/how-to-set-up-apache-virtual-hosts-on-ubuntu-12-04-lts
 
 MySQL
 -----
