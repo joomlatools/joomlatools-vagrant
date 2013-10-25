@@ -46,8 +46,6 @@ Vagrant.configure("2") do |config|
     }
   end
 
-  config.vm.synced_folder "./shared", "/home/vagrant/shared", :create => true
-
   config.vm.provision :shell, :inline => "sudo apt-get update"
   config.vm.provision :shell, :inline => 'echo -e "mysql_root_password=root
 controluser_password=awesome" > /etc/phpmyadmin.facts;'
