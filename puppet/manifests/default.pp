@@ -22,6 +22,12 @@ file { '/home/vagrant/.bash_aliases':
   source => 'puppet:///modules/puphpet/dot/.bash_aliases',
 }
 
+file { '/home/vagrant/shared/logs':
+   ensure => 'link',
+   force => true,
+   target => '/var/log',
+}
+
 package { [
     'build-essential',
     'vim',
