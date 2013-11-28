@@ -102,3 +102,7 @@ Use following details to connect:
     Port: 2222
     User: vagrant
     Password: vagrant
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/joomlatools/joomla-vagrant/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
