@@ -11,7 +11,7 @@ class scripts::install {
   }
   
   exec { 'make-scripts-executable': 
-    command => 'chmod +x /home/vagrant/scripts/joomla; chmod +x /home/vagrant/scripts/symlinker',
+    command => 'chmod +x /home/vagrant/scripts/joomla; chmod +x /home/vagrant/scripts/symlinker; chmod +x /home/vagrant/scripts/remove_dotunderscore',
     require => File['/home/vagrant/scripts']
   }
 
