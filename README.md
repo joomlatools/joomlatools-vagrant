@@ -31,7 +31,7 @@ Go to the repository folder and create the box
     $ cd joomla-vagrant
     $ vagrant up
 
-Add the following line into /etc/hosts
+Add the following line into your ***hosts file*** (in linux /etc/hosts, for other operating systems see: http://en.wikipedia.org/wiki/Hosts_(file)#Location_in_the_file_system)
 
     33.33.33.58 webgrind phpmyadmin
 
