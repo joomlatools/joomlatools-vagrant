@@ -9,7 +9,7 @@ To view the diff between two versions, go to https://github.com/joomlatools/joom
 
 * 1.1.0 (2014-01-12)
  * Added - Joomla 3.2 site template to be used with joomla command
- * Added - New command line script: remove_dotunderscore (Removes files starting with ._ in the current directory. See: http://kadin.sdf-us.org/weblog/technology/software/deleting-dot-underscore-files.html[http://kadin.sdf-us.org/weblog/technology/software/deleting-dot-underscore-files.html])
+ * Added - New command line script: remove_dotunderscore (Removes files starting with ._ in the current directory. See: http://kadin.sdf-us.org/weblog/technology/software/deleting-dot-underscore-files.html)
 
 * 1.0.0 (2013-08-08)
  * Added - Initial release
