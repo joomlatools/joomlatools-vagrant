@@ -6,6 +6,8 @@ class phpmanager {
 }
 
 class phpmanager::install {
+  package { ['autoconf2.13', 'bison', 'flex', 're2c', 'libxml2-dev', 'libxslt1-dev', 'libcurl4-openssl-dev']: ensure  => 'installed' }
+
   file { '/home/vagrant/phpmanager':
     source => 'puppet:///modules/phpmanager/scripts',
     recurse => true,
@@ -15,8 +17,8 @@ class phpmanager::install {
 
   file { $phpmanager::source_path:
     ensure => "directory",
-    owner  => "root",
-    group  => "root",
+    owner  => vagrant,
+    group  => vagrant,
     mode   => 755,
   }
 
@@ -35,5 +37,12 @@ class phpmanager::install {
     command => 'echo "export PATH=\$PATH:/home/vagrant/phpmanager" >> /home/vagrant/.profile',
     unless  => 'grep ":/home/vagrant/phpmanager" /home/vagrant/.profile',
     require => Exec['make-phpmanager-executable']
+  }
+
+  file { '/opt/php':
+    ensure => "directory",
+    recurse => true,
+    owner   => "root",
+    group   => "root",
   }
 }
