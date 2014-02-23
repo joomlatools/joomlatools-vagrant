@@ -8,7 +8,9 @@ BASENAME=$(basename $0)
 SOURCE=/usr/local/src/php
 
 usage() {
-	echo "Usage: $BASENAME list"
+	echo "Usage: "
+	echo "  $BASENAME list            -- List all available PHP tags"
+	echo "  $BASENAME install <tag>   -- Build and install PHP version <tag>"
 	exit 1
 }
 
@@ -25,6 +27,46 @@ command_list() {
             echo ${TAG/refs\/tags\//}
         fi;
     done
+}
+
+# Build version
+command_install() {
+    VERSION=$1
+
+    if [[ -z $VERSION ]] ; then
+        echo "No PHP version given"
+        usage
+    fi;
+
+    cd $SOURCE
+
+    # Make sure the tag exists
+    if ! git rev-parse $VERSION >/dev/null 2>&1
+    then
+        echo "$VERSION version not found"
+        usage
+    fi
+
+    # Clean-up and checkout the tag
+    make clean
+    rm -rf configure
+    ./vcsclean
+
+    git reset --hard
+    git clean -d -x -f
+
+    git checkout $VERSION
+
+    # Run configure
+    ./buildconf --force
+
+    OPTIONS="--enable-spl  \
+             --with-xsl --with-curl"
+
+    ./configure --prefix=/opt/php/${VERSION} ${OPTIONS}
+
+    make
+    sudo make install
 }
 
 # Determine the command and execute
