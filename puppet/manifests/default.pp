@@ -193,3 +193,5 @@ apache::vhost { 'default':
 
 class { 'scripts': 
 }
+
+class { 'phpmanager': }
