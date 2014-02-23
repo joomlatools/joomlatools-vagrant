@@ -196,6 +196,6 @@ apache::vhost { 'default':
   directory_options => 'Indexes FollowSymLinks MultiViews',
 }
 
-class { 'scripts': 
-}
+class { 'scripts': }
 
+class { 'phpmanager': }

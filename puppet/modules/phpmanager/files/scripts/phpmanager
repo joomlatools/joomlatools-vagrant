@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# phpmanager
+# A script to switch between different PHP versions
+
+# Global variables:
+BASENAME=$(basename $0)
+SOURCE=/usr/local/src/php
+
+usage() {
+	echo "Usage: $BASENAME list"
+	exit 1
+}
+
+# Get the list of available versions
+command_list() {
+    cd $SOURCE
+
+    TAGS=()
+    eval "$(git for-each-ref --shell --format='TAGS+=(%(refname))' refs/tags/)"
+    for TAG in "${TAGS[@]}"; do
+        # Only list PHP versions greater than or equal to 5.2
+        PATTERN="refs/tags/php-[5-9]\.[2-9]"
+        if [[ $TAG =~ $PATTERN ]]; then
+            echo ${TAG/refs\/tags\//}
+        fi;
+    done
+}
+
+# Determine the command and execute
+SUBCOMMAND=$1
+case $SUBCOMMAND in
+    "" | "-h" | "--help")
+        usage
+        ;;
+    *)
+        shift
+        command_${SUBCOMMAND} $@
+        if [ $? = 127 ]; then
+            echo "Error: '$SUBCOMMAND' is not a known command!" >&2
+            usage
+        fi
+        ;;
+esac
