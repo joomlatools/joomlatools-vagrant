@@ -11,10 +11,6 @@ TARGET=/opt/php/
 
 VERSIONS=()
 
-# Abort whenever a command exits with a nonzero status
-set -e
-set -o pipefail
-
 # Print out usage
 usage() {
     echo "phpmanager v$VERSION"
@@ -32,6 +28,9 @@ usage() {
 # Get the list of available versions
 command_list() {
     cd $SOURCE
+
+    # Fetch the list of available PHP versions from the Git repo
+    command_getversions
 
     # Print out each element of the array on a separate line
     STRING=$(printf "%s\n" "${VERSIONS[@]}")
@@ -71,13 +70,16 @@ command_build() {
         usage
     fi
 
+    # Setup the PATH to include the required build tools
+    export PATH=/opt/bison-2.2/bin:/opt/flex-2.5.4/bin:$PATH
+
     # Clean-up and checkout the tag
     make clean
     rm -rf configure
     ./vcsclean
 
-    git reset --hard
-    git clean -d -x -f
+    git reset --hard --quiet
+    git clean -d -x -f --quiet
 
     git checkout $VERSION
 
@@ -89,8 +91,22 @@ command_build() {
 
     ./configure --prefix=/opt/php/${VERSION} ${OPTIONS}
 
+    if [[ $? -ne 0 ]] ; then
+        echo "ERROR: Configure failed. Exiting"
+        exit 1
+    fi
+
     make
+    if [[ $? -ne 0 ]] ; then
+        echo "ERROR: Failed to build PHP $VERSION. Exiting"
+        exit 1
+    fi
+
     sudo make install
+    if [[ $? -ne 0 ]] ; then
+        echo "ERROR: make install failed. Exiting"
+        exit 1
+    fi
 }
 
 # Get the available PHP tags
@@ -121,9 +137,6 @@ command_getversions() {
 }
 
 # Start executing :
-
-# Fetch the list of available PHP versions from the Git repo
-command_getversions
 
 # Determine the command and execute
 SUBCOMMAND=$1
