@@ -1,13 +1,14 @@
 class phpmanager {
   $script_path = '/home/vagrant/phpmanager'
-  $source_path = '/usr/local/src/php'
+  $source_path = '/usr/local/src'
+  $php_source_path = "${php_source_path}/php"
+  $installation_path = '/opt'
 
   class {"phpmanager::install": }
+  class {"phpmanager::buildtools": }
 }
 
 class phpmanager::install {
-  package { ['autoconf2.13', 'bison', 'flex', 're2c', 'libxml2-dev', 'libxslt1-dev', 'libcurl4-openssl-dev']: ensure  => 'installed' }
-
   file { '/home/vagrant/phpmanager':
     source => 'puppet:///modules/phpmanager/scripts',
     recurse => true,
@@ -22,10 +23,17 @@ class phpmanager::install {
     mode   => 755,
   }
 
+  file { $phpmanager::php_source_path:
+    ensure => "directory",
+    owner  => vagrant,
+    group  => vagrant,
+    mode   => 755,
+  }
+
   exec {"clone-php-source":
-    command =>"git clone git://git.php.net/php-src.git ${phpmanager::source_path}",
+    command => "git clone git://git.php.net/php-src.git ${phpmanager::php_source_path}",
     require => Package["git-core"],
-    onlyif => ["test ! -d ${phpmanager::source_path}/.git"]
+    onlyif =>  ["test ! -d ${phpmanager::php_source_path}/.git"]
   }
 
   exec { 'make-phpmanager-executable':
@@ -39,10 +47,20 @@ class phpmanager::install {
     require => Exec['make-phpmanager-executable']
   }
 
-  file { '/opt/php':
+  file { "${phpmanager::installation_path}/php":
     ensure => "directory",
-    recurse => true,
     owner   => "root",
     group   => "root",
+  }
+}
+
+class phpmanager::buildtools {
+  package { ['autoconf2.13', 'flex', 're2c']: ensure  => 'installed' }
+
+  puppi::netinstall { 'bison':
+    url => 'http://ftp.gnu.org/gnu/bison/bison-2.2.tar.gz',
+    extracted_dir => 'bison-2.2',
+    destination_dir => $phpmanager::source_path,
+    postextract_command => "${phpmanager::source_path}/bison-2.2/configure --prefix=${phpmanager::installation_path}/bison-2.2 && make && sudo make install"
   }
 }
