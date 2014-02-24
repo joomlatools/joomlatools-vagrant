@@ -56,7 +56,7 @@ class phpmanager::install {
 
 class phpmanager::buildtools {
   package { ['autoconf2.13', 're2c']: ensure  => 'installed' }
-  package { ['libcurl4-openssl-dev']: ensure => 'installed' }
+  package { ['libcurl4-openssl-dev', 'libmysqlclient-dev']: ensure => 'installed' }
 
   puppi::netinstall { 'bison':
     url => 'http://ftp.gnu.org/gnu/bison/bison-2.2.tar.gz',
@@ -73,4 +73,11 @@ class phpmanager::buildtools {
     postextract_command => "${phpmanager::source_path}/flex-2.5.4/configure --prefix=${phpmanager::installation_path}/flex-2.5.4 && make && sudo make install",
     require => Puppi::Netinstall['bison'],
   }
+
+  puppi::netinstall { 'mysql-5.1.73':
+    url => 'http://fossies.org/linux/misc/mysql-5.1.73-linux-x86_64-glibc23.tar.gz',
+    extracted_dir => 'mysql-5.1.73',
+    destination_dir => "${phpmanager::installation_path}"
+  }
+
 }
