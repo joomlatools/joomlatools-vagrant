@@ -56,6 +56,7 @@ class phpmanager::install {
 
 class phpmanager::buildtools {
   package { ['autoconf2.13', 're2c']: ensure  => 'installed' }
+  package { ['libcurl4-openssl-dev']: ensure => 'installed' }
 
   puppi::netinstall { 'bison':
     url => 'http://ftp.gnu.org/gnu/bison/bison-2.2.tar.gz',

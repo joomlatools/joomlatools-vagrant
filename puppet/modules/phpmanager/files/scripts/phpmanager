@@ -61,6 +61,15 @@ command_build() {
         usage
     fi;
 
+    # Fetch the list of available PHP versions from the Git repo
+    command_getversions
+
+    in_array $VERSION
+    if [[ $? != 0 ]] ; then
+        echo "Illegal version $VERSION"
+        exit 1
+    fi
+
     cd $SOURCE
 
     # Make sure the tag exists
@@ -121,7 +130,8 @@ command_getversions() {
     for TAG in "${TAGS[@]}"; do
         # Only list PHP versions greater than or equal to 5.2
         PATTERN="refs/tags/php-[5-9]\.[2-9]"
-        if [[ $TAG =~ $PATTERN ]]; then
+        EXCLUDES="refs/tags/php-5\.2\.0.*"
+        if [[ $TAG =~ $PATTERN ]] && ! [[ $TAG =~ $EXCLUDES ]] ; then
             VERSIONS+=(${TAG/refs\/tags\//})
         fi;
     done
@@ -134,6 +144,16 @@ command_getversions() {
             done | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n
         )
     )
+}
+
+# Check if a value exists in an array
+in_array() {
+    local needle=$1
+
+    for HAY in "${VERSIONS[@]}"; do
+        [[ $HAY == $needle ]] && return 0
+    done
+    return 1
 }
 
 # Start executing :
