@@ -30,7 +30,7 @@ command_list() {
     cd $SOURCE
 
     # Fetch the list of available PHP versions from the Git repo
-    command_getversions
+    sub_getversions
 
     # Print out each element of the array on a separate line
     STRING=$(printf "%s\n" "${VERSIONS[@]}")
@@ -42,6 +42,10 @@ command_list() {
 # Install PHP version
 command_install() {
     VERSION=$1
+
+    if [[ ${VERSION:0:4} != "php-" ]] ; then
+        VERSION="php-${VERSION}"
+    fi
 
     if [[ ! -d /opt/php/$VERSION ]] ; then
         echo "$VERSION does not exist, attempting to build .."
@@ -56,13 +60,19 @@ command_install() {
 command_build() {
     VERSION=$1
 
+    if [[ ${VERSION:0:4} != "php-" ]] ; then
+        VERSION="php-${VERSION}"
+    fi
+
+    SHORT=$(sub_getshortversion $VERSION)
+
     if [[ -z $VERSION ]] ; then
         echo "No PHP version given"
         usage
     fi;
 
     # Fetch the list of available PHP versions from the Git repo
-    command_getversions
+    sub_getversions
 
     in_array $VERSION
     if [[ $? != 0 ]] ; then
@@ -95,8 +105,7 @@ command_build() {
     # Run configure
     ./buildconf --force
 
-    OPTIONS="--enable-spl  \
-             --with-xsl --with-curl"
+    OPTIONS=$(sub_buildprefix $SHORT)
 
     ./configure --prefix=/opt/php/${VERSION} ${OPTIONS}
 
@@ -118,8 +127,32 @@ command_build() {
     fi
 }
 
+# Build the configure string
+sub_buildprefix() {
+    VERSION=$1
+
+    MYSQL=""
+
+    if [[ "$VERSION" < "5213" ]] ; then
+        CFG="/opt/mysql-5.1.73/bin/mysql_config"
+	    MYSQL="--with-mysql=/opt/mysql-5.1.73 --with-pdo-mysql=${CFG}"
+    elif [[ "$VERSION" < "5300" ]] ; then
+        CFG=$(which mysql_config)
+        MYSQL="--with-mysql --with-mysqli=${CFG} --with-pdo-mysql=${CFG} --with-libdir=/lib/x86_64-linux-gnu"
+    else
+        MYSQL="--with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd"
+    fi
+
+    OPTIONS="--enable-spl \
+            ${MYSQL}
+             --with-xsl \
+             --with-curl"
+
+    echo $OPTIONS
+}
+
 # Get the available PHP tags
-command_getversions() {
+sub_getversions() {
     cd $SOURCE
 
     git fetch origin --quiet
@@ -146,6 +179,21 @@ command_getversions() {
     )
 }
 
+# Convert a tag to a version string which we can use in comparisons
+sub_getshortversion() {
+    SHORT=$(echo $1 | sed -e 's/RC[0-9]*$//' -e 's/alpha[0-9]*$//' -e 's/beta[0-9]*$//')
+    SHORT=${SHORT//[^0-9]/}
+
+    while [ ${#SHORT} -lt 4 ]
+    do
+        SHORT="${SHORT}0"
+    done
+
+    SHORT=$(printf "%04d" $SHORT)
+
+    echo $SHORT
+}
+
 # Check if a value exists in an array
 in_array() {
     local needle=$1
@@ -155,8 +203,6 @@ in_array() {
     done
     return 1
 }
-
-# Start executing :
 
 # Determine the command and execute
 SUBCOMMAND=$1
