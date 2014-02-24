@@ -55,12 +55,21 @@ class phpmanager::install {
 }
 
 class phpmanager::buildtools {
-  package { ['autoconf2.13', 'flex', 're2c']: ensure  => 'installed' }
+  package { ['autoconf2.13', 're2c']: ensure  => 'installed' }
 
   puppi::netinstall { 'bison':
     url => 'http://ftp.gnu.org/gnu/bison/bison-2.2.tar.gz',
     extracted_dir => 'bison-2.2',
     destination_dir => $phpmanager::source_path,
     postextract_command => "${phpmanager::source_path}/bison-2.2/configure --prefix=${phpmanager::installation_path}/bison-2.2 && make && sudo make install"
+  }
+
+  puppi::netinstall { 'flex':
+    path => ["${phpmanager::installation_path}/bison-2.2/bin:/bin:/sbin:/usr/bin:/usr/sbin"],
+    url => 'http://fossies.org/unix/misc/old/flex-2.5.4a.tar.gz',
+    extracted_dir => 'flex-2.5.4',
+    destination_dir => $phpmanager::source_path,
+    postextract_command => "${phpmanager::source_path}/flex-2.5.4/configure --prefix=${phpmanager::installation_path}/flex-2.5.4 && make && sudo make install",
+    require => Puppi::Netinstall['bison'],
   }
 }
