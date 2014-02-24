@@ -4,13 +4,28 @@
 # A script to switch between different PHP versions
 
 # Global variables:
+VERSION=0.1
 BASENAME=$(basename $0)
 SOURCE=/usr/local/src/php
+TARGET=/opt/php/
 
+VERSIONS=()
+
+# Abort whenever a command exits with a nonzero status
+set -e
+set -o pipefail
+
+# Print out usage
 usage() {
+    echo "phpmanager v$VERSION"
 	echo "Usage: "
-	echo "  $BASENAME list            -- List all available PHP tags"
-	echo "  $BASENAME install <tag>   -- Build and install PHP version <tag>"
+	echo "  $BASENAME list                  -- List all available PHP versions."
+	echo "  $BASENAME install <version>     -- Installs selected PHP version. Will build from source if version does not exist yet."
+	echo "  $BASENAME build <version>       -- Attempts to build PHP version from source."
+	echo "  $BASENAME --help|-h             -- Show help"
+	echo "Configuration: "
+	echo " PHP Source directory: $SOURCE"
+	echo " Target directory: $TARGET"
 	exit 1
 }
 
@@ -18,19 +33,28 @@ usage() {
 command_list() {
     cd $SOURCE
 
-    TAGS=()
-    eval "$(git for-each-ref --shell --format='TAGS+=(%(refname))' refs/tags/)"
-    for TAG in "${TAGS[@]}"; do
-        # Only list PHP versions greater than or equal to 5.2
-        PATTERN="refs/tags/php-[5-9]\.[2-9]"
-        if [[ $TAG =~ $PATTERN ]]; then
-            echo ${TAG/refs\/tags\//}
-        fi;
-    done
+    # Print out each element of the array on a separate line
+    STRING=$(printf "%s\n" "${VERSIONS[@]}")
+
+    # Display the versions in columns
+    printf "%20s  %20s  %20s  %20s  %20s\n" $STRING
+}
+
+# Install PHP version
+command_install() {
+    VERSION=$1
+
+    if [[ ! -d /opt/php/$VERSION ]] ; then
+        echo "$VERSION does not exist, attempting to build .."
+        command_build $VERSION
+    fi
+
+    PATH=/usr/local/php/${VERSION}/bin:$PATH
+    echo $PATH
 }
 
 # Build version
-command_install() {
+command_build() {
     VERSION=$1
 
     if [[ -z $VERSION ]] ; then
@@ -68,6 +92,38 @@ command_install() {
     make
     sudo make install
 }
+
+# Get the available PHP tags
+command_getversions() {
+    cd $SOURCE
+
+    git fetch origin --quiet
+    git fetch origin --tags --quiet
+
+    TAGS=()
+    eval "$(git for-each-ref --shell --format='TAGS+=(%(refname))' refs/tags/)"
+    for TAG in "${TAGS[@]}"; do
+        # Only list PHP versions greater than or equal to 5.2
+        PATTERN="refs/tags/php-[5-9]\.[2-9]"
+        if [[ $TAG =~ $PATTERN ]]; then
+            VERSIONS+=(${TAG/refs\/tags\//})
+        fi;
+    done
+
+    # Sort the tags
+    VERSIONS=(
+        $(for el in "${VERSIONS[@]}"
+            do
+                echo "$el"
+            done | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n
+        )
+    )
+}
+
+# Start executing :
+
+# Fetch the list of available PHP versions from the Git repo
+command_getversions
 
 # Determine the command and execute
 SUBCOMMAND=$1
