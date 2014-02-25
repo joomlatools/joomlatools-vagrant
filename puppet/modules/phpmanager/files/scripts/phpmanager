@@ -60,16 +60,14 @@ command_install() {
 command_build() {
     VERSION=$1
 
-    if [[ ${VERSION:0:4} != "php-" ]] ; then
-        VERSION="php-${VERSION}"
-    fi
-
-    SHORT=$(sub_getshortversion $VERSION)
-
     if [[ -z $VERSION ]] ; then
         echo "No PHP version given"
         usage
     fi;
+
+    if [[ ${VERSION:0:4} != "php-" ]] ; then
+        VERSION="php-${VERSION}"
+    fi
 
     # Fetch the list of available PHP versions from the Git repo
     sub_getversions
@@ -105,7 +103,7 @@ command_build() {
     # Run configure
     ./buildconf --force
 
-    OPTIONS=$(sub_buildprefix $SHORT)
+    OPTIONS=$(sub_getoptions $VERSION)
 
     ./configure --prefix=/opt/php/${VERSION} ${OPTIONS}
 
@@ -114,6 +112,10 @@ command_build() {
         exit 1
     fi
 
+    # Before building, backup the libphp5.so file as "make install" will overwrite it automatically
+    sudo cp /usr/lib/apache2/modules/libphp5.so /usr/lib/apache2/modules/libphp5.so.bak
+
+    # Start the build
     make
     if [[ $? -ne 0 ]] ; then
         echo "ERROR: Failed to build PHP $VERSION. Exiting"
@@ -125,30 +127,55 @@ command_build() {
         echo "ERROR: make install failed. Exiting"
         exit 1
     fi
+
+    # Store our newly built module and put the original libphp5.so module back
+    sudo mv /usr/lib/apache2/modules/libphp5.so "/opt/php/${VERSION}/libphp5.so"
+    sudo mv /usr/lib/apache2/modules/libphp5.so.bak /usr/lib/apache2/modules/libphp5.so
 }
 
 # Build the configure string
-sub_buildprefix() {
-    VERSION=$1
+sub_getoptions() {
+    VERSION=$(sub_getshortversion $1)
 
+    # Default options :
+    OPTIONS="--enable-calendar \
+              --enable-cli \
+              --enable-exif \
+              --enable-ftp \
+              --enable-mbstring \
+              --enable-soap \
+              --enable-sockets \
+              --enable-zip \
+              --with-apxs2=/usr/bin/apxs2 \
+              --with-bz2 \
+              --with-curl \
+              --with-iconv \
+              --with-mcrypt \
+              --with-pcre-regex \
+              --with-readline \
+              --with-xmlrpc
+              --with-xsl \
+              --with-zlib"
+
+    # Build the mysql configuration string
     MYSQL=""
-
-    if [[ "$VERSION" < "5213" ]] ; then
+    if [[ "$VERSION" -lt 5213 ]] ; then
         CFG="/opt/mysql-5.1.73/bin/mysql_config"
 	    MYSQL="--with-mysql=/opt/mysql-5.1.73 --with-pdo-mysql=${CFG}"
-    elif [[ "$VERSION" < "5300" ]] ; then
+    elif [[ "$VERSION" -lt 5300 ]] ; then
         CFG=$(which mysql_config)
         MYSQL="--with-mysql --with-mysqli=${CFG} --with-pdo-mysql=${CFG} --with-libdir=/lib/x86_64-linux-gnu"
     else
         MYSQL="--with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd"
     fi
+    OPTIONS="$OPTIONS $MYSQL"
 
-    OPTIONS="--enable-spl \
-            ${MYSQL}
-             --with-xsl \
-             --with-curl"
+    # Add some legacy options
+    if [[ "$VERSION" -lt 5300 ]] ; then
+        OPTIONS="$OPTIONS --enable-spl --with-mime-magic"
+    fi
 
-    echo $OPTIONS
+    echo "$OPTIONS"
 }
 
 # Get the available PHP tags
@@ -184,6 +211,10 @@ sub_getshortversion() {
     SHORT=$(echo $1 | sed -e 's/RC[0-9]*$//' -e 's/alpha[0-9]*$//' -e 's/beta[0-9]*$//')
     SHORT=${SHORT//[^0-9]/}
 
+    if [[ ${#SHORT} -eq 3 ]] ; then
+        SHORT="${SHORT:0:2}0${SHORT:2}"
+    fi
+
     while [ ${#SHORT} -lt 4 ]
     do
         SHORT="${SHORT}0"
@@ -191,7 +222,7 @@ sub_getshortversion() {
 
     SHORT=$(printf "%04d" $SHORT)
 
-    echo $SHORT
+    echo "$SHORT"
 }
 
 # Check if a value exists in an array

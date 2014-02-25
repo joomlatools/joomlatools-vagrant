@@ -55,8 +55,8 @@ class phpmanager::install {
 }
 
 class phpmanager::buildtools {
-  package { ['autoconf2.13', 're2c']: ensure  => 'installed' }
-  package { ['libcurl4-openssl-dev', 'libmysqlclient-dev']: ensure => 'installed' }
+  package { ['autoconf2.13', 're2c', 'apache2-prefork-dev']: ensure  => 'installed' }
+  package { ['libcurl4-openssl-dev', 'libmysqlclient-dev', 'libmcrypt-dev', 'libbz2-dev']: ensure => 'installed' }
 
   puppi::netinstall { 'bison':
     url => 'http://ftp.gnu.org/gnu/bison/bison-2.2.tar.gz',
@@ -79,5 +79,4 @@ class phpmanager::buildtools {
     extracted_dir => 'mysql-5.1.73',
     destination_dir => "${phpmanager::installation_path}"
   }
-
 }
