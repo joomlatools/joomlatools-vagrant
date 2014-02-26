@@ -99,6 +99,9 @@ command_install() {
         fi
     done
 
+    # Setup PEAR deps
+    sub_pear
+
     # Change the Apache module
     if [ ! -f "/usr/lib/apache2/modules/libphp5.so.original" ] ; then
         sudo cp "/usr/lib/apache2/modules/libphp5.so" "/usr/lib/apache2/modules/libphp5.so.original"
@@ -132,8 +135,6 @@ command_build() {
         VERSION="php-${VERSION}"
     fi
 
-    SHORT=$(sub_getshortversion $VERSION)
-
     LOGFILE="/tmp/phpmanager-build-${VERSION}.log"
     echo -e "Starting build of ${VERSION} at $(date) .. \n\n" > "$LOGFILE"
 
@@ -157,6 +158,7 @@ command_build() {
     git checkout $VERSION  &> /dev/null
 
     # Setup the PATH to include legacy build tools if needed
+    SHORT=$(sub_getshortversion $VERSION)
     if [[ $SHORT -le 5360 ]] ; then
         export PATH=/opt/bison-2.2/bin:/opt/flex-2.5.4/bin:$PATH
     fi
@@ -166,9 +168,9 @@ command_build() {
     # Run configure
     ./buildconf --force  >> "$LOGFILE" 2>&1
 
-    OPTIONS=$(sub_getoptions $SHORT)
+    OPTIONS=$(sub_getoptions "$VERSION")
 
-    CMD="./configure --prefix=/opt/php/${VERSION} ${OPTIONS}"
+    CMD="./configure ${OPTIONS}"
     sub_execute "$CMD" "configure" "$LOGFILE" "Configuring makefile"
 
     # Start the build
@@ -179,6 +181,9 @@ command_build() {
 
     # Install the new binaries and module
     sub_execute "sudo make install" "install" "$LOGFILE" "Installing ${VERSION}"
+
+    # Now setup the php.ini files
+    sub_setupini "$VERSION"
 
     # Store our newly built module and put the original libphp5.so module back
     sudo mkdir "/opt/php/${VERSION}/libs"
@@ -261,9 +266,18 @@ sub_execute() {
     fi
 }
 
+# Install PEAR libraries that are required for the box to keep working
+sub_pear() {
+    sudo pear channel-discover pear.phing.info &> /dev/null
+
+    sudo pear install Console_CommandLine &> /dev/null
+    sudo pear install phing/phing &> /dev/null
+}
+
 # Build the configure string
 sub_getoptions() {
     VERSION=$1
+    SHORT=$(sub_getshortversion $VERSION)
 
     # Default options :
     OPTIONS="--enable-calendar \
@@ -275,8 +289,10 @@ sub_getoptions() {
               --enable-soap \
               --enable-sockets \
               --enable-zip \
+              --prefix=/opt/php/${VERSION} \
               --with-apxs2=/usr/bin/apxs2 \
               --with-bz2 \
+              --with-config-file-scan-dir=/opt/php/${VERSION}/etc/conf.d/ \
               --with-curl \
               --with-gd --with-jpeg-dir --with-png-dir --enable-gd-native-ttf --with-freetype-dir \
               --with-iconv \
@@ -290,10 +306,10 @@ sub_getoptions() {
 
     # Build the mysql configuration string
     MYSQL=""
-    if [[ "$VERSION" -lt 5213 ]] ; then
+    if [[ "$SHORT" -lt 5213 ]] ; then
         CFG="/opt/mysql-5.1.73-linux-x86_64-glibc23/bin/mysql_config"
 	    MYSQL="--with-mysql=/opt/mysql-5.1.73-linux-x86_64-glibc23 --with-pdo-mysql=${CFG}"
-    elif [[ "$VERSION" -lt 5300 ]] ; then
+    elif [[ "$SHORT" -lt 5300 ]] ; then
         CFG=$(which mysql_config)
         MYSQL="--with-mysql --with-mysqli=${CFG} --with-pdo-mysql=${CFG}"
     else
@@ -302,11 +318,31 @@ sub_getoptions() {
     OPTIONS="$OPTIONS $MYSQL"
 
     # Add some legacy options
-    if [[ "$VERSION" -lt 5300 ]] ; then
+    if [[ "$SHORT" -lt 5300 ]] ; then
         OPTIONS="$OPTIONS --enable-spl --with-mime-magic"
     fi
 
     echo "$OPTIONS"
+}
+
+# Copy the php.ini files
+sub_setupini() {
+    VERSION="$1"
+
+    [[ ! -d "/opt/php/${VERSION}/etc/conf.d" ]] && sudo mkdir -p "/opt/php/${VERSION}/etc/conf.d"
+    [[ ! -d "/opt/php/${VERSION}/lib" ]] && sudo mkdir -p "/opt/php/${VERSION}/lib"
+
+    if [[ -f "${SOURCE}/php.ini-recommended" ]] ; then
+        sudo cp "${SOURCE}/php.ini-recommended" "/opt/php/${VERSION}/lib/php.ini"
+    elif [[ -f "${SOURCE}/php.ini-development" ]] ; then
+        sudo cp "${SOURCE}/php.ini-development" "/opt/php/${VERSION}/lib/php.ini"
+    fi
+
+    sudo cp /etc/php5/apache2/conf.d/zzz_custom.ini "/opt/php/${VERSION}/etc/conf.d/zzz_custom.ini"
+    sudo cp /etc/php5/apache2/conf.d/zzz_php.ini "/opt/php/${VERSION}/etc/conf.d/zzz_php.ini"
+
+    sudo chown vagrant:vagrant "/opt/php/${VERSION}/lib/php.ini"
+    sudo chown -R vagrant:vagrant "/opt/php/${VERSION}/etc/conf.d"
 }
 
 # Get the available PHP tags
