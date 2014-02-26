@@ -12,11 +12,10 @@
 # A script to easily switch between different PHP versions
 #
 # @author   Steven Rombauts <https://github.com/stevenrombauts>
-#
 ##
 
 # Global variables:
-VERSION=0.1
+SCRIPT_VERSION=0.1
 BASENAME=$(basename $0)
 SOURCE=/usr/local/src/php
 TARGET=/opt/php/
@@ -26,21 +25,24 @@ BINARIES=('php' 'pear' 'pecl' 'phar' 'phing' 'php-config' 'phpize')
 
 # Print out usage
 usage() {
-    echo "phpmanager v$VERSION"
+    echo "phpmanager v${SCRIPT_VERSION}"
+    echo "Copyright (C) 2011 - 2014 Johan Janssens and Timble CVBA. (http://www.timble.net)"
 	echo "Usage: "
-	echo "  $BASENAME list                  -- List all available PHP versions."
-	echo "  $BASENAME install <version>     -- Installs selected PHP version. Will build from source if version does not exist yet."
+	echo "  $BASENAME versions              -- List all available PHP versions."
+	echo "  $BASENAME available             -- Show all PHP version which have been built locally."
+	echo "  $BASENAME install <version>     -- Installs selected PHP version. Builds from source if version does not exist yet. "
 	echo "  $BASENAME build <version>       -- Attempts to build PHP version from source."
 	echo "  $BASENAME restore               -- Put the original binaries and Apache module back in place."
-	echo "  $BASENAME --help|-h             -- Show help"
+	echo "  $BASENAME help                  -- Show help"
+	echo ""
 	echo "Configuration: "
 	echo " PHP Source directory: $SOURCE"
-	echo " Target directory: $TARGET"
+	echo " Target directory:     $TARGET"
 	exit 1
 }
 
 # Get the list of available versions
-command_list() {
+command_versions() {
     cd $SOURCE
 
     # Fetch the list of available PHP versions from the Git repo
@@ -53,6 +55,11 @@ command_list() {
     printf "%20s  %20s  %20s  %20s  %20s\n" $STRING
 }
 
+# Get the list of installed builds
+command_available() {
+    ls $TARGET
+}
+
 # Install PHP version
 command_install() {
     VERSION=$1
@@ -62,7 +69,17 @@ command_install() {
     fi
 
     if [[ ! -d "/opt/php/$VERSION" ]] ; then
-        echo "$VERSION does not exist, attempting to build .."
+        echo -e "\033[33m${VERSION} does not exist, attempting to build ..\e[0m"
+
+        # Fetch the list of available PHP versions from the Git repo
+        sub_getversions
+
+        in_array $VERSION
+        if [[ $? != 0 ]] ; then
+            echo -e "\033[31mERROR: Unknown version $VERSION\e[0m"
+            exit 1
+        fi
+
         command_build $VERSION
     fi
 
@@ -87,10 +104,18 @@ command_install() {
         sudo cp "/usr/lib/apache2/modules/libphp5.so" "/usr/lib/apache2/modules/libphp5.so.original"
     fi
 
-    sudo cp "/opt/php/${VERSION}/libphp5.so" "/usr/lib/apache2/modules/libphp5.so"
-    sudo /etc/init.d/apache2 restart
+    sudo cp "/opt/php/${VERSION}/libs/libphp5.so" "/usr/lib/apache2/modules/libphp5.so"
 
-    echo "Installed binaries and Apache module. PHP version is now: "
+    echo -n "Restarting Apache .. "
+    sudo /etc/init.d/apache2 restart &> /dev/null
+
+    if [ $? -ne 0 ] ; then
+        echo "\033[31mFAILED\e[0m"
+    else
+        echo "OK"
+    fi
+
+    echo -e "Installed binaries and Apache module. PHP version is now:\n"
     php -v
 }
 
@@ -99,7 +124,7 @@ command_build() {
     VERSION=$1
 
     if [[ -z $VERSION ]] ; then
-        echo "No PHP version given"
+        echo -e "\033[31mERROR: No PHP version given\e[0m"
         usage
     fi;
 
@@ -110,22 +135,13 @@ command_build() {
     SHORT=$(sub_getshortversion $VERSION)
 
     LOGFILE="/tmp/phpmanager-build-${VERSION}.log"
-    echo -e "Starting build of ${VERSION} at $(date) .. \n\n" > $LOGFILE
-
-    # Fetch the list of available PHP versions from the Git repo
-    sub_getversions
-
-    in_array $VERSION
-    if [[ $? != 0 ]] ; then
-        echo "Illegal version $VERSION"
-        exit 1
-    fi
+    echo -e "Starting build of ${VERSION} at $(date) .. \n\n" > "$LOGFILE"
 
     cd $SOURCE
 
     # Make sure the tag exists
     if [ ! git rev-parse "$VERSION" >/dev/null 2>&1 ] ; then
-        echo "$VERSION version not found"
+        echo -e "\033[31mERROR: $VERSION version not found\e[0m"
         usage
     fi
 
@@ -137,57 +153,54 @@ command_build() {
     git reset --hard --quiet
     git clean -d -x -f --quiet
 
-    echo "Checking out ${VERSION} source"
-    git checkout $VERSION
+    echo "Checking out ${VERSION} tag"
+    git checkout $VERSION  &> /dev/null
 
     # Setup the PATH to include legacy build tools if needed
     if [[ $SHORT -le 5360 ]] ; then
         export PATH=/opt/bison-2.2/bin:/opt/flex-2.5.4/bin:$PATH
     fi
 
+    echo "Logging to ${LOGFILE}"
+
     # Run configure
-    ./buildconf --force  >> $LOGFILE 2>&1
+    ./buildconf --force  >> "$LOGFILE" 2>&1
 
     OPTIONS=$(sub_getoptions $SHORT)
 
-    echo "Configuring .. "
-    ./configure --prefix=/opt/php/${VERSION} ${OPTIONS} >> $LOGFILE 2>&1
-
-    if [[ $? -ne 0 ]] ; then
-        tail -n 10 "${LOGFILE}"
-        echo "ERROR: Configure failed!"
-        echo "See ${LOGFILE} for more details."
-        exit 1
-    fi
+    CMD="./configure --prefix=/opt/php/${VERSION} ${OPTIONS}"
+    sub_execute "$CMD" "configure" "$LOGFILE" "Configuring makefile"
 
     # Start the build
-    make >> $LOGFILE 2>&1
-    if [[ $? -ne 0 ]] ; then
-    tail -n 10 "${LOGFILE}"
-        tail -n 10 "${LOGFILE}"
-        echo "ERROR: Failed to build PHP $VERSION."
-        echo "See ${LOGFILE} for more details."
-        exit 1
-    fi
+    sub_execute "make" "make" "$LOGFILE" "Building ${VERSION}"
 
     # Backup the libphp5.so file as "make install" will overwrite it automatically
     sudo mv /usr/lib/apache2/modules/libphp5.so /usr/lib/apache2/modules/libphp5.so.bak
 
-    sudo make install >> $LOGFILE 2>&1
+    # Install the new binaries and module
+    sub_execute "sudo make install" "install" "$LOGFILE" "Installing ${VERSION}"
 
     # Store our newly built module and put the original libphp5.so module back
-    if [[ -f "/opt/php/${VERSION}/libphp5.so" ]] ; then
-        sudo mv /usr/lib/apache2/modules/libphp5.so "/opt/php/${VERSION}/libphp5.so"
-    fi
+    sudo mkdir "/opt/php/${VERSION}/libs"
 
-    sudo mv /usr/lib/apache2/modules/libphp5.so.bak /usr/lib/apache2/modules/libphp5.so
+    if [[ -f "${SOURCE}/.libs/libphp5.so" ]] ; then
+        sudo cp "${SOURCE}/.libs/libphp5.so" "/opt/php/${VERSION}/libs/libphp5.so"
+    elif [[ -f /usr/lib/apache2/modules/libphp5.so ]] ; then
+        sudo mv "/usr/lib/apache2/modules/libphp5.so" "/opt/php/${VERSION}/libs/libphp5.so"
+    else
+        [[ -f /usr/lib/apache2/modules/libphp5.so ]] && sudo rm /usr/lib/apache2/modules/libphp5.so
+        sudo mv /usr/lib/apache2/modules/libphp5.so.bak /usr/lib/apache2/modules/libphp5.so
 
-    if [[ $? -ne 0 ]] ; then
-        tail -n 10 "${LOGFILE}"
-        echo "ERROR: make install failed."
-        echo "See ${LOGFILE} for details."
+        echo -e "\033[31mERROR: Failed to build libphp5.so!\e[0m"
+        echo "See ${LOGFILE} for more details or try again."
         exit 1
     fi
+
+    # Put the original apache module back in place
+    [[ -f /usr/lib/apache2/modules/libphp5.so ]] && sudo rm /usr/lib/apache2/modules/libphp5.so
+    sudo mv /usr/lib/apache2/modules/libphp5.so.bak /usr/lib/apache2/modules/libphp5.so
+
+    echo -e "\n${VERSION} has been built and can be found at /opt/php/${VERSION} -- happy coding!"
 }
 
 # Restore the original PHP binaries and Apache module
@@ -214,6 +227,33 @@ command_restore() {
     php -v
 }
 
+# Run tasks that take up more time than regular commands.
+# Takes the following parameters
+#  - The command itself
+#  - The name of the task
+#  - The logfile to pipe output to
+#  - A message to display next to the working indicator
+sub_execute() {
+    CMD=$1
+    NAME=$2
+    LOGFILE=$3
+    MSG=$4
+
+    $CMD >> "$LOGFILE" 2>&1 &
+    PID=$!
+
+    sub_waitinganim $PID "$MSG"
+
+    wait $PID
+
+    if [[ $? -ne 0 ]] ; then
+        tail -n 5 "${LOGFILE}"
+        echo -e "\033[31mERROR: ${NAME} failed!\e[0m"
+        echo "See ${LOGFILE} for more details."
+        exit 1
+    fi
+}
+
 # Build the configure string
 sub_getoptions() {
     VERSION=$1
@@ -223,6 +263,7 @@ sub_getoptions() {
               --enable-cli \
               --enable-exif \
               --enable-ftp \
+              --enable-intl \
               --enable-mbstring \
               --enable-soap \
               --enable-sockets \
@@ -265,8 +306,8 @@ sub_getoptions() {
 sub_getversions() {
     cd $SOURCE
 
-    git fetch origin --quiet
-    git fetch origin --tags --quiet
+    git fetch origin --quiet &> /dev/null
+    git fetch origin --tags --quiet &> /dev/null
 
     TAGS=()
     eval "$(git for-each-ref --shell --format='TAGS+=(%(refname))' refs/tags/)"
@@ -308,6 +349,24 @@ sub_getshortversion() {
     echo "$SHORT"
 }
 
+# Display a "loading animation" while given process is running
+# From: http://stackoverflow.com/questions/12498304/using-bash-to-display-a-progress-working-indicator
+sub_waitinganim() {
+    PID=$1
+    TEXT=$2
+
+    SPIN='-\|/'
+    i=0
+    while kill -0 $PID &> /dev/null
+    do
+      i=$(( (i+1) % 4 ))
+      printf "\r${TEXT} .. \e[1;32m${SPIN:$i:1} \e[0m\033[?25l"
+      sleep .1
+    done
+
+    echo -e "\r${TEXT} .. finished\033[?25h"
+}
+
 # Check if a value exists in an array
 in_array() {
     local needle=$1
@@ -321,14 +380,14 @@ in_array() {
 # Determine the command and execute
 SUBCOMMAND=$1
 case $SUBCOMMAND in
-    "" | "-h" | "--help")
+    "" | "-h" | "--help" | "help")
         usage
         ;;
     *)
         shift
         command_${SUBCOMMAND} $@
         if [ $? = 127 ]; then
-            echo "Error: '$SUBCOMMAND' is not a known command!" >&2
+            echo -e "\033[31mError: '$SUBCOMMAND' is not a known command!\e[0m" >&2
             usage
         fi
         ;;
