@@ -52,13 +52,11 @@ command_versions() {
     STRING=$(printf "%s\n" "${VERSIONS[@]}")
 
     # Display the versions in columns
-    printf "%20s  %20s  %20s  %20s  %20s\n" $STRING
     printf "%20s  %20s  %20s  %20s  %20s  %20s  %20s\n" $STRING
 }
 
 # Get the list of installed builds
 command_available() {
-    ls $TARGET
     LIST=(/opt/php/php-*)
     AVAILABLE=()
 
@@ -319,7 +317,12 @@ sub_getoptions() {
     MYSQL=""
     if [[ "$SHORT" -lt 5213 ]] ; then
         CFG="/opt/mysql-5.1.73-linux-x86_64-glibc23/bin/mysql_config"
-	    MYSQL="--with-mysql=/opt/mysql-5.1.73-linux-x86_64-glibc23 --with-pdo-mysql=${CFG}"
+	    MYSQL="--with-mysql=/opt/mysql-5.1.73-linux-x86_64-glibc23 --with-mysqli=${CFG} --with-pdo-mysql=${CFG}"
+
+        if [[ "$SHORT" -lt 5208 ]] ; then
+            # http://bugs.mysql.com/bug.php?id=29994
+            sed -i.bak 's/gptr/char\*/g' "${SOURCE}/ext/mysqli/mysqli_api.c"
+        fi
     elif [[ "$SHORT" -lt 5300 ]] ; then
         CFG=$(which mysql_config)
         MYSQL="--with-mysql --with-mysqli=${CFG} --with-pdo-mysql=${CFG}"
