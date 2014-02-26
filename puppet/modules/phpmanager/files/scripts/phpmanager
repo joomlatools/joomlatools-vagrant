@@ -212,18 +212,25 @@ command_restore() {
             sudo rm "/usr/bin/${BINARY}"
         fi
 
-        sudo mv "/usr/bin/${BINARY}.original" "/usr/bin/${BINARY}"
+        sudo cp "/usr/bin/${BINARY}.original" "/usr/bin/${BINARY}"
     done
 
     if [ -f "/usr/lib/apache2/modules/libphp5.so" ] ; then
         sudo rm "/usr/lib/apache2/modules/libphp5.so"
     fi
 
-    sudo mv "/usr/lib/apache2/modules/libphp5.so.original" "/usr/lib/apache2/modules/libphp5.so"
+    sudo cp "/usr/lib/apache2/modules/libphp5.so.original" "/usr/lib/apache2/modules/libphp5.so"
 
-    sudo /etc/init.d/apache2 restart
+    echo -n "Restarting Apache .. "
+    sudo /etc/init.d/apache2 restart &> /dev/null
 
-    echo "Restored PHP, version is now:"
+    if [ $? -ne 0 ] ; then
+        echo "\033[31mFAILED\e[0m"
+    else
+        echo "OK"
+    fi
+
+    echo -e "Restored PHP, version is now: \n"
     php -v
 }
 
@@ -388,7 +395,7 @@ case $SUBCOMMAND in
         command_${SUBCOMMAND} $@
         if [ $? = 127 ]; then
             echo -e "\033[31mError: '$SUBCOMMAND' is not a known command!\e[0m" >&2
-            usage
+            echo "Run ${BASENAME} --help for available commands."
         fi
         ;;
 esac
