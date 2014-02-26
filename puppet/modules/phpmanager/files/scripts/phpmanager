@@ -1,7 +1,19 @@
 #!/bin/bash
+##
+# Joomlatools Composer plugin - https://github.com/joomlatools/joomla-composer
+#
+# @copyright	Copyright (C) 2011 - 2014 Johan Janssens and Timble CVBA. (http://www.timble.net)
+# @license		MPL 2.0 <http://www.mozilla.org/MPL/2.0/>
+# @link		    http://github.com/joomlatools/joomla-vagrant for the canonical source repository
+##
 
+##
 # phpmanager
-# A script to switch between different PHP versions
+# A script to easily switch between different PHP versions
+#
+# @author   Steven Rombauts <https://github.com/stevenrombauts>
+#
+##
 
 # Global variables:
 VERSION=0.1
@@ -47,13 +59,38 @@ command_install() {
         VERSION="php-${VERSION}"
     fi
 
-    if [[ ! -d /opt/php/$VERSION ]] ; then
+    if [[ ! -d "/opt/php/$VERSION" ]] ; then
         echo "$VERSION does not exist, attempting to build .."
         command_build $VERSION
     fi
 
-    PATH=/usr/local/php/${VERSION}/bin:$PATH
-    echo $PATH
+    # Install the binaries
+    BINARIES=('php' 'pear' 'pecl' 'phar' 'phing' 'php-config' 'phpize')
+    for BINARY in "${BINARIES[@]}"
+    do
+        # Check if we've already made backups
+        if [ ! -f "/usr/bin/${BINARY}.bak" ] ; then
+            sudo mv "/usr/bin/${BINARY}" "/usr/bin/${BINARY}.bak"
+        fi
+
+        # Now symlink the new binaries
+        if [ -f "/opt/php/$VERSION/bin/$BINARY" ] ; then
+            sudo ln -fs "/opt/php/$VERSION/bin/$BINARY" "/usr/bin/$BINARY"
+        elif [ -f "/usr/bin/$BINARY" ] ; then
+            sudo rm "/usr/bin/$BINARY"
+        fi
+    done
+
+    # Change the Apache module
+    if [ ! -f "/usr/lib/apache2/modules/libphp5.so.original" ] ; then
+        sudo cp "/usr/lib/apache2/modules/libphp5.so" "/usr/lib/apache2/modules/libphp5.so.original"
+    fi
+
+    sudo cp "/opt/php/${VERSION}/libphp5.so" "/usr/lib/apache2/modules/libphp5.so"
+    sudo /etc/init.d/apache2 restart
+
+    echo "Installed binaries and Apache module. PHP version is now: "
+    php -v
 }
 
 # Build version
@@ -69,6 +106,8 @@ command_build() {
         VERSION="php-${VERSION}"
     fi
 
+    SHORT=$(sub_getshortversion $VERSION)
+
     # Fetch the list of available PHP versions from the Git repo
     sub_getversions
 
@@ -81,14 +120,10 @@ command_build() {
     cd $SOURCE
 
     # Make sure the tag exists
-    if ! git rev-parse $VERSION >/dev/null 2>&1
-    then
+    if [ ! git rev-parse "$VERSION" >/dev/null 2>&1 ] ; then
         echo "$VERSION version not found"
         usage
     fi
-
-    # Setup the PATH to include the required build tools
-    export PATH=/opt/bison-2.2/bin:/opt/flex-2.5.4/bin:$PATH
 
     # Clean-up and checkout the tag
     make clean
@@ -100,10 +135,15 @@ command_build() {
 
     git checkout $VERSION
 
+    # Setup the PATH to include legacy build tools if needed
+    if [[ $SHORT -le 5360 ]] ; then
+        export PATH=/opt/bison-2.2/bin:/opt/flex-2.5.4/bin:$PATH
+    fi
+
     # Run configure
     ./buildconf --force
 
-    OPTIONS=$(sub_getoptions $VERSION)
+    OPTIONS=$(sub_getoptions $SHORT)
 
     ./configure --prefix=/opt/php/${VERSION} ${OPTIONS}
 
@@ -135,7 +175,7 @@ command_build() {
 
 # Build the configure string
 sub_getoptions() {
-    VERSION=$(sub_getshortversion $1)
+    VERSION=$1
 
     # Default options :
     OPTIONS="--enable-calendar \
@@ -149,7 +189,9 @@ sub_getoptions() {
               --with-apxs2=/usr/bin/apxs2 \
               --with-bz2 \
               --with-curl \
+              --with-gd --with-jpeg-dir --with-png-dir --enable-gd-native-ttf --with-freetype-dir \
               --with-iconv \
+              --with-libdir=lib/x86_64-linux-gnu \
               --with-mcrypt \
               --with-pcre-regex \
               --with-readline \
@@ -164,7 +206,7 @@ sub_getoptions() {
 	    MYSQL="--with-mysql=/opt/mysql-5.1.73 --with-pdo-mysql=${CFG}"
     elif [[ "$VERSION" -lt 5300 ]] ; then
         CFG=$(which mysql_config)
-        MYSQL="--with-mysql --with-mysqli=${CFG} --with-pdo-mysql=${CFG} --with-libdir=/lib/x86_64-linux-gnu"
+        MYSQL="--with-mysql --with-mysqli=${CFG} --with-pdo-mysql=${CFG}"
     else
         MYSQL="--with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd"
     fi
