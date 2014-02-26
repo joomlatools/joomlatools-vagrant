@@ -22,6 +22,7 @@ SOURCE=/usr/local/src/php
 TARGET=/opt/php/
 
 VERSIONS=()
+BINARIES=('php' 'pear' 'pecl' 'phar' 'phing' 'php-config' 'phpize')
 
 # Print out usage
 usage() {
@@ -30,6 +31,7 @@ usage() {
 	echo "  $BASENAME list                  -- List all available PHP versions."
 	echo "  $BASENAME install <version>     -- Installs selected PHP version. Will build from source if version does not exist yet."
 	echo "  $BASENAME build <version>       -- Attempts to build PHP version from source."
+	echo "  $BASENAME restore               -- Put the original binaries and Apache module back in place."
 	echo "  $BASENAME --help|-h             -- Show help"
 	echo "Configuration: "
 	echo " PHP Source directory: $SOURCE"
@@ -65,12 +67,11 @@ command_install() {
     fi
 
     # Install the binaries
-    BINARIES=('php' 'pear' 'pecl' 'phar' 'phing' 'php-config' 'phpize')
     for BINARY in "${BINARIES[@]}"
     do
         # Check if we've already made backups
-        if [ ! -f "/usr/bin/${BINARY}.bak" ] ; then
-            sudo mv "/usr/bin/${BINARY}" "/usr/bin/${BINARY}.bak"
+        if [ ! -f "/usr/bin/${BINARY}.original" ] ; then
+            sudo mv "/usr/bin/${BINARY}" "/usr/bin/${BINARY}.original"
         fi
 
         # Now symlink the new binaries
@@ -171,6 +172,30 @@ command_build() {
     # Store our newly built module and put the original libphp5.so module back
     sudo mv /usr/lib/apache2/modules/libphp5.so "/opt/php/${VERSION}/libphp5.so"
     sudo mv /usr/lib/apache2/modules/libphp5.so.bak /usr/lib/apache2/modules/libphp5.so
+}
+
+# Restore the original PHP binaries and Apache module
+command_restore() {
+    for BINARY in "${BINARIES[@]}"
+    do
+        # Remove the symlink
+        if [ -L "/usr/bin/${BINARY}" ] ; then
+            sudo rm "/usr/bin/${BINARY}"
+        fi
+
+        sudo mv "/usr/bin/${BINARY}.original" "/usr/bin/${BINARY}"
+    done
+
+    if [ -f "/usr/lib/apache2/modules/libphp5.so" ] ; then
+        sudo rm "/usr/lib/apache2/modules/libphp5.so"
+    fi
+
+    sudo mv "/usr/lib/apache2/modules/libphp5.so.original" "/usr/lib/apache2/modules/libphp5.so"
+
+    sudo /etc/init.d/apache2 restart
+
+    echo "Restored PHP, version is now:"
+    php -v
 }
 
 # Build the configure string
