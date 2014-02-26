@@ -30,6 +30,12 @@ class phpmanager::install {
     mode   => 755,
   }
 
+  file { '/etc/bash_completion.d/phpmanager':
+    ensure => 'link',
+    target => '/home/vagrant/phpmanager/phpmanager.complete',
+    require => File['/home/vagrant/phpmanager']
+  }
+
   exec {"clone-php-source":
     command => "git clone git://git.php.net/php-src.git ${phpmanager::php_source_path}",
     require => Package["git-core"],
@@ -56,7 +62,7 @@ class phpmanager::install {
 
 class phpmanager::buildtools {
   package { ['autoconf2.13', 're2c', 'apache2-prefork-dev', 'bison']: ensure  => 'installed' }
-  package { ['libcurl4-openssl-dev', 'libmysqlclient-dev', 'libmcrypt-dev', 'libbz2-dev', 'libjpeg-dev', 'libpng12-dev', 'libfreetype6-dev']: ensure => 'installed' }
+  package { ['libcurl4-openssl-dev', 'libmysqlclient-dev', 'libmcrypt-dev', 'libbz2-dev', 'libjpeg-dev', 'libpng12-dev', 'libfreetype6-dev', 'libicu-dev']: ensure => 'installed' }
 
   puppi::netinstall { 'bison':
     url => 'http://ftp.gnu.org/gnu/bison/bison-2.2.tar.gz',
