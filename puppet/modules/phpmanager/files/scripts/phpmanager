@@ -109,6 +109,9 @@ command_build() {
 
     SHORT=$(sub_getshortversion $VERSION)
 
+    LOGFILE="/tmp/phpmanager-build-${VERSION}.log"
+    echo -e "Starting build of ${VERSION} at $(date) .. \n\n" > $LOGFILE
+
     # Fetch the list of available PHP versions from the Git repo
     sub_getversions
 
@@ -127,13 +130,14 @@ command_build() {
     fi
 
     # Clean-up and checkout the tag
-    make clean
-    rm -rf configure
-    ./vcsclean
+    make clean &> /dev/null
+    rm -rf configure  &> /dev/null
+    ./vcsclean  &> /dev/null
 
     git reset --hard --quiet
     git clean -d -x -f --quiet
 
+    echo "Checking out ${VERSION} source"
     git checkout $VERSION
 
     # Setup the PATH to include legacy build tools if needed
@@ -142,36 +146,48 @@ command_build() {
     fi
 
     # Run configure
-    ./buildconf --force
+    ./buildconf --force  >> $LOGFILE 2>&1
 
     OPTIONS=$(sub_getoptions $SHORT)
 
-    ./configure --prefix=/opt/php/${VERSION} ${OPTIONS}
+    echo "Configuring .. "
+    ./configure --prefix=/opt/php/${VERSION} ${OPTIONS} >> $LOGFILE 2>&1
 
     if [[ $? -ne 0 ]] ; then
-        echo "ERROR: Configure failed. Exiting"
+        tail -n 10 "${LOGFILE}"
+        echo "ERROR: Configure failed!"
+        echo "See ${LOGFILE} for more details."
         exit 1
     fi
-
-    # Before building, backup the libphp5.so file as "make install" will overwrite it automatically
-    sudo cp /usr/lib/apache2/modules/libphp5.so /usr/lib/apache2/modules/libphp5.so.bak
 
     # Start the build
-    make
+    make >> $LOGFILE 2>&1
     if [[ $? -ne 0 ]] ; then
-        echo "ERROR: Failed to build PHP $VERSION. Exiting"
+    tail -n 10 "${LOGFILE}"
+        tail -n 10 "${LOGFILE}"
+        echo "ERROR: Failed to build PHP $VERSION."
+        echo "See ${LOGFILE} for more details."
         exit 1
     fi
 
-    sudo make install
-    if [[ $? -ne 0 ]] ; then
-        echo "ERROR: make install failed. Exiting"
-        exit 1
-    fi
+    # Backup the libphp5.so file as "make install" will overwrite it automatically
+    sudo mv /usr/lib/apache2/modules/libphp5.so /usr/lib/apache2/modules/libphp5.so.bak
+
+    sudo make install >> $LOGFILE 2>&1
 
     # Store our newly built module and put the original libphp5.so module back
-    sudo mv /usr/lib/apache2/modules/libphp5.so "/opt/php/${VERSION}/libphp5.so"
+    if [[ -f "/opt/php/${VERSION}/libphp5.so" ]] ; then
+        sudo mv /usr/lib/apache2/modules/libphp5.so "/opt/php/${VERSION}/libphp5.so"
+    fi
+
     sudo mv /usr/lib/apache2/modules/libphp5.so.bak /usr/lib/apache2/modules/libphp5.so
+
+    if [[ $? -ne 0 ]] ; then
+        tail -n 10 "${LOGFILE}"
+        echo "ERROR: make install failed."
+        echo "See ${LOGFILE} for details."
+        exit 1
+    fi
 }
 
 # Restore the original PHP binaries and Apache module
