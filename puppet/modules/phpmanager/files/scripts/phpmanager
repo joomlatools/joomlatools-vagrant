@@ -53,11 +53,22 @@ command_versions() {
 
     # Display the versions in columns
     printf "%20s  %20s  %20s  %20s  %20s\n" $STRING
+    printf "%20s  %20s  %20s  %20s  %20s  %20s  %20s\n" $STRING
 }
 
 # Get the list of installed builds
 command_available() {
     ls $TARGET
+    LIST=(/opt/php/php-*)
+    AVAILABLE=()
+
+    for ITEM in "${LIST[@]}"; do
+        AVAILABLE+=($(basename "$ITEM"))
+    done
+
+    STRING=$(printf "%s\n" "${AVAILABLE[@]}")
+
+    printf "%20s  %20s  %20s  %20s  %20s  %20s  %20s\n" $STRING
 }
 
 # Install PHP version
