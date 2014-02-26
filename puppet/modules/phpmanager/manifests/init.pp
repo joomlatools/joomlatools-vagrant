@@ -1,7 +1,7 @@
 class phpmanager {
   $script_path = '/home/vagrant/phpmanager'
   $source_path = '/usr/local/src'
-  $php_source_path = "${php_source_path}/php"
+  $php_source_path = "${source_path}/php"
   $installation_path = '/opt'
 
   class {"phpmanager::install": }
@@ -28,6 +28,7 @@ class phpmanager::install {
     owner  => vagrant,
     group  => vagrant,
     mode   => 755,
+    require => File["$phpmanager::source_path"]
   }
 
   file { '/etc/bash_completion.d/phpmanager':
@@ -38,8 +39,10 @@ class phpmanager::install {
 
   exec {"clone-php-source":
     command => "git clone git://git.php.net/php-src.git ${phpmanager::php_source_path}",
-    require => Package["git-core"],
-    onlyif =>  ["test ! -d ${phpmanager::php_source_path}/.git"]
+    require => File["${phpmanager::php_source_path}"],
+    onlyif =>  ["test ! -d ${phpmanager::php_source_path}/.git"],
+    user => vagrant,
+    group => vagrant
   }
 
   exec { 'make-phpmanager-executable':
@@ -62,7 +65,7 @@ class phpmanager::install {
 
 class phpmanager::buildtools {
   package { ['autoconf2.13', 're2c', 'apache2-prefork-dev', 'bison']: ensure  => 'installed' }
-  package { ['libcurl4-openssl-dev', 'libmysqlclient-dev', 'libmcrypt-dev', 'libbz2-dev', 'libjpeg-dev', 'libpng12-dev', 'libfreetype6-dev', 'libicu-dev']: ensure => 'installed' }
+  package { ['libcurl4-openssl-dev', 'libmysqlclient-dev', 'libmcrypt-dev', 'libbz2-dev', 'libjpeg-dev', 'libpng12-dev', 'libfreetype6-dev', 'libicu-dev', 'libxml2-dev', 'libxslt-dev']: ensure => 'installed' }
 
   puppi::netinstall { 'bison':
     url => 'http://ftp.gnu.org/gnu/bison/bison-2.2.tar.gz',
@@ -82,8 +85,8 @@ class phpmanager::buildtools {
 
   puppi::netinstall { 'mysql-5.1.73':
     url => 'http://fossies.org/linux/misc/mysql-5.1.73-linux-x86_64-glibc23.tar.gz',
-    extracted_dir => 'mysql-5.1.73',
-    destination_dir => "${phpmanager::installation_path}",
-    postextract_command => "mkdir -p ${phpmanager::installation_path}/mysql-5.1.73/lib/x86_64-linux-gnu && ln -s ${phpmanager::installation_path}/mysql-5.1.73/lib/libmysqlclient.so ${phpmanager::installation_path}/mysql-5.1.73/lib/x86_64-linux-gnu/libmysqlclient.so"
+    extracted_dir => 'mysql-5.1.73-linux-x86_64-glibc23',
+    destination_dir => $phpmanager::installation_path,
+    postextract_command => "mkdir -p ${phpmanager::installation_path}/mysql-5.1.73-linux-x86_64-glibc23/lib/x86_64-linux-gnu && ln -s ${phpmanager::installation_path}/mysql-5.1.73-linux-x86_64-glibc23/lib/libmysqlclient.so ${phpmanager::installation_path}/mysql-5.1.73-linux-x86_64-glibc23/lib/x86_64-linux-gnu/libmysqlclient.so"
   }
 }
