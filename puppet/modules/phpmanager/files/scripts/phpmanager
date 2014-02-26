@@ -291,8 +291,8 @@ sub_getoptions() {
     # Build the mysql configuration string
     MYSQL=""
     if [[ "$VERSION" -lt 5213 ]] ; then
-        CFG="/opt/mysql-5.1.73/bin/mysql_config"
-	    MYSQL="--with-mysql=/opt/mysql-5.1.73 --with-pdo-mysql=${CFG}"
+        CFG="/opt/mysql-5.1.73-linux-x86_64-glibc23/bin/mysql_config"
+	    MYSQL="--with-mysql=/opt/mysql-5.1.73-linux-x86_64-glibc23 --with-pdo-mysql=${CFG}"
     elif [[ "$VERSION" -lt 5300 ]] ; then
         CFG=$(which mysql_config)
         MYSQL="--with-mysql --with-mysqli=${CFG} --with-pdo-mysql=${CFG}"
