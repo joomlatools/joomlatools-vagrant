@@ -125,7 +125,7 @@ puphpet::ini { 'php':
 
 puphpet::ini { 'custom':
   value   => [
-    'sendmail_path = /usr/bin/env catchmail -fnoreply@example.com',
+    'sendmail_path = /opt/vagrant_ruby/bin/catchmail -fnoreply@example.com',
     'display_errors = On',
     'error_reporting = -1',
     'display_startup_errors = On',
