@@ -32,6 +32,11 @@ package { [
   ensure  => 'installed',
 }
 
+package { ['sass', 'compass']:
+  ensure => 'installed',
+  provider => 'gem',
+}
+
 class { 'apache': }
 
 apache::dotconf { 'custom':
@@ -193,3 +198,4 @@ apache::vhost { 'default':
 
 class { 'scripts': 
 }
+
