@@ -61,7 +61,10 @@ command_available() {
     AVAILABLE=()
 
     for ITEM in "${LIST[@]}"; do
-        AVAILABLE+=($(basename "$ITEM"))
+        PATTERN="php-[5-9]\.[2-9]"
+        if [[ "$ITEM" =~ $PATTERN ]] ; then
+            AVAILABLE+=($(basename "$ITEM"))
+        fi;
     done
 
     STRING=$(printf "%s\n" "${AVAILABLE[@]}")
@@ -168,8 +171,12 @@ command_build() {
 
     # Setup the PATH to include legacy build tools if needed
     SHORT=$(sub_getshortversion $VERSION)
-    if [[ $SHORT -le 5360 ]] ; then
+    if [[ "$SHORT" -le 5306 ]] ; then
         export PATH=/opt/bison-2.2/bin:/opt/flex-2.5.4/bin:$PATH
+    fi
+
+    if [[ "$SHORT" -le 5301 ]] && [[ "$SHORT" -ge 5300 ]]; then
+        export PATH=/opt/openssl-0.9.7g/bin:$PATH
     fi
 
     echo "Logging to ${LOGFILE}"
@@ -330,6 +337,21 @@ sub_getoptions() {
         MYSQL="--with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd"
     fi
     OPTIONS="$OPTIONS $MYSQL"
+
+    # Can we build with OpenSSL ?
+    OPENSSL=""
+    if [[ "$SHORT" -le 5306 ]] && [[ "$SHORT" -ge 5300 ]]; then
+        if [[ "$SHORT" -le 5301 ]] ; then
+            OPENSSL="--with-openssl=/opt/openssl-0.9.7g"
+        else
+            OPENSSL="--with-openssl"
+        fi
+
+        patch -p1 < /home/vagrant/phpmanager/patches/openssl.ssl2.patch &> /dev/null
+    elif [[ "$SHORT" -ge 5307 ]] ; then
+        OPENSSL="--with-openssl"
+    fi
+    OPTIONS="$OPTIONS $OPENSSL"
 
     # Add some legacy options
     if [[ "$SHORT" -lt 5300 ]] ; then
