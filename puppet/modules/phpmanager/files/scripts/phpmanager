@@ -125,7 +125,7 @@ command_install() {
     sudo /etc/init.d/apache2 restart &> /dev/null
 
     if [ $? -ne 0 ] ; then
-        echo "\033[31mFAILED\e[0m"
+        echo -e "\033[31mFAILED\e[0m"
     else
         echo "OK"
     fi
@@ -340,15 +340,13 @@ sub_getoptions() {
 
     # Can we build with OpenSSL ?
     OPENSSL=""
-    if [[ "$SHORT" -le 5306 ]] && [[ "$SHORT" -ge 5300 ]]; then
-        if [[ "$SHORT" -le 5301 ]] ; then
-            OPENSSL="--with-openssl=/opt/openssl-0.9.7g"
-        else
-            OPENSSL="--with-openssl"
-        fi
-
+    if [[ "$SHORT" -le 5301 ]] ; then
+        OPENSSL="--with-openssl=/opt/openssl-0.9.7g"
         patch -p1 < /home/vagrant/phpmanager/patches/openssl.ssl2.patch &> /dev/null
-    elif [[ "$SHORT" -ge 5307 ]] ; then
+    elif [[ "$SHORT" -le 5306 ]] ; then
+        OPENSSL="--with-openssl"
+        patch -p1 < /home/vagrant/phpmanager/patches/openssl.ssl2.patch &> /dev/null
+    else
         OPENSSL="--with-openssl"
     fi
     OPTIONS="$OPTIONS $OPENSSL"

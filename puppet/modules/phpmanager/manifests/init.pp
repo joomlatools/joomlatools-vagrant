@@ -87,7 +87,7 @@ class phpmanager::buildtools {
     url => 'http://fossies.org/linux/misc/mysql-5.1.73-linux-x86_64-glibc23.tar.gz',
     extracted_dir => 'mysql-5.1.73-linux-x86_64-glibc23',
     destination_dir => $phpmanager::installation_path,
-    postextract_command => "mkdir -p ${phpmanager::installation_path}/mysql-5.1.73-linux-x86_64-glibc23/lib/x86_64-linux-gnu && ln -s ${phpmanager::installation_path}/mysql-5.1.73-linux-x86_64-glibc23/lib/libmysqlclient.so ${phpmanager::installation_path}/mysql-5.1.73-linux-x86_64-glibc23/lib/x86_64-linux-gnu/libmysqlclient.so"
+    postextract_command => "ln -s ${phpmanager::installation_path}/mysql-5.1.73-linux-x86_64-glibc23/lib ${phpmanager::installation_path}/mysql-5.1.73-linux-x86_64-glibc23/lib/x86_64-linux-gnu"
   }
 
   puppi::netinstall { 'openssl':
