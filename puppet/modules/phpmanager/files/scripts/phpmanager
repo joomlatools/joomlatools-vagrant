@@ -17,11 +17,21 @@
 # Global variables:
 SCRIPT_VERSION=0.1
 BASENAME=$(basename $0)
-SOURCE=/usr/local/src/php
-TARGET=/opt/php/
 
 VERSIONS=()
 BINARIES=('php' 'pear' 'pecl' 'phar' 'phing' 'php-config' 'phpize')
+
+SOURCE=/usr/local/src/php
+TARGET=/opt/php/
+EXTRA_CONFIGURE_ARGUMENTS=""
+SHOW_CONFIGURE=false
+
+# Load a custom CFG if present
+LOADED_CUSTOM_CONFIG=false
+if [[ -r ~/phpmanager.cfg ]] ; then
+    source ~/phpmanager.cfg
+    LOADED_CUSTOM_CONFIG=true
+fi
 
 # Print out usage
 usage() {
@@ -36,8 +46,14 @@ usage() {
 	echo "  $BASENAME help                  -- Show help"
 	echo ""
 	echo "Configuration: "
-	echo " PHP Source directory: $SOURCE"
-	echo " Target directory:     $TARGET"
+	if [ "$LOADED_CUSTOM_CONFIG" == true ] ; then
+        echo " Read additional config from ~/phpmanager.cfg"
+	fi
+	echo " PHP Source directory:                $SOURCE"
+	echo " Target directory:                    $TARGET"
+	if [ ! -z "$CONFIGURE_ARGUMENTS" ] ; then
+	    echo " Additional ./configure arguments:    $CONFIGURE_ARGUMENTS"
+	fi
 	exit 1
 }
 
@@ -185,6 +201,10 @@ command_build() {
     ./buildconf --force  >> "$LOGFILE" 2>&1
 
     OPTIONS=$(sub_getoptions "$VERSION")
+
+    if [ "$SHOW_CONFIGURE" == true ] ; then
+        echo "Configure arguments: $OPTIONS"
+	fi
 
     CMD="./configure ${OPTIONS}"
     sub_execute "$CMD" "configure" "$LOGFILE" "Configuring makefile"
@@ -354,6 +374,11 @@ sub_getoptions() {
     # Add some legacy options
     if [[ "$SHORT" -lt 5300 ]] ; then
         OPTIONS="$OPTIONS --enable-spl --with-mime-magic"
+    fi
+
+    # Add user-specified configure options
+    if [[ ! -z  "$EXTRA_CONFIGURE_ARGUMENTS" ]] ; then
+        OPTIONS="$OPTIONS $EXTRA_CONFIGURE_ARGUMENTS"
     fi
 
     echo "$OPTIONS"
