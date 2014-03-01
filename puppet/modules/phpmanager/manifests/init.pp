@@ -65,7 +65,7 @@ class phpmanager::install {
 
 class phpmanager::buildtools {
   package { ['autoconf2.13', 're2c', 'apache2-prefork-dev', 'bison']: ensure  => 'installed' }
-  package { ['libcurl4-openssl-dev', 'libmysqlclient-dev', 'libmcrypt-dev', 'libbz2-dev', 'libjpeg-dev', 'libpng12-dev', 'libfreetype6-dev', 'libicu-dev', 'libxml2-dev', 'libxslt-dev']: ensure => 'installed' }
+  package { ['libcurl4-openssl-dev', 'libmysqlclient-dev', 'libmcrypt-dev', 'libbz2-dev', 'libjpeg-dev', 'libpng12-dev', 'libfreetype6-dev', 'libicu-dev', 'libxml2-dev', 'libxslt-dev', 'libssl-dev']: ensure => 'installed' }
 
   puppi::netinstall { 'bison':
     url => 'http://ftp.gnu.org/gnu/bison/bison-2.2.tar.gz',
@@ -88,5 +88,13 @@ class phpmanager::buildtools {
     extracted_dir => 'mysql-5.1.73-linux-x86_64-glibc23',
     destination_dir => $phpmanager::installation_path,
     postextract_command => "mkdir -p ${phpmanager::installation_path}/mysql-5.1.73-linux-x86_64-glibc23/lib/x86_64-linux-gnu && ln -s ${phpmanager::installation_path}/mysql-5.1.73-linux-x86_64-glibc23/lib/libmysqlclient.so ${phpmanager::installation_path}/mysql-5.1.73-linux-x86_64-glibc23/lib/x86_64-linux-gnu/libmysqlclient.so"
+  }
+
+  puppi::netinstall { 'openssl':
+    path => ["${phpmanager::installation_path}/bison-2.2/bin:/bin:/sbin:/usr/bin:/usr/sbin"],
+    url => 'http://www.openssl.org/source/openssl-0.9.7g.tar.gz',
+    extracted_dir => 'openssl-0.9.7g',
+    destination_dir => $phpmanager::source_path,
+    postextract_command => "${phpmanager::source_path}/openssl-0.9.7g/config --prefix=${phpmanager::installation_path}/openssl-0.9.7g -fPIC no-gost && make && sudo make install && ln -s /opt/openssl-0.9.7g/lib x86_64-linux-gnu"
   }
 }
