@@ -23,6 +23,7 @@ BINARIES=('php' 'pear' 'pecl' 'phar' 'phing' 'php-config' 'phpize')
 
 SOURCE=/usr/local/src/php
 TARGET=/opt/php/
+SOURCE_XDEBUG=/usr/local/src/xdebug
 EXTRA_CONFIGURE_ARGUMENTS=""
 SHOW_CONFIGURE=false
 
@@ -215,15 +216,19 @@ command_build() {
     # Install the new binaries and module
     sub_execute "sudo make install" "install" "$LOGFILE" "Installing ${VERSION}"
 
+    # Create the directory in which we'll store extra extensions
+    sudo mkdir "/opt/php/${VERSION}/libs"
+
     # Now setup the php.ini files
     sub_setupini "$VERSION"
 
     # Setup PEAR dependencies
     sub_pear "/opt/php/${VERSION}/bin/pear" "$LOGFILE"
 
-    # Store our newly built module and put the original libphp5.so module back
-    sudo mkdir "/opt/php/${VERSION}/libs"
+    # Build Xdebug
+    sub_xdebug "$VERSION" "$LOGFILE"
 
+    # Store our newly built Apache module and put the original libphp5.so module back
     if [[ -f "${SOURCE}/.libs/libphp5.so" ]] ; then
         sudo cp "${SOURCE}/.libs/libphp5.so" "/opt/php/${VERSION}/libs/libphp5.so"
     elif [[ -f /usr/lib/apache2/modules/libphp5.so ]] ; then
@@ -306,8 +311,8 @@ sub_execute() {
 # Note: we do not display errors (except in the logfile) because the command will also fail if
 # the packages have already been installed for example.
 sub_pear() {
-    PEAR=$1
-    LOGFILE=$2
+    PEAR="$1"
+    LOGFILE="$2"
 
     sudo "$PEAR" channel-discover pear.phing.info >> "$LOGFILE" 2>&1
 
@@ -316,6 +321,49 @@ sub_pear() {
     done
 }
 
+# Build Xdebug for the given version
+sub_xdebug() {
+    VERSION="$1"
+    LOGFILE="$2"
+
+    echo "Setting up Xdebug .."
+
+    cd $SOURCE_XDEBUG
+
+    # Clean out the repository
+    git reset --hard --quiet
+    git clean -d -x -f --quiet
+
+    # and get the latest updates
+    git fetch origin --quiet &> /dev/null
+    git fetch origin --tags --quiet &> /dev/null
+
+    # Find the tag of the latest tagged commit in all branches
+    TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+
+    git checkout $TAG &> /dev/null
+
+    "/opt/php/${VERSION}/bin/phpize" >> "$LOGFILE" 2>&1
+
+    ./configure --enable-xdebug --with-php-config="/opt/php/${VERSION}/bin/php-config" >> "$LOGFILE" 2>&1
+
+    sub_execute "make" "build" "$LOGFILE" "Building Xdebug"
+
+    if [[ -f "${SOURCE_XDEBUG}/modules/xdebug.so" ]] ; then
+        LIB="/opt/php/${VERSION}/libs/xdebug.so"
+        INI="/opt/php/${VERSION}/etc/conf.d/zzz_xdebug.ini"
+
+        sudo cp "${SOURCE_XDEBUG}/modules/xdebug.so" "$LIB"
+
+        sudo echo "zend_extension=\"${LIB}\"" > "${INI}"
+        sudo cat /etc/php5/apache2/conf.d/zzz_xdebug.ini >> "${INI}"
+    else
+        echo -e "\033[31mERROR: Failed to build Xdebug!\e[0m"
+    fi
+
+    # Go back to the PHP source
+    cd $SOURCE
+}
 
 # Build the configure string
 sub_getoptions() {

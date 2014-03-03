@@ -2,6 +2,7 @@ class phpmanager {
   $script_path = '/home/vagrant/phpmanager'
   $source_path = '/usr/local/src'
   $php_source_path = "${source_path}/php"
+  $xdebug_source_path = "${source_path}/xdebug"
   $installation_path = '/opt'
 
   class {"phpmanager::install": }
@@ -32,6 +33,14 @@ class phpmanager::install {
     require => File["$phpmanager::source_path"]
   }
 
+  file { $phpmanager::xdebug_source_path:
+    ensure => "directory",
+    owner  => vagrant,
+    group  => vagrant,
+    mode   => 755,
+    require => File["$phpmanager::source_path"]
+  }
+
   file { '/etc/bash_completion.d/phpmanager':
     ensure => 'link',
     target => '/home/vagrant/phpmanager/phpmanager.complete',
@@ -39,6 +48,14 @@ class phpmanager::install {
   }
 
   exec {"clone-php-source":
+    command => "git clone https://github.com/xdebug/xdebug.git ${phpmanager::xdebug_source_path}",
+    require => File["${phpmanager::xdebug_source_path}"],
+    onlyif =>  ["test ! -d ${phpmanager::xdebug_source_path}/.git"],
+    user => vagrant,
+    group => vagrant
+  }
+
+  exec {"clone-xdebug-source":
     command => "git clone git://git.php.net/php-src.git ${phpmanager::php_source_path}",
     require => File["${phpmanager::php_source_path}"],
     onlyif =>  ["test ! -d ${phpmanager::php_source_path}/.git"],
