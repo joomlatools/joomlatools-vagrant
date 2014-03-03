@@ -335,8 +335,10 @@ sub_xdebug() {
     git clean -d -x -f --quiet
 
     # and get the latest updates
+    git checkout master &> /dev/null
     git fetch origin --quiet &> /dev/null
     git fetch origin --tags --quiet &> /dev/null
+    git rebase origin/master &> /dev/null
 
     # Find the tag of the latest tagged commit in all branches
     TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
