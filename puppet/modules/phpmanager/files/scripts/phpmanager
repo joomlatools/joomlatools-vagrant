@@ -371,6 +371,13 @@ sub_getoptions() {
     fi
     OPTIONS="$OPTIONS $OPENSSL"
 
+    # PHP 5.20 and older requires older curl headers, so point to the correct source files
+    CURL="--with-curl"
+    if [[ "$SHORT" -le 5200 ]] ; then
+        CURL="${CURL}=/usr/local/src/curl-7.15.3"
+    fi
+    OPTIONS="$OPTIONS $CURL"
+
     # Add some legacy options
     if [[ "$SHORT" -lt 5300 ]] ; then
         OPTIONS="$OPTIONS --enable-spl --with-mime-magic"
@@ -416,8 +423,7 @@ sub_getversions() {
     for TAG in "${TAGS[@]}"; do
         # Only list PHP versions greater than or equal to 5.2
         PATTERN="refs/tags/php-[5-9]\.[2-9]"
-        EXCLUDES="refs/tags/php-5\.2\.0.*"
-        if [[ $TAG =~ $PATTERN ]] && ! [[ $TAG =~ $EXCLUDES ]] ; then
+        if [[ $TAG =~ $PATTERN ]] ; then
             VERSIONS+=(${TAG/refs\/tags\//})
         fi;
     done
