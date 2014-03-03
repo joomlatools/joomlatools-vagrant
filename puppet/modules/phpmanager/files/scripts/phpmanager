@@ -127,9 +127,6 @@ command_install() {
         fi
     done
 
-    # Setup PEAR deps
-    sub_pear
-
     # Change the Apache module
     if [ ! -f "/usr/lib/apache2/modules/libphp5.so.original" ] ; then
         sudo cp "/usr/lib/apache2/modules/libphp5.so" "/usr/lib/apache2/modules/libphp5.so.original"
@@ -221,6 +218,9 @@ command_build() {
     # Now setup the php.ini files
     sub_setupini "$VERSION"
 
+    # Setup PEAR dependencies
+    sub_pear "/opt/php/${VERSION}/bin/pear" "$LOGFILE"
+
     # Store our newly built module and put the original libphp5.so module back
     sudo mkdir "/opt/php/${VERSION}/libs"
 
@@ -302,13 +302,20 @@ sub_execute() {
     fi
 }
 
-# Install PEAR libraries that are required for the box to keep working
+# Install PEAR libraries that are required for the box to keep working.
+# Note: we do not display errors (except in the logfile) because the command will also fail if
+# the packages have already been installed for example.
 sub_pear() {
-    sudo pear channel-discover pear.phing.info &> /dev/null
+    PEAR=$1
+    LOGFILE=$2
 
-    sudo pear install Console_CommandLine &> /dev/null
-    sudo pear install phing/phing &> /dev/null
+    sudo "$PEAR" channel-discover pear.phing.info >> "$LOGFILE" 2>&1
+
+    for PACKAGE in "Console_CommandLine" "phing/phing"; do
+        sudo "$PEAR" install $PACKAGE >> "$LOGFILE" 2>&1
+    done
 }
+
 
 # Build the configure string
 sub_getoptions() {
