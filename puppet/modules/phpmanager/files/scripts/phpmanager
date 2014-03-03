@@ -93,12 +93,16 @@ command_available() {
 command_install() {
     VERSION=$1
 
-    if [[ ${VERSION:0:4} != "php-" ]] ; then
+    if [[ "${VERSION:0:4}" != "php-" ]] && [[ "${VERSION}" != "master" ]] ; then
         VERSION="php-${VERSION}"
     fi
 
-    if [[ ! -d "/opt/php/$VERSION" ]] ; then
-        echo -e "\033[33m${VERSION} does not exist, attempting to build ..\e[0m"
+    if [[ ! -d "/opt/php/$VERSION" ]] || [[ "${VERSION}" == "master" ]] ; then
+        if [[ "${VERSION}" == "master" ]] ; then
+            echo -e "\033[33mRebuilding master ..\e[0m"
+        else
+            echo -e "\033[33m${VERSION} does not exist, attempting to build ..\e[0m"
+        fi
 
         # Fetch the list of available PHP versions from the Git repo
         sub_getversions
@@ -157,7 +161,7 @@ command_build() {
         usage
     fi;
 
-    if [[ ${VERSION:0:4} != "php-" ]] ; then
+    if [[ "${VERSION:0:4}" != "php-" ]] && [[ "${VERSION}" != "master" ]]; then
         VERSION="php-${VERSION}"
     fi
 
@@ -167,7 +171,7 @@ command_build() {
     cd $SOURCE
 
     # Make sure the tag exists
-    if [ ! git rev-parse "$VERSION" >/dev/null 2>&1 ] ; then
+    if [ ! git rev-parse "$VERSION" >/dev/null 2>&1 ] && [[ "${VERSION}" != "master" ]]; then
         echo -e "\033[31mERROR: $VERSION version not found\e[0m"
         usage
     fi
@@ -177,8 +181,7 @@ command_build() {
     rm -rf configure  &> /dev/null
     ./vcsclean  &> /dev/null
 
-    git reset --hard --quiet
-    git clean -d -x -f --quiet
+    sub_cleanuprepo
 
     echo "Checking out ${VERSION} tag"
     git checkout $VERSION  &> /dev/null
@@ -330,15 +333,7 @@ sub_xdebug() {
 
     cd $SOURCE_XDEBUG
 
-    # Clean out the repository
-    git reset --hard --quiet
-    git clean -d -x -f --quiet
-
-    # and get the latest updates
-    git checkout master &> /dev/null
-    git fetch origin --quiet &> /dev/null
-    git fetch origin --tags --quiet &> /dev/null
-    git rebase origin/master &> /dev/null
+    sub_cleanuprepo
 
     # Find the tag of the latest tagged commit in all branches
     TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
@@ -472,8 +467,7 @@ sub_setupini() {
 sub_getversions() {
     cd $SOURCE
 
-    git fetch origin --quiet &> /dev/null
-    git fetch origin --tags --quiet &> /dev/null
+    sub_cleanuprepo
 
     TAGS=()
     eval "$(git for-each-ref --shell --format='TAGS+=(%(refname))' refs/tags/)"
@@ -493,11 +487,21 @@ sub_getversions() {
             done | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n
         )
     )
+
+    # Append master
+    VERSIONS+=("master")
 }
 
 # Convert a tag to a version string which we can use in comparisons
 sub_getshortversion() {
-    SHORT=$(echo $1 | sed -e 's/RC[0-9]*$//' -e 's/alpha[0-9]*$//' -e 's/beta[0-9]*$//')
+    VERSION="$1"
+
+    if [[ "$VERSION" == "master" ]] ; then
+        echo 9999
+        return
+    fi
+
+    SHORT=$(echo "$VERSION" | sed -e 's/RC[0-9]*$//' -e 's/alpha[0-9]*$//' -e 's/beta[0-9]*$//')
     SHORT=${SHORT//[^0-9]/}
 
     if [[ ${#SHORT} -eq 3 ]] ; then
@@ -530,6 +534,24 @@ sub_waitinganim() {
     done
 
     echo -e "\r${TEXT} .. finished\033[?25h"
+}
+
+# Clean-up and update the Git repo in current working directory
+sub_cleanuprepo() {
+    if [[ ! -d "./.git" ]] ; then
+        echo "$(pwd) is not a git repository!"
+        exit
+    fi
+
+    # Clean out the repository
+    git reset --hard --quiet
+    git clean -d -x -f --quiet
+
+    # and get the latest updates
+    git checkout master --quiet
+    git fetch origin --quiet &> /dev/null
+    git fetch origin --tags --quiet &> /dev/null
+    git rebase origin/master --quiet
 }
 
 # Check if a value exists in an array
