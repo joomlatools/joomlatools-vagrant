@@ -44,6 +44,7 @@ usage() {
 	echo "  $BASENAME install <version>     -- Installs selected PHP version. Builds from source if version does not exist yet. "
 	echo "  $BASENAME build <version>       -- Attempts to build PHP version from source."
 	echo "  $BASENAME restore               -- Put the original binaries and Apache module back in place."
+	echo "  $BASENAME uninstall <version>   -- Remove given version from disk."
 	echo "  $BASENAME help                  -- Show help"
 	echo ""
 	echo "Configuration: "
@@ -281,6 +282,32 @@ command_restore() {
 
     echo -e "Restored PHP, version is now: \n"
     php -v
+}
+
+# Uninstall given version
+command_uninstall() {
+    VERSION=$1
+
+    cd $SOURCE
+
+    if [[ "${VERSION:0:4}" != "php-" ]] && [[ "${VERSION}" != "master" ]] ; then
+        VERSION="php-${VERSION}"
+    fi
+
+    if [[ ! -d "/opt/php/$VERSION" ]] ; then
+        echo "$VERSION does not exist. Skipping"
+    else
+        VERSION="${VERSION/php-/}"
+        INSTALLED=$(php -v | head -1)
+        LEN=${#VERSION}
+
+        if [[ "${INSTALLED:4:${LEN}}" == "$VERSION" ]] ; then
+            echo "$VERSION is currently installed! Please install another version number before removing."
+        else
+            sudo rm -rf -- "/opt/php/php-${VERSION}"
+            echo "$VERSION has been removed."
+        fi
+    fi
 }
 
 # Run tasks that take up more time than regular commands.
@@ -573,7 +600,7 @@ case $SUBCOMMAND in
     *)
         shift
         command_${SUBCOMMAND} $@
-        if [ $? = 127 ]; then
+        if [ $? -eq 127 ]; then
             echo -e "\033[31mError: '$SUBCOMMAND' is not a known command!\e[0m" >&2
             echo "Run ${BASENAME} --help for available commands."
         fi
