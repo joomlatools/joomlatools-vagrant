@@ -405,7 +405,7 @@ sub_apc() {
     VERSION="$1"
     LOGFILE="$2"
 
-    echo "Building APC .."
+    echo -n "Building APC .. "
 
     # @FIXME we can't get this command passed as an argument to sub_execute()
     printf "\n" | sudo "/opt/php/${VERSION}/bin/pecl" install apc  >> "$LOGFILE" 2>&1
@@ -415,9 +415,10 @@ sub_apc() {
     LIB="/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/apc.so"
 
     if [[ -f "$LIB" ]] ; then
+        echo "finished"
         sudo echo "extension=\"apc.so\"" > "/opt/php/${VERSION}/etc/conf.d/zzz_apc.ini"
     else
-        echo -e "\033[31mERROR: Failed to build APC!\e[0m"
+        echo "\033[31mFailed\e[0m"
     fi
 }
 
