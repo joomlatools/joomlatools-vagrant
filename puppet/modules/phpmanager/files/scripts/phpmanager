@@ -1,6 +1,6 @@
 #!/bin/bash
 ##
-# Joomlatools Composer plugin - https://github.com/joomlatools/joomla-composer
+# Joomlatools PHP Manager script - https://github.com/joomlatools/joomla-vagrant
 #
 # @copyright	Copyright (C) 2011 - 2014 Johan Janssens and Timble CVBA. (http://www.timble.net)
 # @license		MPL 2.0 <http://www.mozilla.org/MPL/2.0/>
@@ -44,7 +44,7 @@ usage() {
 	echo "  $BASENAME install <version>     -- Installs selected PHP version. Builds from source if version does not exist yet. "
 	echo "  $BASENAME build <version>       -- Attempts to build PHP version from source."
 	echo "  $BASENAME restore               -- Put the original binaries and Apache module back in place."
-	echo "  $BASENAME uninstall <version>   -- Remove given version from disk."
+	echo "  $BASENAME remove <version>      -- Remove given version from disk."
 	echo "  $BASENAME help                  -- Show help"
 	echo ""
 	echo "Configuration: "
@@ -121,7 +121,7 @@ command_install() {
     for BINARY in "${BINARIES[@]}"
     do
         # Check if we've already made backups
-        if [ ! -f "/usr/bin/${BINARY}.original" ] ; then
+        if [ ! -f "/usr/bin/${BINARY}.original" ] && [ -f "/usr/bin/${BINARY}" ] ; then
             sudo mv "/usr/bin/${BINARY}" "/usr/bin/${BINARY}.original"
         fi
 
@@ -138,7 +138,7 @@ command_install() {
         sudo cp "/usr/lib/apache2/modules/libphp5.so" "/usr/lib/apache2/modules/libphp5.so.original"
     fi
 
-    sudo cp "/opt/php/${VERSION}/libs/libphp5.so" "/usr/lib/apache2/modules/libphp5.so"
+    sudo cp "/opt/php/${VERSION}/lib/apache/libphp5.so" "/usr/lib/apache2/modules/libphp5.so"
 
     echo -n "Restarting Apache .. "
     sudo /etc/init.d/apache2 restart &> /dev/null
@@ -220,8 +220,10 @@ command_build() {
     # Install the new binaries and module
     sub_execute "sudo make install" "install" "$LOGFILE" "Installing ${VERSION}"
 
-    # Create the directory in which we'll store extra extensions
-    sudo mkdir "/opt/php/${VERSION}/libs"
+    # Create the extension directories
+    EXTENSION=$(sub_getextensionnumber $VERSION)
+    sudo mkdir -p "/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/"
+    sudo mkdir -p "/opt/php/${VERSION}/lib/apache"
 
     # Now setup the php.ini files
     sub_setupini "$VERSION"
@@ -232,11 +234,16 @@ command_build() {
     # Build Xdebug
     sub_xdebug "$VERSION" "$LOGFILE"
 
+    # Build APC
+    if [[ "$SHORT" -lt 5500 ]] ; then
+        sub_apc "$VERSION" "$LOGFILE"
+    fi
+
     # Store our newly built Apache module and put the original libphp5.so module back
     if [[ -f "${SOURCE}/.libs/libphp5.so" ]] ; then
-        sudo cp "${SOURCE}/.libs/libphp5.so" "/opt/php/${VERSION}/libs/libphp5.so"
+        sudo cp "${SOURCE}/.libs/libphp5.so" "/opt/php/${VERSION}/lib/apache/libphp5.so"
     elif [[ -f /usr/lib/apache2/modules/libphp5.so ]] ; then
-        sudo mv "/usr/lib/apache2/modules/libphp5.so" "/opt/php/${VERSION}/libs/libphp5.so"
+        sudo mv "/usr/lib/apache2/modules/libphp5.so" "/opt/php/${VERSION}/lib/apache/libphp5.so"
     else
         [[ -f /usr/lib/apache2/modules/libphp5.so ]] && sudo rm /usr/lib/apache2/modules/libphp5.so
         sudo mv /usr/lib/apache2/modules/libphp5.so.bak /usr/lib/apache2/modules/libphp5.so
@@ -262,7 +269,9 @@ command_restore() {
             sudo rm "/usr/bin/${BINARY}"
         fi
 
-        sudo cp "/usr/bin/${BINARY}.original" "/usr/bin/${BINARY}"
+        if [ -f "/usr/bin/${BINARY}.original" ] ; then
+            sudo cp "/usr/bin/${BINARY}.original" "/usr/bin/${BINARY}"
+        fi
     done
 
     if [ -f "/usr/lib/apache2/modules/libphp5.so" ] ; then
@@ -285,7 +294,7 @@ command_restore() {
 }
 
 # Uninstall given version
-command_uninstall() {
+command_remove() {
     VERSION=$1
 
     cd $SOURCE
@@ -297,14 +306,14 @@ command_uninstall() {
     if [[ ! -d "/opt/php/$VERSION" ]] ; then
         echo "$VERSION does not exist. Skipping"
     else
-        VERSION="${VERSION/php-/}"
+        NUMBER="${VERSION/php-/}"
         INSTALLED=$(php -v | head -1)
-        LEN=${#VERSION}
+        LEN=${#NUMBER}
 
-        if [[ "${INSTALLED:4:${LEN}}" == "$VERSION" ]] ; then
+        if [[ "${INSTALLED:4:${LEN}}" == "$NUMBER" ]] ; then
             echo "$VERSION is currently installed! Please install another version number before removing."
         else
-            sudo rm -rf -- "/opt/php/php-${VERSION}"
+            sudo rm -rf -- "/opt/php/${VERSION}"
             echo "$VERSION has been removed."
         fi
     fi
@@ -317,10 +326,10 @@ command_uninstall() {
 #  - The logfile to pipe output to
 #  - A message to display next to the working indicator
 sub_execute() {
-    CMD=$1
-    NAME=$2
-    LOGFILE=$3
-    MSG=$4
+    CMD="$1"
+    NAME="$2"
+    LOGFILE="$3"
+    MSG="$4"
 
     $CMD >> "$LOGFILE" 2>&1 &
     PID=$!
@@ -371,14 +380,16 @@ sub_xdebug() {
 
     ./configure --enable-xdebug --with-php-config="/opt/php/${VERSION}/bin/php-config" >> "$LOGFILE" 2>&1
 
-    sub_execute "make" "build" "$LOGFILE" "Building Xdebug"
+    sub_execute "make" "xdebug-build" "$LOGFILE" "Building Xdebug"
 
     if [[ -f "${SOURCE_XDEBUG}/modules/xdebug.so" ]] ; then
-        LIB="/opt/php/${VERSION}/libs/xdebug.so"
+        EXTENSION=$(sub_getextensionnumber $VERSION)
+        LIB="/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/xdebug.so"
         INI="/opt/php/${VERSION}/etc/conf.d/zzz_xdebug.ini"
 
         sudo cp "${SOURCE_XDEBUG}/modules/xdebug.so" "$LIB"
 
+        # Note: the zend_extension directive requires the FULL path!
         sudo echo "zend_extension=\"${LIB}\"" > "${INI}"
         sudo cat /etc/php5/apache2/conf.d/zzz_xdebug.ini >> "${INI}"
     else
@@ -387,6 +398,27 @@ sub_xdebug() {
 
     # Go back to the PHP source
     cd $SOURCE
+}
+
+# Build APC
+sub_apc() {
+    VERSION="$1"
+    LOGFILE="$2"
+
+    echo "Building APC .."
+
+    # @FIXME we can't get this command passed as an argument to sub_execute()
+    printf "\n" | sudo "/opt/php/${VERSION}/bin/pecl" install apc  >> "$LOGFILE" 2>&1
+
+    EXTENSION=$(sub_getextensionnumber $VERSION)
+
+    LIB="/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/apc.so"
+
+    if [[ -f "$LIB" ]] ; then
+        sudo echo "extension=\"apc.so\"" > "/opt/php/${VERSION}/etc/conf.d/zzz_apc.ini"
+    else
+        echo -e "\033[31mERROR: Failed to build APC!\e[0m"
+    fi
 }
 
 # Build the configure string
@@ -462,6 +494,11 @@ sub_getoptions() {
         OPTIONS="$OPTIONS --enable-spl --with-mime-magic"
     fi
 
+    # Enable opcache for newer versions
+    if [[ "$SHORT" -ge 5500 ]] ; then
+        OPTIONS="$OPTIONS --enable-opcache"
+    fi
+
     # Add user-specified configure options
     if [[ ! -z  "$EXTRA_CONFIGURE_ARGUMENTS" ]] ; then
         OPTIONS="$OPTIONS $EXTRA_CONFIGURE_ARGUMENTS"
@@ -488,6 +525,12 @@ sub_setupini() {
 
     sudo chown vagrant:vagrant "/opt/php/${VERSION}/lib/php.ini"
     sudo chown -R vagrant:vagrant "/opt/php/${VERSION}/etc/conf.d"
+
+    # The default extensions directory should be <install-dir>/lib/php/extensions/ <debug-or-not>-<zts-or-not>-ZEND_MODULE_API_NO
+    # according to the docs at http://be2.php.net/dl but for most builds this isn't the case.
+    # So let's make sure we properly set the extension_dir directive :
+    EXTENSION=$(sub_getextensionnumber $VERSION)
+    echo "extension_dir=/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/" >> "/opt/php/${VERSION}/etc/conf.d/zzz_php.ini"
 }
 
 # Get the available PHP tags
@@ -579,6 +622,16 @@ sub_cleanuprepo() {
     git fetch origin --quiet &> /dev/null
     git fetch origin --tags --quiet &> /dev/null
     git rebase origin/master --quiet
+}
+
+# Find the PHP Extension number
+sub_getextensionnumber() {
+    VERSION="$1"
+
+    EXTENSION=$("/opt/php/${VERSION}/bin/php" -i | grep "PHP Extension => ")
+    EXTENSION=${EXTENSION:(-8)}
+
+    echo $EXTENSION
 }
 
 # Check if a value exists in an array
