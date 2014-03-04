@@ -32,8 +32,14 @@ package { [
   ensure  => 'installed',
 }
 
-package { ['sass', 'compass']:
-  ensure => 'installed',
+# need to use gem directly to install pre-release 3.3 version for sourcemaps support
+exec { 'install-sass':
+  command  => '/opt/vagrant_ruby/bin/gem install sass --pre',
+  unless   => '/opt/vagrant_ruby/bin/gem list | grep -c sass'
+}
+
+package { ['compass']:
+  ensure   => 'installed',
   provider => 'gem',
 }
 
