@@ -1,3 +1,4 @@
+/Projects/*
 .vagrant/*
 www/*
 !www/index.html
