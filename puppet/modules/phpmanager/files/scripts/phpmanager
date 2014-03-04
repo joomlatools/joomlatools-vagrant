@@ -66,8 +66,11 @@ command_versions() {
     # Fetch the list of available PHP versions from the Git repo
     sub_getversions
 
+    # Remove the php- prefix
+    NUMBERS=("${VERSIONS[@]/php-/}")
+
     # Print out each element of the array on a separate line
-    STRING=$(printf "%s\n" "${VERSIONS[@]}")
+    STRING=$(printf "%s\n" "${NUMBERS[@]}")
 
     # Display the versions in columns
     printf "%20s  %20s  %20s  %20s  %20s  %20s  %20s\n" $STRING
@@ -146,7 +149,7 @@ command_install() {
     if [ $? -ne 0 ] ; then
         echo -e "\033[31mFAILED\e[0m"
     else
-        echo "OK"
+        echo -e "\033[92mOK\033[0m"
     fi
 
     echo -e "Installed binaries and Apache module. PHP version is now:\n"
@@ -258,6 +261,8 @@ command_build() {
     sudo mv /usr/lib/apache2/modules/libphp5.so.bak /usr/lib/apache2/modules/libphp5.so
 
     echo -e "\n${VERSION} has been built and can be found at /opt/php/${VERSION} -- happy coding!"
+
+    echo -e "Build completed at $(date) .. \n\n" > "$LOGFILE"
 }
 
 # Restore the original PHP binaries and Apache module
@@ -284,9 +289,9 @@ command_restore() {
     sudo /etc/init.d/apache2 restart &> /dev/null
 
     if [ $? -ne 0 ] ; then
-        echo "\033[31mFAILED\e[0m"
+        echo -e "\033[31mFAILED\e[0m"
     else
-        echo "OK"
+        echo -e "\033[92mOK\033[0m"
     fi
 
     echo -e "Restored PHP, version is now: \n"
@@ -365,8 +370,6 @@ sub_xdebug() {
     VERSION="$1"
     LOGFILE="$2"
 
-    echo "Setting up Xdebug .."
-
     cd $SOURCE_XDEBUG
 
     sub_cleanuprepo
@@ -415,7 +418,7 @@ sub_apc() {
     LIB="/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/apc.so"
 
     if [[ -f "$LIB" ]] ; then
-        echo "finished"
+        echo "\033[92mfinished\033[0m"
         sudo echo "extension=\"apc.so\"" > "/opt/php/${VERSION}/etc/conf.d/zzz_apc.ini"
     else
         echo "\033[31mFailed\e[0m"
@@ -600,11 +603,11 @@ sub_waitinganim() {
     while kill -0 $PID &> /dev/null
     do
       i=$(( (i+1) % 4 ))
-      printf "\r${TEXT} .. \e[1;32m${SPIN:$i:1} \e[0m\033[?25l"
+      printf "\r${TEXT} .. \e[1;32m${SPIN:$i:1} \e[0m \033[?25l"
       sleep .1
     done
 
-    echo -e "\r${TEXT} .. finished\033[?25h"
+    echo -e "\r${TEXT} .. \e[92mfinished\e[0m \033[?25h"
 }
 
 # Clean-up and update the Git repo in current working directory

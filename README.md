@@ -84,14 +84,37 @@ You can also connect using any MySQL client with these details:
     User: root
     Password: root
 
+
+Managing multiple PHP Versions
+------------------------------
+
+We have included a script that can build and install any PHP version from 5.2.0 and up automatically. This is ideal to try out your code on new PHP releases or to fix bugs that have been reported on older PHP installations.
+
+To get a list of available PHP versions, SSH into the box and run:
+
+    phpmanager versions
+    
+To install one of the available versions, for example 5.2.16, execute:
+
+	phpmanager install 5.2.16
+	
+The script will check if this version has been installed and if not, will attempt to build it. Please note that building PHP might take a while. Depending on your system, this could take between 5 and 45 minutes.
+
+If you want to test your code against the latest and greatest of PHP, you can call ```phpmanager install master```. Each time you build the master branch the script will pull in the latest changes from the PHP Git repository.
+
+To restore the original PHP installation again, run:
+
+	phpmanager restore
+	
+For more options, run ```phpmanager --help```. To see this script in action, refer to this [screencast](http://quick.as/5aw1ulxx).
+
+
 Webgrind
 --------
 
 After you modify /etc/hosts as shown above go to
 
     http://webgrind
-
-
 
 SFTP
 ----
