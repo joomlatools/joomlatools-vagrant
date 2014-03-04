@@ -418,7 +418,7 @@ sub_apc() {
     LIB="/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/apc.so"
 
     if [[ -f "$LIB" ]] ; then
-        echo "\033[92mfinished\033[0m"
+        echo -e "\033[92mfinished\033[0m"
         sudo echo "extension=\"apc.so\"" > "/opt/php/${VERSION}/etc/conf.d/zzz_apc.ini"
     else
         echo "\033[31mFailed\e[0m"
@@ -469,7 +469,7 @@ sub_getoptions() {
         CFG=$(which mysql_config)
         MYSQL="--with-mysql --with-mysqli=${CFG} --with-pdo-mysql=${CFG}"
     else
-        MYSQL="--with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd"
+        MYSQL="--with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-mysql-sock=/var/run/mysqld/mysqld.sock"
     fi
     OPTIONS="$OPTIONS $MYSQL"
 
@@ -535,6 +535,11 @@ sub_setupini() {
     # So let's make sure we properly set the extension_dir directive :
     EXTENSION=$(sub_getextensionnumber $VERSION)
     echo "extension_dir=/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/" >> "/opt/php/${VERSION}/etc/conf.d/zzz_php.ini"
+
+    # Configure the MySQL socket
+    echo "mysql.default_socket=/var/run/mysqld/mysqld.sock" > "/opt/php/${VERSION}/etc/conf.d/zzz_mysql.ini"
+    echo "mysqli.default_socket=/var/run/mysqld/mysqld.sock" >> "/opt/php/${VERSION}/etc/conf.d/zzz_mysql.ini"
+    echo "pdo_mysql.default_socket=/var/run/mysqld/mysqld.sock" >> "/opt/php/${VERSION}/etc/conf.d/zzz_mysql.ini"
 }
 
 # Get the available PHP tags
@@ -632,7 +637,7 @@ sub_cleanuprepo() {
 sub_getextensionnumber() {
     VERSION="$1"
 
-    EXTENSION=$("/opt/php/${VERSION}/bin/php" -i | grep "PHP Extension => ")
+    EXTENSION=$("/opt/php/${VERSION}/bin/php" -i 2> /dev/null | grep "PHP Extension => ")
     EXTENSION=${EXTENSION:(-8)}
 
     echo $EXTENSION
