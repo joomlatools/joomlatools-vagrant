@@ -82,7 +82,7 @@ class CreateSite
         $parser->addOption('version', array(
             'long_name'   => '--version',
             'description' => "Joomla version to build from. Either a version number (2, 3.2, or latest) or a branch from the Joomla Git repository.",
-            'help_name'   => 'TEMPLATE'
+            'help_name'   => 'VERSION'
         ));
 
         $parser->addOption('symlink', array(
