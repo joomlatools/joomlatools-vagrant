@@ -164,6 +164,19 @@ class CreateSite
                     throw new Exception(sprintf('Version %s not found. Check https://github.com/joomla/joomla-cms for a list of valid tags and branch names.', $this->version));
                 }
 
+                $result = `echo 'SHOW DATABASES LIKE "$this->target_db"' | mysql -uroot -proot`;
+                if (!empty($result)) { // Table exists
+                    throw new Exception(sprintf('A database with name %s already exists', $this->target_db));
+                }
+
+                $this->source_tarball = $this->getTarball();
+                if(!file_exists($this->source_tarball)) {
+                    throw new Exception(sprintf('File %s does not exist', $this->source_tarball));
+                }
+            }
+
+            if ($this->version && $this->sample)
+            {
                 if (!in_array($this->sample, array('default', 'blog', 'brochure', 'testing', 'learn'))) {
                     throw new Exception(sprintf('Unknown sample data "%s"', $this->sample));
                 }
@@ -173,16 +186,6 @@ class CreateSite
                     if (in_array($this->sample, array('testing', 'learn')) && version_compare($this->version, '3.0.0', '<')) {
                         throw new Exception(sprintf('%s does not support sample data %s', $this->version, $this->sample));
                     }
-                }
-
-                $result = `echo 'SHOW DATABASES LIKE "$this->target_db"' | mysql -uroot -proot`;
-                if (!empty($result)) { // Table exists
-                    throw new Exception(sprintf('A database with name %s already exists', $this->target_db));
-                }
-
-                $this->source_tarball = $this->getTarball();
-                if(!file_exists($this->source_tarball)) {
-                    throw new Exception(sprintf('File %s does not exist', $this->source_tarball));
                 }
             }
         }
