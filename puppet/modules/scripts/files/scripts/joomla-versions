@@ -1,0 +1,7 @@
+#!/usr/bin/env php
+<?php
+
+require_once 'Console/CommandLine.php';
+require_once __DIR__.'/joomla-versions.php';
+
+JoomlaVersions::fromInput();

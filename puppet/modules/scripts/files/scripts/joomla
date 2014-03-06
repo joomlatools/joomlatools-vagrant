@@ -3,6 +3,7 @@
 
 require_once 'Console/CommandLine.php';
 require_once __DIR__.'/symlinker.php';
+require_once __DIR__.'/joomla-versions.php';
 
 CreateSite::fromInput();
 
@@ -14,6 +15,7 @@ class CreateSite
     public $site;
     public $version;
     public $sample;
+    public $clearcache = false;
     public $type;
     public $symlink = array();
 
@@ -25,7 +27,7 @@ class CreateSite
 
     public $versions;
 
-    public function __construct($task, $site, $version, $symlink, $sample)
+    public function __construct($task, $site, $version, $symlink, $sample, $clearcache)
     {
         if (!self::$templates) {
             self::$templates = __DIR__.'/joomla_files';
@@ -37,7 +39,10 @@ class CreateSite
 
         $this->task       = $task;
         $this->site       = $site;
-        $this->version   = $version;
+        $this->version    = $version;
+
+        $this->clearcache = $clearcache;
+        $this->versions   = $this->getAvailableVersions();
 
         if ($symlink) {
             $this->symlink = explode(',', $symlink);
@@ -49,7 +54,7 @@ class CreateSite
 
         if($version)
         {
-            $versions = $this->getAvailableVersions();
+            $versions = $this->versions;
             foreach($versions as $ref => $list)
             {
                 if(in_array($this->version, $list)) {
@@ -81,7 +86,7 @@ class CreateSite
 
         $parser->addOption('version', array(
             'long_name'   => '--version',
-            'description' => "Joomla version to build from. Either a version number (2, 3.2, or latest) or a branch from the Joomla Git repository.",
+            'description' => "Joomla version. Can be a release number (2, 3.2, ..) or branch name. Run `joomla-version show` for a full list.",
             'help_name'   => 'VERSION'
         ));
 
@@ -97,17 +102,24 @@ class CreateSite
             'help_name'   => 'SAMPLE'
         ));
 
+        $parser->addOption('clearcache', array(
+            'long_name'   => '--clear-cache',
+            'description' => "Update the list of available tags and branches from the Joomla repository.",
+            'action'      => 'StoreTrue'
+        ));
+
         try
         {
             $result   = $parser->parse();
             $task     = $result->args['task'];
             $site     = $result->args['site'];
 
-            $version = $result->options['version'];
+            $version  = $result->options['version'];
             $symlink  = $result->options['symlink'];
-            $sample  = $result->options['sample'];
+            $sample   = $result->options['sample'];
+            $clear    = $result->options['clearcache'];
 
-            $instance = new self($task, $site, $version, $symlink, $sample);
+            $instance = new self($task, $site, $version, $symlink, $sample, $clear);
             $instance->run();
         } catch (Exception $e) {
             $parser->displayError($e->getMessage());
@@ -516,41 +528,11 @@ class CreateSite
         }
     }
 
-    public function getAvailableVersions()
-    {
-        if(!$this->versions)
-        {
-            $result = `git ls-remote https://github.com/joomla/joomla-cms.git | grep -E 'refs/(tags|heads)' | grep -v '{}'`;
-            $refs   = explode(PHP_EOL, $result);
-
-            $versions = array();
-            $pattern  = '/^[a-z0-9]+\s+refs\/(heads|tags)\/([a-z0-9\.\-_]+)$/im';
-            foreach($refs as $ref)
-            {
-                if(preg_match($pattern, $ref, $matches))
-                {
-                    $type = isset($versions[$matches[1]]) ? $versions[$matches[1]] : array();
-
-                    if($matches[2] == '1.7.3' || substr($matches[2], 0, 4) == 'vPBF' || substr($matches[2], 0, 6) == 'search') {
-                        continue;
-                    }
-
-                    $type[] = $matches[2];
-                    $versions[$matches[1]] = $type;
-                }
-            }
-
-            $this->versions = $versions;
-        }
-
-        return $this->versions;
-    }
-
     public function getLatestRelease($prefix = null)
     {
         // Find the latest tag
         $latest = '0.0.0';
-        $versions = $this->getAvailableVersions();
+        $versions = $this->versions;
 
         foreach($versions['tags'] as $version)
         {
@@ -568,5 +550,16 @@ class CreateSite
         }
 
         return $latest;
+    }
+
+    public function getAvailableVersions()
+    {
+        $versions = new JoomlaVersions(null);
+
+        if($this->clearcache) {
+            $versions->refresh();
+        }
+
+        return $versions->getVersions();
     }
 }
