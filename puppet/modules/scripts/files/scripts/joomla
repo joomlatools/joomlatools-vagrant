@@ -134,6 +134,7 @@ class CreateSite
         $this->modifyConfiguration();
         $this->addVirtualHost();
         $this->symlinkProjects();
+        $this->enableWebinstaller();
     }
 
     public function delete()
@@ -440,6 +441,55 @@ class CreateSite
         }
 
         return self::$templates.'/'.$tar;
+    }
+
+    public function enableWebinstaller()
+    {
+        if(!$this->version) {
+            return;
+        }
+
+        if(version_compare($this->version, '3.2.0', '<')) {
+            return;
+        }
+
+        $xml = simplexml_load_file('http://appscdn.joomla.org/webapps/jedapps/webinstaller.xml');
+        if($xml == false) {
+            echo 'Failed to load';
+            return;
+        }
+
+        $url = '';
+        foreach($xml->update->downloads->children() as $download)
+        {
+            $attributes = $download->attributes();
+            if($attributes->type == 'full' && $attributes->format == 'zip')
+            {
+                $url = (string) $download;
+                break;
+            }
+        }
+
+        if(empty($url)) {
+            return;
+        }
+
+        $filename = self::$templates.'/'.basename($url);
+        if(!file_exists($filename))
+        {
+            $bytes = file_put_contents($filename, fopen($url, 'r'));
+            if($bytes === false || $bytes == 0) {
+                return;
+            }
+        }
+
+        `mkdir -p $this->target_dir/plugins/installer`;
+        `cd $this->target_dir/plugins/installer/ && unzip -o $filename`;
+
+        $sql = "INSERT INTO `j_extensions` (`name`, `type`, `element`, `folder`, `enabled`, `access`, `manifest_cache`) VALUES ('plg_installer_webinstaller', 'plugin', 'webinstaller', 'installer', 1, 1, '{\"name\":\"plg_installer_webinstaller\",\"type\":\"plugin\",\"version\":\"".$xml->update->version."\",\"description\":\"Web Installer\"}');";
+        $sql = escapeshellarg($sql);
+
+        `mysql -proot -uroot $this->target_db -e $sql`;
     }
 
     public function checkVersion()
