@@ -1,0 +1,670 @@
+#!/bin/bash
+##
+# Joomlatools PHP Manager script - https://github.com/joomlatools/joomla-vagrant
+#
+# @copyright	Copyright (C) 2011 - 2014 Johan Janssens and Timble CVBA. (http://www.timble.net)
+# @license		MPL 2.0 <http://www.mozilla.org/MPL/2.0/>
+# @link		    http://github.com/joomlatools/joomla-vagrant for the canonical source repository
+##
+
+##
+# phpmanager
+# A script to easily switch between different PHP versions
+#
+# @author   Steven Rombauts <https://github.com/stevenrombauts>
+##
+
+# Global variables:
+SCRIPT_VERSION=0.1
+BASENAME=$(basename $0)
+
+VERSIONS=()
+BINARIES=('php' 'pear' 'pecl' 'phar' 'phing' 'php-config' 'phpize')
+
+SOURCE=/usr/local/src/php
+TARGET=/opt/php/
+SOURCE_XDEBUG=/usr/local/src/xdebug
+EXTRA_CONFIGURE_ARGUMENTS=""
+SHOW_CONFIGURE=false
+
+# Load a custom CFG if present
+LOADED_CUSTOM_CONFIG=false
+if [[ -r ~/phpmanager.cfg ]] ; then
+    source ~/phpmanager.cfg
+    LOADED_CUSTOM_CONFIG=true
+fi
+
+# Print out usage
+usage() {
+    echo "phpmanager v${SCRIPT_VERSION}"
+    echo "Copyright (C) 2011 - 2014 Johan Janssens and Timble CVBA. (http://www.timble.net)"
+	echo "Usage: "
+	echo "  $BASENAME versions              -- List all available PHP versions."
+	echo "  $BASENAME available             -- Show all PHP version which have been built locally."
+	echo "  $BASENAME install <version>     -- Installs selected PHP version. Builds from source if version does not exist yet. "
+	echo "  $BASENAME build <version>       -- Attempts to build PHP version from source."
+	echo "  $BASENAME restore               -- Put the original binaries and Apache module back in place."
+	echo "  $BASENAME remove <version>      -- Remove given version from disk."
+	echo "  $BASENAME help                  -- Show help"
+	echo ""
+	echo "Configuration: "
+	if [ "$LOADED_CUSTOM_CONFIG" == true ] ; then
+        echo " Read additional config from ~/phpmanager.cfg"
+	fi
+	echo " PHP Source directory:                $SOURCE"
+	echo " Target directory:                    $TARGET"
+	if [ ! -z "$CONFIGURE_ARGUMENTS" ] ; then
+	    echo " Additional ./configure arguments:    $CONFIGURE_ARGUMENTS"
+	fi
+	exit 1
+}
+
+# Get the list of available versions
+command_versions() {
+    cd $SOURCE
+
+    # Fetch the list of available PHP versions from the Git repo
+    sub_getversions
+
+    # Remove the php- prefix
+    NUMBERS=("${VERSIONS[@]/php-/}")
+
+    # Print out each element of the array on a separate line
+    STRING=$(printf "%s\n" "${NUMBERS[@]}")
+
+    # Display the versions in columns
+    printf "%20s  %20s  %20s  %20s  %20s  %20s  %20s\n" $STRING
+}
+
+# Get the list of installed builds
+command_available() {
+    LIST=(/opt/php/php-*)
+    AVAILABLE=()
+
+    for ITEM in "${LIST[@]}"; do
+        PATTERN="php-[5-9]\.[2-9]"
+        if [[ "$ITEM" =~ $PATTERN ]] ; then
+            AVAILABLE+=($(basename "$ITEM"))
+        fi;
+    done
+
+    STRING=$(printf "%s\n" "${AVAILABLE[@]}")
+
+    printf "%20s  %20s  %20s  %20s  %20s  %20s  %20s\n" $STRING
+}
+
+# Install PHP version
+command_install() {
+    VERSION=$1
+
+    if [[ "${VERSION:0:4}" != "php-" ]] && [[ "${VERSION}" != "master" ]] ; then
+        VERSION="php-${VERSION}"
+    fi
+
+    if [[ ! -d "/opt/php/$VERSION" ]] || [[ "${VERSION}" == "master" ]] ; then
+        if [[ "${VERSION}" == "master" ]] ; then
+            echo -e "\033[33mRebuilding master ..\e[0m"
+        else
+            echo -e "\033[33m${VERSION} does not exist, attempting to build ..\e[0m"
+        fi
+
+        # Fetch the list of available PHP versions from the Git repo
+        sub_getversions
+
+        in_array $VERSION
+        if [[ $? != 0 ]] ; then
+            echo -e "\033[31mERROR: Unknown version $VERSION\e[0m"
+            exit 1
+        fi
+
+        command_build $VERSION
+    fi
+
+    # Install the binaries
+    for BINARY in "${BINARIES[@]}"
+    do
+        # Check if we've already made backups
+        if [ ! -f "/usr/bin/${BINARY}.original" ] && [ -f "/usr/bin/${BINARY}" ] ; then
+            sudo mv "/usr/bin/${BINARY}" "/usr/bin/${BINARY}.original"
+        fi
+
+        # Now symlink the new binaries
+        if [ -f "/opt/php/$VERSION/bin/$BINARY" ] ; then
+            sudo ln -fs "/opt/php/$VERSION/bin/$BINARY" "/usr/bin/$BINARY"
+        elif [ -f "/usr/bin/$BINARY" ] ; then
+            sudo rm "/usr/bin/$BINARY"
+        fi
+    done
+
+    # Change the Apache module
+    if [ ! -f "/usr/lib/apache2/modules/libphp5.so.original" ] ; then
+        sudo cp "/usr/lib/apache2/modules/libphp5.so" "/usr/lib/apache2/modules/libphp5.so.original"
+    fi
+
+    sudo cp "/opt/php/${VERSION}/lib/apache/libphp5.so" "/usr/lib/apache2/modules/libphp5.so"
+
+    echo -n "Restarting Apache .. "
+    sudo /etc/init.d/apache2 restart &> /dev/null
+
+    if [ $? -ne 0 ] ; then
+        echo -e "\033[31mFAILED\e[0m"
+    else
+        echo -e "\033[92mOK\033[0m"
+    fi
+
+    echo -e "Installed binaries and Apache module. PHP version is now:\n"
+    php -v
+}
+
+# Build version
+command_build() {
+    VERSION=$1
+
+    if [[ -z $VERSION ]] ; then
+        echo -e "\033[31mERROR: No PHP version given\e[0m"
+        usage
+    fi;
+
+    if [[ "${VERSION:0:4}" != "php-" ]] && [[ "${VERSION}" != "master" ]]; then
+        VERSION="php-${VERSION}"
+    fi
+
+    LOGFILE="/tmp/phpmanager-build-${VERSION}.log"
+    echo -e "Starting build of ${VERSION} at $(date) .. \n\n" > "$LOGFILE"
+
+    cd $SOURCE
+
+    # Make sure the tag exists
+    if [ ! git rev-parse "$VERSION" >/dev/null 2>&1 ] && [[ "${VERSION}" != "master" ]]; then
+        echo -e "\033[31mERROR: $VERSION version not found\e[0m"
+        usage
+    fi
+
+    # Clean-up and checkout the tag
+    make clean &> /dev/null
+    rm -rf configure  &> /dev/null
+    ./vcsclean  &> /dev/null
+
+    sub_cleanuprepo
+
+    echo "Checking out ${VERSION} tag"
+    git checkout $VERSION  &> /dev/null
+
+    # Setup the PATH to include legacy build tools if needed
+    SHORT=$(sub_getshortversion $VERSION)
+    if [[ "$SHORT" -le 5306 ]] ; then
+        export PATH=/opt/bison-2.2/bin:/opt/flex-2.5.4/bin:$PATH
+    fi
+
+    if [[ "$SHORT" -le 5301 ]] && [[ "$SHORT" -ge 5300 ]]; then
+        export PATH=/opt/openssl-0.9.7g/bin:$PATH
+    fi
+
+    echo "Logging to ${LOGFILE}"
+
+    # Run configure
+    ./buildconf --force  >> "$LOGFILE" 2>&1
+
+    OPTIONS=$(sub_getoptions "$VERSION")
+
+    if [ "$SHOW_CONFIGURE" == true ] ; then
+        echo "Configure arguments: $OPTIONS"
+	fi
+
+    CMD="./configure ${OPTIONS}"
+    sub_execute "$CMD" "configure" "$LOGFILE" "Configuring makefile"
+
+    # Start the build
+    sub_execute "make" "make" "$LOGFILE" "Building ${VERSION}"
+
+    # Backup the libphp5.so file as "make install" will overwrite it automatically
+    sudo mv /usr/lib/apache2/modules/libphp5.so /usr/lib/apache2/modules/libphp5.so.bak
+
+    # Install the new binaries and module
+    sub_execute "sudo make install" "install" "$LOGFILE" "Installing ${VERSION}"
+
+    # Create the extension directories
+    EXTENSION=$(sub_getextensionnumber $VERSION)
+    sudo mkdir -p "/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/"
+    sudo mkdir -p "/opt/php/${VERSION}/lib/apache"
+
+    # Now setup the php.ini files
+    sub_setupini "$VERSION"
+
+    # Setup PEAR dependencies
+    sub_pear "/opt/php/${VERSION}/bin/pear" "$LOGFILE"
+
+    # Build Xdebug
+    sub_xdebug "$VERSION" "$LOGFILE"
+
+    # Build APC
+    if [[ "$SHORT" -lt 5500 ]] ; then
+        sub_apc "$VERSION" "$LOGFILE"
+    fi
+
+    # Store our newly built Apache module and put the original libphp5.so module back
+    if [[ -f "${SOURCE}/.libs/libphp5.so" ]] ; then
+        sudo cp "${SOURCE}/.libs/libphp5.so" "/opt/php/${VERSION}/lib/apache/libphp5.so"
+    elif [[ -f /usr/lib/apache2/modules/libphp5.so ]] ; then
+        sudo mv "/usr/lib/apache2/modules/libphp5.so" "/opt/php/${VERSION}/lib/apache/libphp5.so"
+    else
+        [[ -f /usr/lib/apache2/modules/libphp5.so ]] && sudo rm /usr/lib/apache2/modules/libphp5.so
+        sudo mv /usr/lib/apache2/modules/libphp5.so.bak /usr/lib/apache2/modules/libphp5.so
+
+        echo -e "\033[31mERROR: Failed to build libphp5.so!\e[0m"
+        echo "See ${LOGFILE} for more details or try again."
+        exit 1
+    fi
+
+    # Put the original apache module back in place
+    [[ -f /usr/lib/apache2/modules/libphp5.so ]] && sudo rm /usr/lib/apache2/modules/libphp5.so
+    sudo mv /usr/lib/apache2/modules/libphp5.so.bak /usr/lib/apache2/modules/libphp5.so
+
+    echo -e "\n${VERSION} has been built and can be found at /opt/php/${VERSION} -- happy coding!"
+
+    echo -e "Build completed at $(date) .. \n\n" > "$LOGFILE"
+}
+
+# Restore the original PHP binaries and Apache module
+command_restore() {
+    for BINARY in "${BINARIES[@]}"
+    do
+        # Remove the symlink
+        if [ -L "/usr/bin/${BINARY}" ] ; then
+            sudo rm "/usr/bin/${BINARY}"
+        fi
+
+        if [ -f "/usr/bin/${BINARY}.original" ] ; then
+            sudo cp "/usr/bin/${BINARY}.original" "/usr/bin/${BINARY}"
+        fi
+    done
+
+    if [ -f "/usr/lib/apache2/modules/libphp5.so" ] ; then
+        sudo rm "/usr/lib/apache2/modules/libphp5.so"
+    fi
+
+    sudo cp "/usr/lib/apache2/modules/libphp5.so.original" "/usr/lib/apache2/modules/libphp5.so"
+
+    echo -n "Restarting Apache .. "
+    sudo /etc/init.d/apache2 restart &> /dev/null
+
+    if [ $? -ne 0 ] ; then
+        echo -e "\033[31mFAILED\e[0m"
+    else
+        echo -e "\033[92mOK\033[0m"
+    fi
+
+    echo -e "Restored PHP, version is now: \n"
+    php -v
+}
+
+# Uninstall given version
+command_remove() {
+    VERSION=$1
+
+    cd $SOURCE
+
+    if [[ "${VERSION:0:4}" != "php-" ]] && [[ "${VERSION}" != "master" ]] ; then
+        VERSION="php-${VERSION}"
+    fi
+
+    if [[ ! -d "/opt/php/$VERSION" ]] ; then
+        echo "$VERSION does not exist. Skipping"
+    else
+        NUMBER="${VERSION/php-/}"
+        INSTALLED=$(php -v | head -1)
+        LEN=${#NUMBER}
+
+        if [[ "${INSTALLED:4:${LEN}}" == "$NUMBER" ]] ; then
+            echo "$VERSION is currently installed! Please install another version number before removing."
+        else
+            sudo rm -rf -- "/opt/php/${VERSION}"
+            echo "$VERSION has been removed."
+        fi
+    fi
+}
+
+# Run tasks that take up more time than regular commands.
+# Takes the following parameters
+#  - The command itself
+#  - The name of the task
+#  - The logfile to pipe output to
+#  - A message to display next to the working indicator
+sub_execute() {
+    CMD="$1"
+    NAME="$2"
+    LOGFILE="$3"
+    MSG="$4"
+
+    $CMD >> "$LOGFILE" 2>&1 &
+    PID=$!
+
+    sub_waitinganim $PID "$MSG"
+
+    wait $PID
+
+    if [[ $? -ne 0 ]] ; then
+        tail -n 5 "${LOGFILE}"
+        echo -e "\033[31mERROR: ${NAME} failed!\e[0m"
+        echo "See ${LOGFILE} for more details."
+        exit 1
+    fi
+}
+
+# Install PEAR libraries that are required for the box to keep working.
+# Note: we do not display errors (except in the logfile) because the command will also fail if
+# the packages have already been installed for example.
+sub_pear() {
+    PEAR="$1"
+    LOGFILE="$2"
+
+    sudo "$PEAR" channel-discover pear.phing.info >> "$LOGFILE" 2>&1
+
+    for PACKAGE in "Console_CommandLine" "phing/phing"; do
+        sudo "$PEAR" install $PACKAGE >> "$LOGFILE" 2>&1
+    done
+}
+
+# Build Xdebug for the given version
+sub_xdebug() {
+    VERSION="$1"
+    LOGFILE="$2"
+
+    cd $SOURCE_XDEBUG
+
+    sub_cleanuprepo
+
+    # Find the tag of the latest tagged commit in all branches
+    TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+
+    git checkout $TAG &> /dev/null
+
+    "/opt/php/${VERSION}/bin/phpize" >> "$LOGFILE" 2>&1
+
+    ./configure --enable-xdebug --with-php-config="/opt/php/${VERSION}/bin/php-config" >> "$LOGFILE" 2>&1
+
+    sub_execute "make" "xdebug-build" "$LOGFILE" "Building Xdebug"
+
+    if [[ -f "${SOURCE_XDEBUG}/modules/xdebug.so" ]] ; then
+        EXTENSION=$(sub_getextensionnumber $VERSION)
+        LIB="/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/xdebug.so"
+        INI="/opt/php/${VERSION}/etc/conf.d/zzz_xdebug.ini"
+
+        sudo cp "${SOURCE_XDEBUG}/modules/xdebug.so" "$LIB"
+
+        # Note: the zend_extension directive requires the FULL path!
+        sudo echo "zend_extension=\"${LIB}\"" > "${INI}"
+        sudo cat /etc/php5/apache2/conf.d/zzz_xdebug.ini >> "${INI}"
+    else
+        echo -e "\033[31mERROR: Failed to build Xdebug!\e[0m"
+    fi
+
+    # Go back to the PHP source
+    cd $SOURCE
+}
+
+# Build APC
+sub_apc() {
+    VERSION="$1"
+    LOGFILE="$2"
+
+    echo -n "Building APC .. "
+
+    # @FIXME we can't get this command passed as an argument to sub_execute()
+    printf "\n" | sudo "/opt/php/${VERSION}/bin/pecl" install apc  >> "$LOGFILE" 2>&1
+
+    EXTENSION=$(sub_getextensionnumber $VERSION)
+
+    LIB="/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/apc.so"
+
+    if [[ -f "$LIB" ]] ; then
+        echo -e "\033[92mfinished\033[0m"
+        sudo echo "extension=\"apc.so\"" > "/opt/php/${VERSION}/etc/conf.d/zzz_apc.ini"
+    else
+        echo "\033[31mFailed\e[0m"
+    fi
+}
+
+# Build the configure string
+sub_getoptions() {
+    VERSION=$1
+    SHORT=$(sub_getshortversion $VERSION)
+
+    # Default options :
+    OPTIONS="--enable-calendar \
+              --enable-cli \
+              --enable-exif \
+              --enable-ftp \
+              --enable-intl \
+              --enable-mbstring \
+              --enable-soap \
+              --enable-sockets \
+              --enable-zip \
+              --prefix=/opt/php/${VERSION} \
+              --with-apxs2=/usr/bin/apxs2 \
+              --with-bz2 \
+              --with-config-file-scan-dir=/opt/php/${VERSION}/etc/conf.d/ \
+              --with-curl \
+              --with-gd --with-jpeg-dir --with-png-dir --enable-gd-native-ttf --with-freetype-dir \
+              --with-iconv \
+              --with-libdir=lib/x86_64-linux-gnu \
+              --with-mcrypt \
+              --with-pcre-regex \
+              --with-readline \
+              --with-xmlrpc
+              --with-xsl \
+              --with-zlib"
+
+    # Build the mysql configuration string
+    MYSQL=""
+    if [[ "$SHORT" -lt 5213 ]] ; then
+        CFG="/opt/mysql-5.1.73-linux-x86_64-glibc23/bin/mysql_config"
+	    MYSQL="--with-mysql=/opt/mysql-5.1.73-linux-x86_64-glibc23 --with-mysqli=${CFG} --with-pdo-mysql=${CFG}"
+
+        if [[ "$SHORT" -lt 5208 ]] ; then
+            # http://bugs.mysql.com/bug.php?id=29994
+            sed -i.bak 's/gptr/char\*/g' "${SOURCE}/ext/mysqli/mysqli_api.c"
+        fi
+    elif [[ "$SHORT" -lt 5300 ]] ; then
+        CFG=$(which mysql_config)
+        MYSQL="--with-mysql --with-mysqli=${CFG} --with-pdo-mysql=${CFG}"
+    else
+        MYSQL="--with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-mysql-sock=/var/run/mysqld/mysqld.sock"
+    fi
+    OPTIONS="$OPTIONS $MYSQL"
+
+    # Can we build with OpenSSL ?
+    OPENSSL=""
+    if [[ "$SHORT" -le 5301 ]] ; then
+        OPENSSL="--with-openssl=/opt/openssl-0.9.7g"
+        patch -p1 < /home/vagrant/phpmanager/patches/openssl.ssl2.patch &> /dev/null
+    elif [[ "$SHORT" -le 5306 ]] ; then
+        OPENSSL="--with-openssl"
+        patch -p1 < /home/vagrant/phpmanager/patches/openssl.ssl2.patch &> /dev/null
+    else
+        OPENSSL="--with-openssl"
+    fi
+    OPTIONS="$OPTIONS $OPENSSL"
+
+    # PHP 5.20 and older requires older curl headers, so point to the correct source files
+    CURL="--with-curl"
+    if [[ "$SHORT" -le 5200 ]] ; then
+        CURL="${CURL}=/usr/local/src/curl-7.15.3"
+    fi
+    OPTIONS="$OPTIONS $CURL"
+
+    # Add some legacy options
+    if [[ "$SHORT" -lt 5300 ]] ; then
+        OPTIONS="$OPTIONS --enable-spl --with-mime-magic"
+    fi
+
+    # Enable opcache for newer versions
+    if [[ "$SHORT" -ge 5500 ]] ; then
+        OPTIONS="$OPTIONS --enable-opcache"
+    fi
+
+    # Add user-specified configure options
+    if [[ ! -z  "$EXTRA_CONFIGURE_ARGUMENTS" ]] ; then
+        OPTIONS="$OPTIONS $EXTRA_CONFIGURE_ARGUMENTS"
+    fi
+
+    echo "$OPTIONS"
+}
+
+# Copy the php.ini files
+sub_setupini() {
+    VERSION="$1"
+
+    [[ ! -d "/opt/php/${VERSION}/etc/conf.d" ]] && sudo mkdir -p "/opt/php/${VERSION}/etc/conf.d"
+    [[ ! -d "/opt/php/${VERSION}/lib" ]] && sudo mkdir -p "/opt/php/${VERSION}/lib"
+
+    if [[ -f "${SOURCE}/php.ini-recommended" ]] ; then
+        sudo cp "${SOURCE}/php.ini-recommended" "/opt/php/${VERSION}/lib/php.ini"
+    elif [[ -f "${SOURCE}/php.ini-development" ]] ; then
+        sudo cp "${SOURCE}/php.ini-development" "/opt/php/${VERSION}/lib/php.ini"
+    fi
+
+    sudo cp /etc/php5/apache2/conf.d/zzz_custom.ini "/opt/php/${VERSION}/etc/conf.d/zzz_custom.ini"
+    sudo cp /etc/php5/apache2/conf.d/zzz_php.ini "/opt/php/${VERSION}/etc/conf.d/zzz_php.ini"
+
+    sudo chown vagrant:vagrant "/opt/php/${VERSION}/lib/php.ini"
+    sudo chown -R vagrant:vagrant "/opt/php/${VERSION}/etc/conf.d"
+
+    # The default extensions directory should be <install-dir>/lib/php/extensions/ <debug-or-not>-<zts-or-not>-ZEND_MODULE_API_NO
+    # according to the docs at http://be2.php.net/dl but for most builds this isn't the case.
+    # So let's make sure we properly set the extension_dir directive :
+    EXTENSION=$(sub_getextensionnumber $VERSION)
+    echo "extension_dir=/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/" >> "/opt/php/${VERSION}/etc/conf.d/zzz_php.ini"
+
+    # Configure the MySQL socket
+    echo "mysql.default_socket=/var/run/mysqld/mysqld.sock" > "/opt/php/${VERSION}/etc/conf.d/zzz_mysql.ini"
+    echo "mysqli.default_socket=/var/run/mysqld/mysqld.sock" >> "/opt/php/${VERSION}/etc/conf.d/zzz_mysql.ini"
+    echo "pdo_mysql.default_socket=/var/run/mysqld/mysqld.sock" >> "/opt/php/${VERSION}/etc/conf.d/zzz_mysql.ini"
+}
+
+# Get the available PHP tags
+sub_getversions() {
+    cd $SOURCE
+
+    sub_cleanuprepo
+
+    TAGS=()
+    eval "$(git for-each-ref --shell --format='TAGS+=(%(refname))' refs/tags/)"
+    for TAG in "${TAGS[@]}"; do
+        # Only list PHP versions greater than or equal to 5.2
+        PATTERN="refs/tags/php-[5-9]\.[2-9]"
+        if [[ $TAG =~ $PATTERN ]] ; then
+            VERSIONS+=(${TAG/refs\/tags\//})
+        fi;
+    done
+
+    # Sort the tags
+    VERSIONS=(
+        $(for el in "${VERSIONS[@]}"
+            do
+                echo "$el"
+            done | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n
+        )
+    )
+
+    # Append master
+    VERSIONS+=("master")
+}
+
+# Convert a tag to a version string which we can use in comparisons
+sub_getshortversion() {
+    VERSION="$1"
+
+    if [[ "$VERSION" == "master" ]] ; then
+        echo 9999
+        return
+    fi
+
+    SHORT=$(echo "$VERSION" | sed -e 's/RC[0-9]*$//' -e 's/alpha[0-9]*$//' -e 's/beta[0-9]*$//')
+    SHORT=${SHORT//[^0-9]/}
+
+    if [[ ${#SHORT} -eq 3 ]] ; then
+        SHORT="${SHORT:0:2}0${SHORT:2}"
+    fi
+
+    while [ ${#SHORT} -lt 4 ]
+    do
+        SHORT="${SHORT}0"
+    done
+
+    SHORT=$(printf "%04d" $SHORT)
+
+    echo "$SHORT"
+}
+
+# Display a "loading animation" while given process is running
+# From: http://stackoverflow.com/questions/12498304/using-bash-to-display-a-progress-working-indicator
+sub_waitinganim() {
+    PID=$1
+    TEXT=$2
+
+    SPIN='-\|/'
+    i=0
+    while kill -0 $PID &> /dev/null
+    do
+      i=$(( (i+1) % 4 ))
+      printf "\r${TEXT} .. \e[1;32m${SPIN:$i:1} \e[0m \033[?25l"
+      sleep .1
+    done
+
+    echo -e "\r${TEXT} .. \e[92mfinished\e[0m \033[?25h"
+}
+
+# Clean-up and update the Git repo in current working directory
+sub_cleanuprepo() {
+    if [[ ! -d "./.git" ]] ; then
+        echo "$(pwd) is not a git repository!"
+        exit
+    fi
+
+    # Clean out the repository
+    git reset --hard --quiet
+    git clean -d -x -f --quiet
+
+    # and get the latest updates
+    git checkout master --quiet
+    git fetch origin --quiet &> /dev/null
+    git fetch origin --tags --quiet &> /dev/null
+    git rebase origin/master --quiet
+}
+
+# Find the PHP Extension number
+sub_getextensionnumber() {
+    VERSION="$1"
+
+    EXTENSION=$("/opt/php/${VERSION}/bin/php" -i 2> /dev/null | grep "PHP Extension => ")
+    EXTENSION=${EXTENSION:(-8)}
+
+    echo $EXTENSION
+}
+
+# Check if a value exists in an array
+in_array() {
+    local needle=$1
+
+    for HAY in "${VERSIONS[@]}"; do
+        [[ $HAY == $needle ]] && return 0
+    done
+    return 1
+}
+
+# Determine the command and execute
+SUBCOMMAND=$1
+case $SUBCOMMAND in
+    "" | "-h" | "--help" | "help")
+        usage
+        ;;
+    *)
+        shift
+        command_${SUBCOMMAND} $@
+        if [ $? -eq 127 ]; then
+            echo -e "\033[31mError: '$SUBCOMMAND' is not a known command!\e[0m" >&2
+            echo "Run ${BASENAME} --help for available commands."
+        fi
+        ;;
+esac

@@ -3,6 +3,7 @@
 
 require_once 'Console/CommandLine.php';
 require_once __DIR__.'/symlinker.php';
+require_once __DIR__.'/joomla-versions.php';
 
 CreateSite::fromInput();
 
@@ -12,16 +13,21 @@ class CreateSite
 
     public $task;
     public $site;
-    public $template;
+    public $version;
+    public $sample;
+    public $clearcache = false;
+    public $type;
     public $symlink = array();
 
-    public $source_tar;
     public $source_db;
+    public $source_tarball;
 
     public $target_dir;
     public $target_db;
 
-    public function __construct($task, $site, $template, $symlink)
+    public $versions;
+
+    public function __construct($task, $site, $version, $symlink, $sample, $clearcache)
     {
         if (!self::$templates) {
             self::$templates = __DIR__.'/joomla_files';
@@ -33,26 +39,40 @@ class CreateSite
 
         $this->task       = $task;
         $this->site       = $site;
-        $this->template   = $template;
+        $this->version    = $version;
+
+        $this->clearcache = $clearcache;
+        $this->versions   = $this->getAvailableVersions();
 
         if ($symlink) {
             $this->symlink = explode(',', $symlink);
         }
 
-        if ($this->template)
-        {
-            $this->source_tar = self::$templates.'/'.$this->template.'.tar.gz';
-            $this->source_db  = self::$templates.'/'.$this->template.'.sql';
+        if ($sample) {
+            $this->sample = $sample;
         }
 
-        $this->target_db  = 'sites_'.$this->site;
+        if($version)
+        {
+            $versions = $this->versions;
+            foreach($versions as $ref => $list)
+            {
+                if(in_array($this->version, $list)) {
+                    $this->type = $ref;
+                }
+            }
+        }
+
         $this->target_dir = '/var/www/'.$this->site;
+        $this->target_db  = 'sites_'.$this->site;
+
+        $this->source_db = $this->target_dir.'/installation/sql/mysql/joomla.sql';
     }
 
     public static function fromInput()
     {
         $parser = new Console_CommandLine();
-        $parser->description = "Install Joomla sites from templates";
+        $parser->description = "Install Joomla sites straight from the Joomla Git repository";
 
         $parser->addArgument('task', array(
             'description' => 'create|delete|symlink',
@@ -64,10 +84,10 @@ class CreateSite
             'help_name'   => 'SITE'
         ));
 
-        $parser->addOption('template', array(
-            'long_name'   => '--template',
-            'description' => "Site template to build from (e.g. joomla25,joomla3)",
-            'help_name'   => 'TEMPLATE'
+        $parser->addOption('version', array(
+            'long_name'   => '--version',
+            'description' => "Joomla version. Can be a release number (2, 3.2, ..) or branch name. Run `joomla-version show` for a full list.",
+            'help_name'   => 'VERSION'
         ));
 
         $parser->addOption('symlink', array(
@@ -76,16 +96,30 @@ class CreateSite
             'help_name'   => 'SYMLINK'
         ));
 
+        $parser->addOption('sample', array(
+            'long_name'   => '--sample',
+            'description' => "Sample data to install (default|blog|brochure|learn|testing)",
+            'help_name'   => 'SAMPLE'
+        ));
+
+        $parser->addOption('clearcache', array(
+            'long_name'   => '--clear-cache',
+            'description' => "Update the list of available tags and branches from the Joomla repository.",
+            'action'      => 'StoreTrue'
+        ));
+
         try
         {
             $result   = $parser->parse();
             $task     = $result->args['task'];
             $site     = $result->args['site'];
 
-            $template = $result->options['template'];
+            $version  = $result->options['version'];
             $symlink  = $result->options['symlink'];
+            $sample   = $result->options['sample'];
+            $clear    = $result->options['clearcache'];
 
-            $instance = new self($task, $site, $template, $symlink);
+            $instance = new self($task, $site, $version, $symlink, $sample, $clear);
             $instance->run();
         } catch (Exception $e) {
             $parser->displayError($e->getMessage());
@@ -112,6 +146,7 @@ class CreateSite
         $this->modifyConfiguration();
         $this->addVirtualHost();
         $this->symlinkProjects();
+        $this->enableWebinstaller();
     }
 
     public function delete()
@@ -134,19 +169,36 @@ class CreateSite
                 throw new Exception(sprintf('A site with name %s already exists', $this->site));
             }
 
-            if ($this->template)
-            {
-                if (!is_file($this->source_db)) {
-                    throw new Exception(sprintf('Database export is missing for template %s', $this->template));
-                }
+            $this->checkVersion();
 
-                if (!is_file($this->source_tar)) {
-                    throw new Exception(sprintf('Source files are missing for template %s', $this->template));
+            if ($this->version)
+            {
+                if(!in_array($this->type, array('tags', 'heads'))) {
+                    throw new Exception(sprintf('Version %s not found. Check https://github.com/joomla/joomla-cms for a list of valid tags and branch names.', $this->version));
                 }
 
                 $result = `echo 'SHOW DATABASES LIKE "$this->target_db"' | mysql -uroot -proot`;
                 if (!empty($result)) { // Table exists
                     throw new Exception(sprintf('A database with name %s already exists', $this->target_db));
+                }
+
+                $this->source_tarball = $this->getTarball();
+                if(!file_exists($this->source_tarball)) {
+                    throw new Exception(sprintf('File %s does not exist', $this->source_tarball));
+                }
+            }
+
+            if ($this->version && $this->sample)
+            {
+                if (!in_array($this->sample, array('default', 'blog', 'brochure', 'testing', 'learn'))) {
+                    throw new Exception(sprintf('Unknown sample data "%s"', $this->sample));
+                }
+
+                if(is_numeric(substr($this->version, 0, 1)))
+                {
+                    if (in_array($this->sample, array('testing', 'learn')) && version_compare($this->version, '3.0.0', '<')) {
+                        throw new Exception(sprintf('%s does not support sample data %s', $this->version, $this->sample));
+                    }
                 }
             }
         }
@@ -162,8 +214,8 @@ class CreateSite
     {
         `mkdir -p $this->target_dir`;
 
-        if ($this->template) {
-            `cd $this->target_dir; tar xzf $this->source_tar`;
+        if ($this->version) {
+            `cd $this->target_dir; tar xzf $this->source_tarball --strip 1`;
         }
     }
 
@@ -174,7 +226,7 @@ class CreateSite
 
     public function createDatabase()
     {
-        if (!$this->template) {
+        if (!$this->version) {
             return;
         }
 
@@ -183,9 +235,33 @@ class CreateSite
             throw new Exception(sprintf('Cannot create database %s. Error: %s', $this->target_db, $result));
         }
 
-        $result = `mysql -proot -uroot $this->target_db < $this->source_db`;
-        if (!empty($result)) { // MySQL returned an error
-            throw new Exception(sprintf('Cannot import database. Error: %s', $result));
+        $imports = array($this->target_dir.'/installation/sql/mysql/joomla.sql');
+
+        $users = 'joomla3.users.sql';
+        if(is_numeric(substr($this->version, 0, 1)) && version_compare($this->version, '3.0.0', '<')) {
+            $users = 'joomla2.users.sql';
+        }
+
+        $imports[] = self::$templates.'/'.$users;
+
+        if ($this->sample)
+        {
+            $type = $this->sample == 'default' ? 'data' : $this->sample;
+            $sample_db = $this->target_dir.'/installation/sql/mysql/sample_' . $type . '.sql';
+
+            $imports[] = $sample_db;
+        }
+
+        foreach($imports as $import)
+        {
+            $file = basename($import);
+
+            `sed -i 's/#__/j_/g' $import`;
+
+            $result = `mysql -proot -uroot $this->target_db < $import`;
+            if (!empty($result)) { // MySQL returned an error
+                throw new Exception(sprintf('Cannot import database "%s". Error: %s', $file, $result));
+            }
         }
     }
 
@@ -199,12 +275,14 @@ class CreateSite
 
     public function modifyConfiguration()
     {
-        if (!$this->template) {
+        if (!$this->version) {
             return;
         }
 
-        $file     = $this->target_dir.'/configuration.php';
-        $contents = file_get_contents($file);
+        $source   = $this->target_dir.'/installation/configuration.php-dist';
+        $target   = $this->target_dir.'/configuration.php';
+
+        $contents = file_get_contents($source);
         $replace  = function($name, $value, &$contents) {
             $pattern     = sprintf("#%s = '.*?'#", $name);
             $replacement = sprintf("%s = '%s'", $name, $value);
@@ -212,13 +290,52 @@ class CreateSite
             $contents = preg_replace($pattern, $replacement, $contents);
         };
 
-        $replace('db', $this->target_db, $contents);
-        $replace('tmp_path', sprintf('/var/www/%s/tmp',  $this->site), $contents);
-        $replace('log_path', sprintf('/var/www/%s/logs', $this->site), $contents);
-        $replace('sitename', $this->site, $contents);
+        $remove  = function($name, &$contents) {
+            $pattern     = sprintf("#public \$%s = '.*?'#", $name);
 
-        chmod($file, 0644);
-        file_put_contents($file, $contents);
+            $contents = preg_replace($pattern, '', $contents);
+        };
+
+        $replacements = array(
+            'db'        => $this->target_db,
+            'user'      => 'root',
+            'password'  => 'root',
+            'dbprefix'  => 'j_',
+            'dbtype'    => 'mysqli',
+
+            'mailer' => 'smtp',
+            'mailfrom' => 'admin@example.com',
+            'fromname' => $this->site,
+            'sendmail' => '/usr/bin/env catchmail',
+            'smtpauth' => '0',
+            'smtpuser' => '',
+            'smtppass' => '',
+            'smtphost' => 'localhost',
+            'smtpsecure' => 'none',
+            'smtpport' => '1025',
+
+            'sef'       => '1',
+            'sef_rewrite'   => '1',
+            'unicodeslugs'  => '1',
+
+            'debug'     => '1',
+            'lifetime'  => '600',
+            'tmp_path'  => sprintf('/var/www/%s/tmp',  $this->site),
+            'log_path'  => sprintf('/var/www/%s/logs', $this->site),
+            'sitename'  => $this->site
+        );
+
+        foreach($replacements as $key => $value) {
+            $replace($key, $value, $contents);
+        }
+
+        $remove('root_user', $contents);
+
+        file_put_contents($target, $contents);
+        chmod($target, 0644);
+
+        `mv $this->target_dir/installation $this->target_dir/_installation`;
+        `cp $this->target_dir/htaccess.txt $this->target_dir/.htaccess`;
     }
 
     public function addVirtualHost()
@@ -308,5 +425,141 @@ class CreateSite
         fwrite(STDERR, $text . ($nl ? "\n" : null));
 
         return $this;
+    }
+
+    public function getTarball()
+    {
+        $tar = $this->version.'.tar.gz';
+
+        if(file_exists(self::$templates.'/'.$tar) && $this->type != 'heads') {
+            return self::$templates.'/'.$tar;
+        }
+
+        switch($this->type)
+        {
+            case 'heads':
+                $url = 'http://github.com/joomla/joomla-cms/tarball/'.$this->version;
+                break;
+            case 'tags':
+            default:
+                $url = 'https://github.com/joomla/joomla-cms/archive/'.$tar;
+                break;
+        }
+
+        echo "Downloading Joomla $this->version - this could take a few minutes .." . PHP_EOL;
+        $bytes = file_put_contents(self::$templates.'/'.$tar, fopen($url, 'r'));
+        if($bytes === false || $bytes == 0) {
+            throw new Exception(sprintf('Failed to download %s', $url));
+        }
+
+        return self::$templates.'/'.$tar;
+    }
+
+    public function enableWebinstaller()
+    {
+        if(!$this->version) {
+            return;
+        }
+
+        if(version_compare($this->version, '3.2.0', '<')) {
+            return;
+        }
+
+        $xml = simplexml_load_file('http://appscdn.joomla.org/webapps/jedapps/webinstaller.xml');
+        if($xml == false) {
+            echo 'Failed to load';
+            return;
+        }
+
+        $url = '';
+        foreach($xml->update->downloads->children() as $download)
+        {
+            $attributes = $download->attributes();
+            if($attributes->type == 'full' && $attributes->format == 'zip')
+            {
+                $url = (string) $download;
+                break;
+            }
+        }
+
+        if(empty($url)) {
+            return;
+        }
+
+        $filename = self::$templates.'/'.basename($url);
+        if(!file_exists($filename))
+        {
+            $bytes = file_put_contents($filename, fopen($url, 'r'));
+            if($bytes === false || $bytes == 0) {
+                return;
+            }
+        }
+
+        `mkdir -p $this->target_dir/plugins/installer`;
+        `cd $this->target_dir/plugins/installer/ && unzip -o $filename`;
+
+        $sql = "INSERT INTO `j_extensions` (`name`, `type`, `element`, `folder`, `enabled`, `access`, `manifest_cache`) VALUES ('plg_installer_webinstaller', 'plugin', 'webinstaller', 'installer', 1, 1, '{\"name\":\"plg_installer_webinstaller\",\"type\":\"plugin\",\"version\":\"".$xml->update->version."\",\"description\":\"Web Installer\"}');";
+        $sql = escapeshellarg($sql);
+
+        `mysql -proot -uroot $this->target_db -e $sql`;
+    }
+
+    public function checkVersion()
+    {
+        if (strtolower($this->version) == 'latest')
+        {
+            $this->version = $this->getLatestRelease();
+            $this->type = 'tags';
+        }
+
+        $length = strlen($this->version);
+        $format = is_numeric($this->version) || preg_match('/^\d\.\d+$/im', $this->version);
+
+        if ( ($length == 1 || $length == 3) && $format)
+        {
+            $prefix = $this->version;
+
+            $this->version = $this->getLatestRelease($prefix);
+            $this->type    = 'tags';
+
+            if($this->version == '0.0.0') {
+                $this->version = $prefix . ($length == 1 ? '.0.0' : '.0');
+            }
+        }
+    }
+
+    public function getLatestRelease($prefix = null)
+    {
+        // Find the latest tag
+        $latest = '0.0.0';
+        $versions = $this->versions;
+
+        foreach($versions['tags'] as $version)
+        {
+            if(!preg_match('/\d\.\d+\.\d+.*/im', $version)) {
+                continue;
+            }
+
+            if(!is_null($prefix) && substr($version, 0, strlen($prefix)) != $prefix) {
+                continue;
+            }
+
+            if(version_compare($latest, strtolower($version), '<')) {
+                $latest = $version;
+            }
+        }
+
+        return $latest;
+    }
+
+    public function getAvailableVersions()
+    {
+        $versions = new JoomlaVersions(null);
+
+        if($this->clearcache) {
+            $versions->refresh();
+        }
+
+        return $versions->getVersions();
     }
 }
