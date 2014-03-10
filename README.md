@@ -57,7 +57,7 @@ Joomla Site Manager
 
 This is a script developed by Joomlatools to ease the management of Joomla sites from command line.
 
-To create a site with it, SSH into the box and then run:
+To create an empty site with it, SSH into the box and then run:
 
     joomla create testsite
 
@@ -66,16 +66,17 @@ Add the following line into your /etc/hosts file on your host machine:
     33.33.33.58 testsite.dev
 
 Now you can reach the ```www/testsite``` folder from the domain testsite.dev
+    
+You can have the script pre-install Joomla for you. Just run ```joomla --version=3 create testsite```to setup the latest Joomla 3 version. You can ask the script to install sample data by adding the ```--sample``` flag. You can install any branch from the Git repository or any version from 2.5.0 and up using this command. See [this demo](http://quick.as/kvjjsg6g) to see how the script works.
 
 For more information and available options, try running:
 
     joomla --help
-    
-You can have the script pre-install Joomla for you. Just run ```joomla --template=joomla3 create testsite```to setup a Joomla 3.0 install. (Note: administrator credentials are _admin/admin_)
+
 
 Symlink your code into a Joomla installation
 --------------------------------------------
-Let's say you are working on your custom Joomla 3.0 component called _MyComponent_ and want to continue working on it using the Vagrant box.
+Let's say you are working on your custom Joomla 3.2 component called _MyComponent_ and want to continue working on it using the Vagrant box.
 
 If your source code is located at _/Users/myname/Projects/mycomponent_, we should start by making this directory available to the Vagrant box.
 
@@ -91,7 +92,7 @@ The "Projects" folder from your host machine will now be available inside the Va
 
 Next step is to create the new site you'll be working on. SSH into the box (```vagrant ssh```) and execute the following command: 
 
-	joomla --template=joomla3 --symlink=mycomponent create testsite
+	joomla --version=3.2 --symlink=mycomponent create testsite
 
 The script will create a new Joomla 3 installation for you and symlink all the folders from the _mycomponent_ folder into it. Now add _testsite.dev_ to your /etc/hosts as described in the previous paragraph, so you can access the new site via _http://testsite.dev_ 
 
