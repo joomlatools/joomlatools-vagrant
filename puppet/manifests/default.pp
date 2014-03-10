@@ -32,6 +32,11 @@ package { [
   ensure  => 'installed',
 }
 
+package { ['sass', 'compass']:
+  ensure   => 'installed',
+  provider => 'gem',
+}
+
 class { 'apache': }
 
 apache::dotconf { 'custom':
@@ -125,7 +130,7 @@ puphpet::ini { 'php':
 
 puphpet::ini { 'custom':
   value   => [
-    'sendmail_path = /usr/bin/env catchmail -fnoreply@example.com',
+    'sendmail_path = /opt/vagrant_ruby/bin/catchmail -fnoreply@example.com',
     'display_errors = On',
     'error_reporting = -1',
     'display_startup_errors = On',
@@ -194,3 +199,4 @@ apache::vhost { 'default':
 class { 'scripts': }
 
 class { 'phpmanager': }
+
