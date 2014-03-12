@@ -1,0 +1,118 @@
+#!/usr/bin/env php
+<?php
+
+require_once 'Console/CommandLine.php';
+
+APC::fromInput();
+
+class APC
+{
+    public static $files;
+
+    public $task;
+
+    protected $_ini_files = array('20-apc.ini', 'zzz_apc.ini');
+
+    public function __construct($task)
+    {
+        if (!self::$files) {
+            self::$files = __DIR__.'/utilities';
+        }
+
+        $this->task = $task;
+    }
+
+    public static function fromInput()
+    {
+        $parser = new Console_CommandLine();
+        $parser->description = "Manage APC through the command line";
+
+        $parser->addArgument('task', array(
+            'description' => 'enable|disable|clear',
+            'help_name'   => 'TASK'
+        ));
+
+        try
+        {
+            $result   = $parser->parse();
+            $task     = $result->args['task'];
+
+            $instance = new self($task);
+            $instance->run();
+        } catch (Exception $e) {
+            $parser->displayError($e->getMessage());
+        }
+    }
+
+    public function run()
+    {
+        try
+        {
+            $task = $this->task;
+            $this->$task();
+        }
+        catch (Exception $e) {
+            $this->error($e->getMessage());
+        }
+    }
+
+    public function clear()
+    {
+        copy(self::$files.'/apc_clear.php', '/var/www/apc_clear.php');
+
+        $url = 'http://localhost/apc_clear.php';
+        $result = json_decode(file_get_contents($url));
+
+        unlink('/var/www/apc_clear.php');
+
+        if($result->status != 'success') {
+            echo 'Failed to clear APC cache!' . PHP_EOL;
+        }
+    }
+
+    public function enable()
+    {
+        $files = $this->_getConfigFiles($this->_ini_files);
+
+        foreach($files as $file) {
+            `sudo sed -i 's#^; extension=#extension=#' $file`;
+        }
+
+        `sudo /etc/init.d/apache2 restart`;
+    }
+
+    public function disable()
+    {
+        $files = $this->_getConfigFiles($this->_ini_files);
+
+        foreach($files as $file) {
+            `sudo sed -i 's#^extension=#; extension=#' $file`;
+        }
+
+        `sudo /etc/init.d/apache2 restart`;
+    }
+
+    protected function _getConfigFiles($basenames = array())
+    {
+        $inis  = array();
+        $paths = array('/etc/php5/conf.d/', '/etc/php5/mods-available/');
+
+        $installs = glob('/opt/php/php-*/etc/conf.d', GLOB_ONLYDIR);
+        $installs = array_unique(array_filter($installs));
+
+        $paths = array_merge($paths, $installs);
+
+        foreach($paths as $path)
+        {
+            foreach($basenames as $basename)
+            {
+                $fullpath = $path . '/' . $basename;
+                if(file_exists($fullpath)) {
+                    $inis[] = $fullpath;
+                }
+            }
+        }
+
+        return $inis;
+    }
+}

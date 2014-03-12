@@ -201,3 +201,4 @@ class { 'scripts':
 }
 
 class { 'phpmanager': }
+

@@ -41,8 +41,8 @@ usage() {
 	echo "Usage: "
 	echo "  $BASENAME versions              -- List all available PHP versions."
 	echo "  $BASENAME available             -- Show all PHP version which have been built locally."
-	echo "  $BASENAME install <version>     -- Installs selected PHP version. Builds from source if version does not exist yet. "
-	echo "  $BASENAME build <version>       -- Attempts to build PHP version from source."
+	echo "  $BASENAME use <version>         -- Installs selected PHP version. Builds from source if version does not exist yet. "
+	echo "  $BASENAME install <version>     -- Attempts to build PHP version from source."
 	echo "  $BASENAME restore               -- Put the original binaries and Apache module back in place."
 	echo "  $BASENAME remove <version>      -- Remove given version from disk."
 	echo "  $BASENAME help                  -- Show help"
@@ -73,7 +73,7 @@ command_versions() {
     STRING=$(printf "%s\n" "${NUMBERS[@]}")
 
     # Display the versions in columns
-    printf "%20s  %20s  %20s  %20s  %20s  %20s  %20s\n" $STRING
+    printf "%-18s  %-18s  %-18s  %-18s %-18s\n" $STRING
 }
 
 # Get the list of installed builds
@@ -90,11 +90,11 @@ command_available() {
 
     STRING=$(printf "%s\n" "${AVAILABLE[@]}")
 
-    printf "%20s  %20s  %20s  %20s  %20s  %20s  %20s\n" $STRING
+    printf "%-18s  %-18s  %-18s  %-18s %-18s\n" $STRING
 }
 
 # Install PHP version
-command_install() {
+command_use() {
     VERSION=$1
 
     if [[ "${VERSION:0:4}" != "php-" ]] && [[ "${VERSION}" != "master" ]] ; then
@@ -117,7 +117,7 @@ command_install() {
             exit 1
         fi
 
-        command_build $VERSION
+        command_install $VERSION
     fi
 
     # Install the binaries
@@ -156,8 +156,8 @@ command_install() {
     php -v
 }
 
-# Build version
-command_build() {
+# Build given version
+command_install() {
     VERSION=$1
 
     if [[ -z $VERSION ]] ; then

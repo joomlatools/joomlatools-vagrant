@@ -138,11 +138,11 @@ To get a list of available PHP versions, SSH into the box and run:
     
 To install one of the available versions, for example 5.2.16, execute:
 
-	phpmanager install 5.2.16
+	phpmanager use 5.2.16
 	
 The script will check if this version has been installed and if not, will attempt to build it. Please note that building PHP might take a while. Depending on your system, this could take between 5 and 45 minutes.
 
-If you want to test your code against the latest and greatest of PHP, you can call ```phpmanager install master```. Each time you build the master branch the script will pull in the latest changes from the PHP Git repository.
+If you want to test your code against the latest and greatest of PHP, you can call ```phpmanager use master```. Each time you build the master branch the script will pull in the latest changes from the PHP Git repository.
 
 To restore the original PHP installation again, run:
 
@@ -150,6 +150,17 @@ To restore the original PHP installation again, run:
 	
 For more options, run ```phpmanager --help```. To see this script in action, refer to this [screencast](http://quick.as/5aw1ulxx).
 
+APC and XDebug
+--------------
+
+You can easily turn XDebug and APC on or off after SSHing into the Vagrant box:
+
+    xdebug enable|disable
+    apc enable|disable
+    
+To clear the APC cache, run:
+
+    apc clear
 
 Webgrind
 --------
