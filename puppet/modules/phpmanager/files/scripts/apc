@@ -14,7 +14,7 @@ class APC
     public function __construct($task)
     {
         if (!self::$files) {
-            self::$files = __DIR__.'/joomla_files';
+            self::$files = __DIR__.'/utilities';
         }
 
         $this->task = $task;
