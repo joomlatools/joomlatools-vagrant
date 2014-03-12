@@ -55,58 +55,63 @@ You can reach the box by using the command:
 Joomla Site Manager
 -------------------
 
-This is a script developed by Joomlatools to ease the management of Joomla sites from command line.
+This is a script developed by [Joomlatools](http://joomlatools.com) to ease the management of Joomla sites.
 
-To create an empty site with it, SSH into the box and then run:
+To create a site with the latest Joomla version, run:
 
-    joomla create testsite
+    joomla site:create testsite
 
 Add the following line into your /etc/hosts file on your host machine:
 
     33.33.33.58 testsite.dev
 
-Now you can reach the ```www/testsite``` folder from the domain testsite.dev
-    
-You can have the script pre-install Joomla for you. Just run ```joomla --version=3 create testsite```to setup the latest Joomla 3 version. You can ask the script to install sample data by adding the ```--sample``` flag. You can install any branch from the Git repository or any version from 2.5.0 and up using this command. See [this demo](http://quick.as/kvjjsg6g) to see how the script works.
+The newly installed site will be available at /var/www/testsite and testsite.dev after that.
 
-For more information and available options, try running:
+You can choose the Joomla version or the sample data to be installed:
 
-    joomla --help
+    joomla site:create testsite --joomla=2.5 --sample-data=blog
+
+You can install any branch from the Git repository or any version from 2.5.0 and up using this command. See [this demo](http://quick.as/kvjjsg6g) to see how the script works.
+
+For more information and available options, see [Joomlatools console repository](https://github.com/joomlatools/joomla-console) or try running:
+
+    joomla --list
 
 
 Symlink your code into a Joomla installation
 --------------------------------------------
-Let's say you are working on your custom Joomla 3.2 component called _MyComponent_ and want to continue working on it using the Vagrant box.
+Let's say you are working on your own Joomla component called _Awesome_ and want to continue working on it using the Vagrant box. You can use the _Projects_ folder in the repository root for your projects.
 
-If your source code is located at _/Users/myname/Projects/mycomponent_, we should start by making this directory available to the Vagrant box.
+But if you would like to use a custom folder we should start by making the source code available to the Vagrant box. Let's assume the source code is located at _/Users/myname/Projects/awesome_ :
 
 Copy the ```config.custom.yaml-dist``` file to ```config.custom.yaml``` and edit with your favorite text editor. Make it look like this:
 
-	synced_folders:
-	  /var/www: ./www
-	  /home/vagrant/Projects: /Users/myname/Projects
+    synced_folders:
+      /home/vagrant/Projects: /Users/myname/Projects
 
-Save this file and start the Vagrant box. (```vagrant up```)
+Save this file and restart the Vagrant box. (```vagrant reload```)
 
 The "Projects" folder from your host machine will now be available inside the Vagrant box through _/home/vagrant/Projects_.
 
 Next step is to create the new site you'll be working on. SSH into the box (```vagrant ssh```) and execute the following command: 
 
-	joomla --version=3.2 --symlink=mycomponent create testsite
+    joomla site:create testsite --joomla=3.2 --symlink=awesome
 
-The script will create a new Joomla 3 installation for you and symlink all the folders from the _mycomponent_ folder into it. Now add _testsite.dev_ to your /etc/hosts as described in the previous paragraph, so you can access the new site via _http://testsite.dev_ 
+Or to symlink your code into an existing site:
 
-Your component files are now symlinked into the _mycomponent.dev_ site. Setup the necessary database tables and you're ready to go!
+    joomla site:symlink testsite awesome
 
-You don't have to create a new site each time you want to symlink files into one of your Vagrant sites. You can use the ```symlinker``` command directly.
-SSH into the Vagrant box and run:
+This will symlink all the folders from the _awesome_ folder into _testsite.dev_.
+Please note that your source code should resemble the Joomla folder structure for symlinking to work well. For example your administrator section should reside in /Users/myname/Projects/awesome/administrator/components/com_awesome.
 
-	symlinker /home/vagrant/Projects/mydirectory /var/www/mycomponent/ 
-	
-This will link every file and folder inside _/home/vagrant/Projects/mydirectory_ into the _/var/www/mycomponent_ directory.
-For more info on the symlinker, run: 
+Now add _testsite.dev_ to your /etc/hosts as described in the previous paragraph, so you can access the new site via _http://testsite.dev_
 
-	symlinker --help
+Run discover install to make your component available to Joomla and you are good to go!
+
+For more information on the symlinker, run:
+
+	  joomla site:symlink  --help
+
 
 MySQL
 -----
