@@ -145,6 +145,17 @@ To restore the original PHP installation again, run:
 	
 For more options, run ```phpmanager --help```. To see this script in action, refer to this [screencast](http://quick.as/5aw1ulxx).
 
+APC and XDebug
+--------------
+
+You can easily turn XDebug and APC on or off after SSHing into the Vagrant box:
+
+    xdebug enable|disable
+    apc enable|disable
+    
+To clear the APC cache, run:
+
+    apc clear
 
 Webgrind
 --------
