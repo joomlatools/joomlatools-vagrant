@@ -9,15 +9,26 @@ class scripts::install {
     owner    => vagrant,
     group    => vagrant,
   }
-  
+
   exec { 'make-scripts-executable': 
-    command => 'chmod +x /home/vagrant/scripts/joomla; chmod +x /home/vagrant/scripts/symlinker; chmod +x /home/vagrant/scripts/remove_dotunderscore',
+    command => 'chmod +x /home/vagrant/scripts/remove_dotunderscore',
     require => File['/home/vagrant/scripts']
   }
 
   exec { 'add-scripts-to-path':
-    command => 'echo "export PATH=\$PATH:/home/vagrant/scripts" >> /home/vagrant/.profile',
-    unless  => 'grep ":/home/vagrant/scripts" /home/vagrant/.profile',
+    command => 'echo "export PATH=\$PATH:/home/vagrant/scripts:/home/vagrant/scripts/joomla-console/bin" >> /home/vagrant/.profile',
+    unless  => 'grep ":/home/vagrant/scripts/joomla-console/bin" /home/vagrant/.profile',
     require => Exec['make-scripts-executable']
+  }
+
+  exec { 'add-console':
+    command => 'git clone https://github.com/joomlatools/joomla-console.git /home/vagrant/scripts/joomla-console &&
+                cd /home/vagrant/scripts/joomla-console &&
+                composer install &&
+                chown -R vagrant:vagrant /home/vagrant/scripts/joomla-console &&
+                chmod +x /home/vagrant/scripts/joomla-console/bin/joomla
+    ',
+    unless  => '[ -d /home/vagrant/scripts/joomla-console ]',
+    require => File['/home/vagrant/scripts']
   }
 }
