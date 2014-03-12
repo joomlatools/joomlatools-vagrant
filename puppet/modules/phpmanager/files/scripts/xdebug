@@ -9,6 +9,8 @@ class XDebug
 {
     public $task;
 
+    protected $_ini_files = array('20-xdebug.ini', 'xdebug.ini', 'zzz_xdebug.ini');
+
     public function __construct($task)
     {
         $this->task       = $task;
@@ -50,10 +52,7 @@ class XDebug
 
     public function enable()
     {
-        $files = array(
-            '/etc/php5/conf.d/20-xdebug.ini',
-            '/etc/php5/mods-available/xdebug.ini'
-        );
+        $files = $this->_getConfigFiles($this->_ini_files);
 
         foreach($files as $file) {
             `sudo sed -i 's#^; zend_extension=#zend_extension=#' $file`;
@@ -64,15 +63,36 @@ class XDebug
 
     public function disable()
     {
-        $files = array(
-            '/etc/php5/conf.d/20-xdebug.ini',
-            '/etc/php5/mods-available/xdebug.ini'
-        );
+        $files = $this->_getConfigFiles($this->_ini_files);
 
         foreach($files as $file) {
             `sudo sed -i 's#^zend_extension=#; zend_extension=#' $file`;
         }
 
         `sudo /etc/init.d/apache2 restart`;
+    }
+
+    protected function _getConfigFiles($basenames = array())
+    {
+        $inis  = array();
+        $paths = array('/etc/php5/conf.d/', '/etc/php5/mods-available/');
+
+        $installs = glob('/opt/php/php-*/etc/conf.d', GLOB_ONLYDIR);
+        $installs = array_unique(array_filter($installs));
+
+        $paths = array_merge($paths, $installs);
+
+        foreach($paths as $path)
+        {
+            foreach($basenames as $basename)
+            {
+                $fullpath = $path . '/' . $basename;
+                if(file_exists($fullpath)) {
+                    $inis[] = $fullpath;
+                }
+            }
+        }
+
+        return $inis;
     }
 }
