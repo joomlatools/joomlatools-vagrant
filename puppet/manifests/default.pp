@@ -112,7 +112,8 @@ puphpet::ini { 'xdebug':
     'xdebug.show_local_vars = 1',
     'xdebug.profiler_enable = 0',
     'xdebug.profiler_enable_trigger = 1',
-    'xdebug.max_nesting_level = 1000'
+    'xdebug.max_nesting_level = 1000',
+    'xdebug.profiler_output_dir = /var/www/logs/xdebug/'
   ],
   ini     => '/etc/php5/conf.d/zzz_xdebug.ini',
   notify  => Service['apache'],
