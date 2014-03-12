@@ -196,6 +196,8 @@ apache::vhost { 'default':
   directory_options => 'Indexes FollowSymLinks MultiViews',
 }
 
-class { 'scripts': }
+class { 'scripts':
+  require => [Class['Composer'], Package['git-core']]
+}
 
 class { 'phpmanager': }
