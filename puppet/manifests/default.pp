@@ -17,7 +17,7 @@ apt::ppa { 'ppa:ondrej/php5-oldstable':
   require => Apt::Key['4F4EA0AAE5267A6C']
 }
 
-file { '/home/vagrant/.bash_aliases':
+file { '/home/vagrant/.bash_aliases'v:
   ensure => 'present',
   source => 'puppet:///modules/puphpet/dot/.bash_aliases',
 }
