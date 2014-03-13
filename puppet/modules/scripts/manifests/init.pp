@@ -29,6 +29,6 @@ class scripts::install {
                 chmod +x /home/vagrant/scripts/joomla-console/bin/joomla
     ',
     unless  => '[ -d /home/vagrant/scripts/joomla-console ]',
-    require => File['/home/vagrant/scripts']
+    require => [File['/home/vagrant/scripts'], Class['Composer'], Package['git-core']]
   }
 }
