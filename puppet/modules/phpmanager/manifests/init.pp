@@ -64,7 +64,7 @@ class phpmanager::install {
   }
 
   exec { 'make-phpmanager-executable':
-    command => 'chmod +x /home/vagrant/phpmanager/phpmanager;',
+    command => 'chmod +x /home/vagrant/phpmanager/phpmanager /home/vagrant/phpmanager/apc /home/vagrant/phpmanager/xdebug;',
     require => File['/home/vagrant/phpmanager']
   }
 
