@@ -47,7 +47,7 @@ class phpmanager::install {
     require => File['/home/vagrant/phpmanager']
   }
 
-  exec {"clone-php-source":
+  exec {"clone-xdebug-source":
     command => "git clone https://github.com/xdebug/xdebug.git ${phpmanager::xdebug_source_path}",
     require => File["${phpmanager::xdebug_source_path}"],
     onlyif =>  ["test ! -d ${phpmanager::xdebug_source_path}/.git"],
@@ -55,7 +55,7 @@ class phpmanager::install {
     group => vagrant
   }
 
-  exec {"clone-xdebug-source":
+  exec {"clone-php-source":
     command => "git clone git://git.php.net/php-src.git ${phpmanager::php_source_path}",
     require => File["${phpmanager::php_source_path}"],
     onlyif =>  ["test ! -d ${phpmanager::php_source_path}/.git"],
