@@ -46,23 +46,7 @@ class phpmanager::install {
     target => '/home/vagrant/phpmanager/phpmanager.complete',
     require => File['/home/vagrant/phpmanager']
   }
-
-  exec {"clone-xdebug-source":
-    command => "git clone https://github.com/xdebug/xdebug.git ${phpmanager::xdebug_source_path}",
-    require => File["${phpmanager::xdebug_source_path}"],
-    onlyif =>  ["test ! -d ${phpmanager::xdebug_source_path}/.git"],
-    user => vagrant,
-    group => vagrant
-  }
-
-  exec {"clone-php-source":
-    command => "git clone git://git.php.net/php-src.git ${phpmanager::php_source_path}",
-    require => File["${phpmanager::php_source_path}"],
-    onlyif =>  ["test ! -d ${phpmanager::php_source_path}/.git"],
-    user => vagrant,
-    group => vagrant
-  }
-
+  
   exec { 'make-phpmanager-executable':
     command => 'chmod +x /home/vagrant/phpmanager/phpmanager /home/vagrant/phpmanager/apc /home/vagrant/phpmanager/xdebug;',
     require => File['/home/vagrant/phpmanager']

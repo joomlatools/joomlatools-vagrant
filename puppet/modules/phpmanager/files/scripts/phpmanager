@@ -643,6 +643,30 @@ sub_getextensionnumber() {
     echo $EXTENSION
 }
 
+# Make sure the PHP source is available
+sub_checksource() {
+    if [[ ! -d "$SOURCE/.git" ]] ; then
+        echo -e "\033[33mCould not find PHP source!\e[0m"
+        echo "Looks like this is the first time you run this script and/or the PHP source is missing."
+        echo "Please wait while we clone the PHP Git repo. Depending on your internet connection this could take a while .. "
+
+        git clone "git://git.php.net/php-src.git" "$SOURCE"
+
+        echo "Done!"
+        echo ""
+    fi
+
+    if [[ ! -d "$SOURCE_XDEBUG/.git" ]] ; then
+        echo -e "\033[33mCould not find Xdebug source!\e[0m"
+        echo "Please wait while we clone the Xdebug source. Depending on your internet connection this could take a while .. "
+
+        git clone "https://github.com/xdebug/xdebug.git" "$SOURCE_XDEBUG"
+
+        echo "Done!"
+        echo ""
+    fi
+}
+
 # Check if a value exists in an array
 in_array() {
     local needle=$1
@@ -660,6 +684,8 @@ case $SUBCOMMAND in
         usage
         ;;
     *)
+        sub_checksource
+
         shift
         command_${SUBCOMMAND} $@
         if [ $? -eq 127 ]; then
