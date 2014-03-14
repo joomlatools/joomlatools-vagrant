@@ -99,7 +99,7 @@ Next step is to create the new site you'll be working on. SSH into the box (```v
 
 Or to symlink your code into an existing site:
 
-    joomla site:symlink testsite awesome
+    joomla extension:symlink testsite awesome
 
 This will symlink all the folders from the _awesome_ folder into _testsite.dev_.
 Please note that your source code should resemble the Joomla folder structure for symlinking to work well. For example your administrator section should reside in /Users/myname/Projects/awesome/administrator/components/com_awesome.
@@ -110,7 +110,7 @@ Run discover install to make your component available to Joomla and you are good
 
 For more information on the symlinker, run:
 
-	  joomla site:symlink  --help
+	  joomla extension:symlink  --help
 
 
 MySQL
