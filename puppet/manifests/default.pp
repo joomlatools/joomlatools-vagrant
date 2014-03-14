@@ -162,11 +162,12 @@ class { 'phpmyadmin':
 }
 
 apache::vhost { 'phpmyadmin':
-  server_name => 'phpmyadmin',
-  docroot     => '/usr/share/phpmyadmin',
-  port        => 80,
-  priority    => '10',
-  require     => Class['phpmyadmin'],
+  server_name   => 'phpmyadmin',
+  serveraliases => 'phpmyadmin.joomla.dev',
+  docroot       => '/usr/share/phpmyadmin',
+  port          => 80,
+  priority      => '10',
+  require       => Class['phpmyadmin'],
 }
 
 class { 'mailcatcher': }
@@ -180,11 +181,12 @@ class { 'webgrind':
 }
 
 apache::vhost { 'webgrind':
-  server_name => 'webgrind',
-  docroot     => '/usr/share/webgrind',
-  port        => 80,
-  priority    => '10',
-  require     => Class['webgrind'],
+  server_name   => 'webgrind',
+  serveraliases => 'webgrind.joomla.dev',
+  docroot       => '/usr/share/webgrind',
+  port          => 80,
+  priority      => '10',
+  require       => Class['webgrind'],
 }
 
 apache::vhost { 'default':

@@ -33,7 +33,7 @@ Go to the repository folder and create the box
 
 Add the following line into your ***hosts file*** (in linux /etc/hosts, for other operating systems see: http://en.wikipedia.org/wiki/Hosts_(file)#Location_in_the_file_system)
 
-    33.33.33.58 webgrind phpmyadmin
+    33.33.33.58 joomla.dev webgrind.joomla.dev phpmyadmin.joomla.dev
 
 There will be two folders created in that folder called www and projects.
 
@@ -43,6 +43,10 @@ Apache
 Apache serves files from the www/ folder using the IP:
 
     http://33.33.33.58/
+
+If you have setup your hosts file correctly as shown above, you can now also access the default www/ folder at:
+
+	http://joomla.dev
 
 It is advised to use virtual hosts for development. See below for our virtual host manager.
 
@@ -60,11 +64,7 @@ To create a site with the latest Joomla version, run:
 
     joomla site:create testsite
 
-Add the following line into your /etc/hosts file on your host machine:
-
-    33.33.33.58 testsite.dev
-
-The newly installed site will be available at /var/www/testsite and testsite.dev after that.
+The newly installed site will be available in the /testsite subfolder at http://joomla.dev/testsite after that. The files are located at /var/www/testsite.
 
 You can choose the Joomla version or the sample data to be installed:
 
@@ -76,6 +76,11 @@ For more information and available options, see [Joomlatools console repository]
 
     joomla --list
 
+Note: The script also creates a new virtual host. If you add the following line into your /etc/hosts file on your host machine:
+
+    33.33.33.58 testsite.dev
+
+you will now be able to go to http://testsite.dev to view your newly created site instead of http://joomla.dev/testsite.
 
 Symlink your code into a Joomla installation
 --------------------------------------------
@@ -117,7 +122,7 @@ MySQL
 
 After you modify /etc/hosts as shown above you can use phpMyAdmin at
 
-    http://phpmyadmin
+    http://phpmyadmin.joomla.dev
 
 You can also connect using any MySQL client with these details:
 
@@ -168,7 +173,7 @@ Webgrind
 
 After you modify /etc/hosts as shown above go to
 
-    http://webgrind
+    http://webgrind.joomla.dev
 
 SFTP
 ----
