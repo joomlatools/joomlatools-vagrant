@@ -55,8 +55,7 @@ You can reach the box by using the command:
 Joomla Site Manager
 -------------------
 
-This is a script developed by [Joomlatools](http://joomlatools.com) to ease the management of Joomla sites.
-
+The Vagrant box has our [Joomla Console](https://github.com/joomlatools/joomla-console) script pre-installed.
 To create a site with the latest Joomla version, run:
 
     joomla site:create testsite
