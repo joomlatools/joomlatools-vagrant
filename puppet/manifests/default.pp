@@ -195,6 +195,7 @@ apache::vhost { 'default':
   directory    => '/var/www',
   directory_allow_override   => 'All',
   directory_options => 'Indexes FollowSymLinks MultiViews',
+  template     => 'apache/virtualhost/joomlatools.vhost.conf.erb',
 }
 
 class { 'scripts': }

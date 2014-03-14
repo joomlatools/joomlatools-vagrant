@@ -161,6 +161,8 @@ You can easily turn XDebug and APC on or off after SSHing into the Vagrant box:
 To clear the APC cache, run:
 
     apc clear
+    
+You can always access the APC dashboard through the /apc folder. (```http://33.33.33.58/apc```)
 
 Webgrind
 --------
