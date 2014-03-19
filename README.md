@@ -23,7 +23,7 @@ Install [VirtualBox](http://www.virtualbox.org/)
 
 Install [Vagrant](http://downloads.vagrantup.com/)
 
-If you have Vagrant 1.5+ run the following commands in a folder of your choice:
+Run the following commands in a folder of your choice:
 
     $ vagrant init joomlatools/box
     $ vagrant up
