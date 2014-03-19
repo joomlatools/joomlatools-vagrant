@@ -1,18 +1,19 @@
 Joomlatools Vagrant box
 =======================
 
+This project automates the setup of a Joomla development environment. 
+
+It is capable of running a full featured LAMP stack with a single command so that you can start working on your Joomla projects quickly.
+
 The setup includes:
 -------------------
-* Ubuntu 12.10 (Precise) 64 bit
-* Apache
-* MySQL
-* PHP 5.4 
-* Composer
+* LAMP (Ubuntu 12.10, Apache, MySQL 5.5, PHP 5.4)
 * Phpmyadmin
+* Composer
 * Xdebug
 * Webgrind
 * Mailcatcher
-* Less compiler
+* Less and SASS compilers
 * UglifyJS
 
 Installation
@@ -22,20 +23,35 @@ Install [VirtualBox](http://www.virtualbox.org/)
 
 Install [Vagrant](http://downloads.vagrantup.com/)
 
+If you have Vagrant 1.5+ run the following commands in a folder of your choice:
+
+    $ vagrant init joomlatools/box
+    $ vagrant up
+    
+This will download the Vagrant box and get it running. 
+
+Note that this requires a 700 MB download for the first run and Vagrant version 1.5 or later. If you want to perform an offline installation or on an older Vagrant version, [download the box here](https://vagrantcloud.com/joomlatools/box/version/1/provider/virtualbox.box) and run the following commands instead:
+
+    $ vagrant init joomlatools/box /path/to/download/joomlatools-box-1.2.box
+    $ vagrant up
+        
+Add the following line into your ***hosts file*** (/etc/hosts on Linux and MacOS, for other operating systems see [here](http://en.wikipedia.org/wiki/Hosts_(file)#Location_in_the_file_system))
+
+    33.33.33.58 joomla.dev webgrind.joomla.dev phpmyadmin.joomla.dev
+
+And you are done. There will be two new folders created called www and Projects.
+
+For hacking on the box
+----------------------
+
 Clone this repository
 
     $ git clone https://github.com/joomlatools/joomla-vagrant.git
 
-Go to the repository folder and create the box
+Go to the repository folder and provision the box
 
     $ cd joomla-vagrant
     $ vagrant up
-
-Add the following line into your ***hosts file*** (in linux /etc/hosts, for other operating systems see: http://en.wikipedia.org/wiki/Hosts_(file)#Location_in_the_file_system)
-
-    33.33.33.58 joomla.dev webgrind.joomla.dev phpmyadmin.joomla.dev
-
-There will be two folders created in that folder called www and projects.
 
 Apache
 ------
@@ -46,7 +62,7 @@ Apache serves files from the www/ folder using the IP:
 
 If you have setup your hosts file correctly as shown above, you can now also access the default www/ folder at:
 
-	http://joomla.dev
+    http://joomla.dev/
 
 It is advised to use virtual hosts for development. See below for our virtual host manager.
 
@@ -54,7 +70,7 @@ SSH
 ---
 You can reach the box by using the command:
 
-	$ vagrant ssh
+    $ vagrant ssh
 
 Joomla Site Manager
 -------------------
@@ -114,7 +130,7 @@ Run discover install to make your component available to Joomla and you are good
 
 For more information on the symlinker, run:
 
-	  joomla extension:symlink  --help
+      joomla extension:symlink  --help
 
 
 MySQL
@@ -142,16 +158,16 @@ To get a list of available PHP versions, SSH into the box and run:
     
 To install one of the available versions, for example 5.2.16, execute:
 
-	phpmanager use 5.2.16
-	
+    phpmanager use 5.2.16
+    
 The script will check if this version has been installed and if not, will attempt to build it. Please note that building PHP might take a while. Depending on your system, this could take between 5 and 45 minutes.
 
 If you want to test your code against the latest and greatest of PHP, you can call ```phpmanager use master```. Each time you build the master branch the script will pull in the latest changes from the PHP Git repository.
 
 To restore the original PHP installation again, run:
 
-	phpmanager restore
-	
+    phpmanager restore
+    
 For more options, run ```phpmanager --help```. To see this script in action, refer to this [screencast](http://quick.as/5aw1ulxx).
 
 APC and XDebug
