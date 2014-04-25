@@ -200,6 +200,12 @@ apache::vhost { 'default':
   template     => 'apache/virtualhost/joomlatools.vhost.conf.erb',
 }
 
+exec { 'set-env-for-debugging':
+  command => "echo \"\nSetEnv JOOMLATOOLS_BOX 1\" >> /etc/apache2/apache2.conf",
+  unless  => "grep JOOMLATOOLS_BOX /etc/apache2/apache2.conf",
+  notify  => Service['apache']
+}
+
 class { 'scripts': }
 
 class { 'phpmanager': }
