@@ -81,6 +81,7 @@ To create a site with the latest Joomla version, run:
     joomla site:create testsite
 
 The newly installed site will be available in the /testsite subfolder at http://joomla.dev/testsite after that. The files are located at /var/www/testsite.
+You can login into your fresh Joomla installation using these credentials: `admin` / `admin`.
 
 You can choose the Joomla version or the sample data to be installed:
 
