@@ -83,21 +83,13 @@ To create a site with the latest Joomla version, run:
 The newly installed site will be available in the /testsite subfolder at http://joomla.dev/testsite after that. The files are located at /var/www/testsite.
 You can login into your fresh Joomla installation using these credentials: `admin` / `admin`.
 
-You can choose the Joomla version or the sample data to be installed:
+For more information, please refer to the [Joomla Console](https://github.com/joomlatools/joomla-console) repository.
 
-    joomla site:create testsite --joomla=2.5 --sample-data=blog
-
-You can install any branch from the Git repository or any version from 2.5.0 and up using this command. See [this demo](http://quick.as/kvjjsg6g) to see how the script works.
-
-For more information and available options, see [Joomlatools console repository](https://github.com/joomlatools/joomla-console) or try running:
-
-    joomla --list
-
-Note: The script also creates a new virtual host. If you add the following line into your /etc/hosts file on your host machine:
+*Note*: The script also creates a new virtual host when creating a new site. If you add the following line into your /etc/hosts file on your host machine:
 
     33.33.33.58 testsite.dev
 
-you will now be able to go to http://testsite.dev to view your newly created site instead of http://joomla.dev/testsite.
+you can access it directly at http://testsite.dev.
 
 Symlink your code into a Joomla installation
 --------------------------------------------
@@ -122,14 +114,9 @@ Or to symlink your code into an existing site:
 
     joomla extension:symlink testsite awesome
 
-This will symlink all the folders from the _awesome_ folder into _testsite.dev_.
-Please note that your source code should resemble the Joomla folder structure for symlinking to work well. For example your administrator section should reside in /Users/myname/Projects/awesome/administrator/components/com_awesome.
-
-Now add _testsite.dev_ to your /etc/hosts as described in the previous paragraph, so you can access the new site via _http://testsite.dev_
-
 Run discover install to make your component available to Joomla and you are good to go!
 
-For more information on the symlinker, run:
+For more information on the symlinker, refer to the [Joomla Console README](https://github.com/joomlatools/joomla-console) or run:
 
       joomla extension:symlink  --help
 
