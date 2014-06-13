@@ -104,6 +104,7 @@ class { 'composer':
 puphpet::ini { 'xdebug':
   value   => [
     'xdebug.remote_autostart = 0',
+    ';Use remote_connect_back = 0 if accessing a shared box',
     'xdebug.remote_connect_back = 1',
     'xdebug.remote_enable = 1',
     'xdebug.remote_handler = "dbgp"',
