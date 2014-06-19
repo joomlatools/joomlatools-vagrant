@@ -1,5 +1,6 @@
 /Projects/*
 .vagrant/*
 www/*
+!www/logs/tail
 !www/index.php
 config.custom.yaml
