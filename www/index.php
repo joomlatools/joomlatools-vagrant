@@ -26,6 +26,13 @@
 		?>
 		<p>To install new sites check the instructions at <a href="https://github.com/joomlatools/joomla-console#create-sites">https://github.com/joomlatools/joomla-console#create-sites</a></p>
 		<h2>Tools:</h2>
-		<a href="http://phpmyadmin.joomla.dev/">PHPmyAdmin</a>
+        <ul>
+            <li><a href="/phpinfo">phpinfo()</a></li>
+            <?php if (function_exists('apc_cache_info') && @apc_cache_info('opcode')): ?>
+                <li><a href="/apc">APC dashboard</a></li>
+            <?php endif; ?>
+		    <li><a href="http://phpmyadmin.joomla.dev/">PHPmyAdmin</a></li>
+            <li><a href="/logs/tail/Log.php">Log files</a></li>
+        </ul>
 	</body>
 </html>
