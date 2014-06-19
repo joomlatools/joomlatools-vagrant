@@ -4,20 +4,30 @@
 		<p>This is the default web page for this server.</p>
 		<h2>Installed sites:</h2>
 		<?php
-		$dir = new DirectoryIterator('.');
+        define('_JEXEC', true);
+
+		$dir = new DirectoryIterator('/var/www');
 		foreach ($dir as $fileinfo)
 		{
 			if ($fileinfo->isDir() && !$fileinfo->isDot())
 			{
-				$subfolders = scandir($fileinfo);
+                $code = $fileinfo->getPathname() . '/libraries/cms/version/version.php';
 
-				// Checks if is a joomla site (avoids to show folders like /logs/ )
-				if (in_array("administrator", $subfolders))
+				if (file_exists($code))
 				{
+                    $identifier = uniqid();
+
+                    $source = str_replace('<?php', '', file_get_contents($code));
+                    $source = preg_replace('/class JVersion/i', 'class JVersion' . $identifier, $source);
+
+                    eval($source);
+
+                    $class   = 'JVersion'.$identifier;
+                    $version = new $class();
 					?>
-					<a href="<?php echo $fileinfo->getFilename() ?>">
+					<a href="/<?php echo $fileinfo->getFilename() ?>">
 						<?php echo $fileinfo->getFilename() ?>
-					</a> (<a href="<?php echo $fileinfo->getFilename() . '/administrator/'; ?>">administrator</a>)
+					</a> (<a href="<?php echo $fileinfo->getFilename() . '/administrator/'; ?>">administrator</a>) - version <?php echo $version->RELEASE.'.'.$version->DEV_LEVEL; ?>
 					<br>
 				<?php
 				}
