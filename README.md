@@ -170,7 +170,7 @@ To clear the APC cache, run:
 
     apc clear
     
-You can always access the APC dashboard through the /apc folder. (```http://33.33.33.58/apc```)
+You can always access the APC dashboard through the /apc folder. (```http://joomla.dev/apc```)
 
 Webgrind
 --------
