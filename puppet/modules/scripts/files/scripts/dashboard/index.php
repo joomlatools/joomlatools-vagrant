@@ -5,6 +5,7 @@
 		<h2>Installed sites:</h2>
 		<?php
         define('_JEXEC', true);
+        define('JPATH_PLATFORM', true);
 
 		$dir = new DirectoryIterator('/var/www');
 		foreach ($dir as $fileinfo)
@@ -13,11 +14,12 @@
 			{
                 $code = $fileinfo->getPathname() . '/libraries/cms/version/version.php';
 
-				if (file_exists($code))
+                if (file_exists($code))
 				{
                     $identifier = uniqid();
 
-                    $source = str_replace('<?php', '', file_get_contents($code));
+                    $source = file_get_contents($code);
+                    $source = preg_replace('/<\?php/', '', $source, 1);
                     $source = preg_replace('/class JVersion/i', 'class JVersion' . $identifier, $source);
 
                     eval($source);
@@ -34,7 +36,7 @@
 			}
 		}
 		?>
-		<p>To install new sites check the instructions at <a href="https://github.com/joomlatools/joomla-console#create-sites">https://github.com/joomlatools/joomla-console#create-sites</a></p>
+		<p>To install new sites, check out the documentation at <a href="https://github.com/joomlatools/joomla-console#create-sites">the joomla-console repository</a>.</p>
 		<h2>Tools:</h2>
         <ul>
             <li><a href="/phpinfo">phpinfo()</a></li>
