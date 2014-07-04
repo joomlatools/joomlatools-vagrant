@@ -27,6 +27,12 @@
     Alias /apc /home/vagrant/scripts/apc.php
     Alias /phpinfo /home/vagrant/scripts/phpinfo.php
 
+    Alias /dashboard /home/vagrant/scripts/dashboard
+
+    RewriteEngine on
+    RewriteCond %{REQUEST_URI} ^/$
+    RewriteRule (.*) /dashboard/ [R=301]
+
 <% if @bool_passenger -%>
     PassengerHighPerformance <%= @bool_passenger_high_performance ? "On" : "Off" %>
     PassengerMaxPoolSize <%= @passenger_max_pool_size %>
