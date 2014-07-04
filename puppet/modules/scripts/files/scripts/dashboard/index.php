@@ -44,7 +44,6 @@
                 <li><a href="/apc">APC dashboard</a></li>
             <?php endif; ?>
 		    <li><a href="http://phpmyadmin.joomla.dev/">PHPmyAdmin</a></li>
-            <li><a href="/logs/tail/Log.php">Log files</a></li>
         </ul>
 	</body>
 </html>
