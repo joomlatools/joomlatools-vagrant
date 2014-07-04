@@ -204,7 +204,8 @@ apache::vhost { 'default':
 exec { 'set-env-for-debugging':
   command => "echo \"\nSetEnv JOOMLATOOLS_BOX 1\" >> /etc/apache2/apache2.conf",
   unless  => "grep JOOMLATOOLS_BOX /etc/apache2/apache2.conf",
-  notify  => Service['apache']
+  notify  => Service['apache'],
+  require => Apache::Vhost['default']
 }
 
 class { 'scripts': }
