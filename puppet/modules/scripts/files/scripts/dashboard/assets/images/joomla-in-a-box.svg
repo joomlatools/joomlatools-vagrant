@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="130px" height="139px" viewBox="0 0 130 139" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+    <!-- Generator: Sketch 3.0.3 (7891) - http://www.bohemiancoding.com/sketch -->
+    <title>box</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+        <g id="Group-8" sketch:type="MSLayerGroup">
+            <path d="M0,29 L64,58 L64,0 L0,29 Z" id="Rectangle-4" fill="#7AC043" sketch:type="MSShapeGroup"></path>
+            <path d="M0,58 L0,139 L64,110 L64,29 L0,58 Z" id="Rectangle-2" fill="#4F91CD" sketch:type="MSShapeGroup" transform="translate(32.000000, 84.000000) scale(-1, 1) translate(-32.000000, -84.000000) "></path>
+            <path d="M66,29 L130,58 L130,0 L66,29 Z" id="Rectangle-3" fill="#FAAE40" sketch:type="MSShapeGroup" transform="translate(98.000000, 29.000000) scale(-1, 1) translate(-98.000000, -29.000000) "></path>
+            <path d="M66,58 L66,139 L130,110 L130,29 L66,58 Z" id="Rectangle-1" fill="#EE4035" sketch:type="MSShapeGroup"></path>
+        </g>
+    </g>
+</svg>
