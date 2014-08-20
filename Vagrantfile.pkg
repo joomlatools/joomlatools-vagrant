@@ -1,4 +1,5 @@
 require "yaml"
+require "json"
 
 # Initialize config
 def deep_merge!(target, data)
@@ -9,7 +10,7 @@ end
 
 _config = {
     "synced_folders" => {
-        "/var/www" => "./www",
+        "/var/www" => File.join(Dir.pwd, "www"),
         "/home/vagrant/Projects" => "./Projects"
     },
     "nfs" => !!(RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/)
@@ -34,5 +35,12 @@ Vagrant.configure("2") do |config|
         config.vm.synced_folder source, target, :nfs => CONF['nfs'], :create => true
       end
     }
+
+    # Store the shared paths as an environment variable on the box
+    json = CONF['synced_folders'].to_json.gsub(/"/, '\\\\\\\\\"')
+    paths = 'SetEnv BOX_SHARED_PATHS \"' + json + '\"'
+    shell_cmd = 'echo "' + paths + '" > /etc/apache2/conf.d/shared_paths'
+    
+    config.vm.provision :shell, :inline => shell_cmd, :run => "always"
   end
 end
