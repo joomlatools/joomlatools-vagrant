@@ -10,6 +10,7 @@ To view the diff between two versions, go to https://github.com/joomlatools/joom
 * 1.2.2 (2014-08-21)
  * Added - Share the path mappings with guest box through BOX_SHARED_PATHS environment variable.
  * Added - Install PECL yaml by default.
+ * Fixed - Fixed broken mysql-5.1.73 download link.
 
 * 1.2.1 (2014-07-04)
  * Added - Created a basic dashboard in the root path
