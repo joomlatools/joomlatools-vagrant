@@ -70,6 +70,11 @@ class { 'php::pear':
   require => Class['php'],
 }
 
+php::pear::config {
+  download_dir: value => "/tmp/pear/download",
+  require => Class['php::pear']
+}
+
 php::pear::module { 'Console_CommandLine':
   use_package => false
 }
@@ -77,6 +82,25 @@ php::pear::module { 'Console_CommandLine':
 php::pear::module { 'Phing':
   use_package => false,
   repository  => 'pear.phing.info'
+}
+
+package { 'libyaml-dev':
+  ensure => present,
+}
+
+php::pecl::module { 'yaml':
+  use_package => no,
+  ensure => present,
+  require => [php::pear::config['download_dir'], Package['libyaml-dev']]
+}
+
+puphpet::ini { 'yaml':
+  value   => [
+    'extension=yaml.so'
+  ],
+  ini     => '/etc/php5/conf.d/zzz_yaml.ini',
+  notify  => Service['apache'],
+  require => [Class['php'], php::pecl::module['yaml']]
 }
 
 php::pecl::module { 'xhprof':
