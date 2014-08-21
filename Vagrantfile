@@ -11,7 +11,7 @@ end
 _config = {
     "synced_folders" => {
         "/var/www" => File.join(Dir.pwd, "www"),
-        "/home/vagrant/Projects" => "./Projects"
+        "/home/vagrant/Projects" => File.join(Dir.pwd, "Projects")
     },
     "nfs" => !!(RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/)
 }
@@ -47,7 +47,12 @@ Vagrant.configure("2") do |config|
     }
 
     # Store the shared paths as an environment variable on the box
-    json = CONF['synced_folders'].to_json.gsub(/"/, '\\\\\\\\\"')
+    pwd = Dir.pwd
+    pwd << '/' unless pwd.end_with?('/')
+
+    mapping = Hash[ CONF['synced_folders'].each_pair.map { |key, value| [key, value.gsub(/^\.\//, pwd)] }]
+
+    json = mapping.to_json.gsub(/"/, '\\\\\\\\\"')
     paths = 'SetEnv BOX_SHARED_PATHS \"' + json + '\"'
     shell_cmd = '[ -d /etc/apache2/conf.d ] && { echo "' + paths + '" > /etc/apache2/conf.d/shared_paths && service apache2 restart; } || echo "Apache2 is not installed yet"'
 
