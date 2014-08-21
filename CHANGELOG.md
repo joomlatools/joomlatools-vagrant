@@ -7,6 +7,10 @@ in 1.x versions.
 To get the diff for a specific change, go to https://github.com/joomlatools/joomla-vagrant/commit/xxx where xxx is the change hash.
 To view the diff between two versions, go to https://github.com/joomlatools/joomla-vagrant/compare/v1.0.0...v1.0.1
 
+* 1.2.2 (2014-08-21)
+ * Added - Share the path mappings with guest box through BOX_SHARED_PATHS environment variable.
+ * Added - Install PECL yaml by default.
+
 * 1.2.1 (2014-07-04)
  * Added - Created a basic dashboard in the root path
  * Fixed - Disable APC dashboard authentication
