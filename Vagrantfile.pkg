@@ -18,7 +18,7 @@ _config = {
 
 # Local-specific/not-git-managed config -- config.custom.yaml
 begin
-  deep_merge!(_config, YAML.load(File.open(File.join(File.dirname(__FILE__), "config.custom.yaml"), File::RDONLY).read))
+  deep_merge!(_config, YAML.load(File.open(File.join(Dir.pwd, "config.custom.yaml"), File::RDONLY).read))
 rescue Errno::ENOENT
   # No config.custom.yaml found -- that's OK; just use the defaults.
 end
