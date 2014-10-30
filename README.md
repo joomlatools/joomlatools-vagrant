@@ -21,7 +21,7 @@ Installation
 
 Install [VirtualBox](http://www.virtualbox.org/)
 
-Install [Vagrant](http://downloads.vagrantup.com/)
+Install [Vagrant](http://www.vagrantup.com/)
 
 Run the following commands in a folder of your choice:
 
