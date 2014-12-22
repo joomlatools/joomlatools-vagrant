@@ -21,7 +21,7 @@ Installation
 
 Install [VirtualBox](http://www.virtualbox.org/)
 
-Install [Vagrant](http://downloads.vagrantup.com/)
+Install [Vagrant](http://www.vagrantup.com/)
 
 Run the following commands in a folder of your choice:
 
@@ -30,7 +30,7 @@ Run the following commands in a folder of your choice:
     
 This will download the Vagrant box and get it running. 
 
-Note that this requires a 700 MB download for the first run and Vagrant version 1.5 or later. If you want to perform an offline installation or on an older Vagrant version, [download the box here](https://vagrantcloud.com/joomlatools/box/version/1/provider/virtualbox.box) and run the following commands instead:
+Note that this requires a 700 MB download for the first run and Vagrant version 1.5 or later. If you want to perform an offline installation or on an older Vagrant version, [download the box here](https://vagrantcloud.com/joomlatools/box/version/3/provider/virtualbox.box) and run the following commands instead:
 
     $ vagrant init joomlatools/box /path/to/download/joomlatools-box-1.2.box
     $ vagrant up
@@ -170,7 +170,7 @@ To clear the APC cache, run:
 
     apc clear
     
-You can always access the APC dashboard through the /apc folder. (```http://33.33.33.58/apc```)
+You can always access the APC dashboard through the /apc folder. (```http://joomla.dev/apc```)
 
 Webgrind
 --------
@@ -188,7 +188,4 @@ Use following details to connect:
     Port: 2222
     User: vagrant
     Password: vagrant
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/joomlatools/joomla-vagrant/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 

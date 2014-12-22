@@ -29,7 +29,7 @@
 					?>
 					<a href="/<?php echo $fileinfo->getFilename() ?>">
 						<?php echo $fileinfo->getFilename() ?>
-					</a> (<a href="<?php echo $fileinfo->getFilename() . '/administrator/'; ?>">administrator</a>) - version <?php echo $version->RELEASE.'.'.$version->DEV_LEVEL; ?>
+					</a> (<a href="/<?php echo $fileinfo->getFilename() . '/administrator/'; ?>">administrator</a>) - version <?php echo $version->RELEASE.'.'.$version->DEV_LEVEL; ?>
 					<br>
 				<?php
 				}

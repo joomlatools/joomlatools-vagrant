@@ -70,6 +70,11 @@ class { 'php::pear':
   require => Class['php'],
 }
 
+php::pear::config {
+  download_dir: value => "/tmp/pear/download",
+  require => Class['php::pear']
+}
+
 php::pear::module { 'Console_CommandLine':
   use_package => false
 }
@@ -79,19 +84,24 @@ php::pear::module { 'Phing':
   repository  => 'pear.phing.info'
 }
 
-php::pecl::module { 'xhprof':
-  use_package     => false,
-  preferred_state => 'beta',
+package { 'libyaml-dev':
+  ensure => present,
 }
 
-apache::vhost { 'xhprof':
-  server_name => 'xhprof',
-  docroot     => '/var/www/xhprof/xhprof_html',
-  port        => 80,
-  priority    => '1',
-  require     => Php::Pecl::Module['xhprof']
+php::pecl::module { 'yaml':
+  use_package => no,
+  ensure => present,
+  require => [php::pear::config['download_dir'], Package['libyaml-dev']]
 }
 
+puphpet::ini { 'yaml':
+  value   => [
+    'extension=yaml.so'
+  ],
+  ini     => '/etc/php5/conf.d/zzz_yaml.ini',
+  notify  => Service['apache'],
+  require => [Class['php'], php::pecl::module['yaml']]
+}
 
 class { 'xdebug':
   service => 'apache',
@@ -104,6 +114,7 @@ class { 'composer':
 puphpet::ini { 'xdebug':
   value   => [
     'xdebug.remote_autostart = 0',
+    ';Use remote_connect_back = 0 if accessing a shared box',
     'xdebug.remote_connect_back = 1',
     'xdebug.remote_enable = 1',
     'xdebug.remote_handler = "dbgp"',
@@ -203,7 +214,8 @@ apache::vhost { 'default':
 exec { 'set-env-for-debugging':
   command => "echo \"\nSetEnv JOOMLATOOLS_BOX 1\" >> /etc/apache2/apache2.conf",
   unless  => "grep JOOMLATOOLS_BOX /etc/apache2/apache2.conf",
-  notify  => Service['apache']
+  notify  => Service['apache'],
+  require => Apache::Vhost['default']
 }
 
 class { 'scripts': }
