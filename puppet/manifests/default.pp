@@ -103,20 +103,6 @@ puphpet::ini { 'yaml':
   require => [Class['php'], php::pecl::module['yaml']]
 }
 
-php::pecl::module { 'xhprof':
-  use_package     => false,
-  preferred_state => 'beta',
-}
-
-apache::vhost { 'xhprof':
-  server_name => 'xhprof',
-  docroot     => '/var/www/xhprof/xhprof_html',
-  port        => 80,
-  priority    => '1',
-  require     => Php::Pecl::Module['xhprof']
-}
-
-
 class { 'xdebug':
   service => 'apache',
 }
