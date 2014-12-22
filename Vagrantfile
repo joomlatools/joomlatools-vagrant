@@ -50,7 +50,7 @@ Vagrant.configure("2") do |config|
     pwd = Dir.pwd
     pwd << '/' unless pwd.end_with?('/')
 
-    mapping = Hash[ CONF['synced_folders'].each_pair.map { |key, value| [key, value.gsub(/^\.\//, pwd)] }]
+    mapping = Hash[ CONF['synced_folders'].keep_if { |key, value| value.is_a? String }.each_pair.map { |key, value| [key, value.gsub(/^\.\//, pwd)] }]
 
     json = mapping.to_json.gsub(/"/, '\\\\\\\\\"')
     paths = 'SetEnv BOX_SHARED_PATHS \"' + json + '\"'
