@@ -37,13 +37,37 @@ package { ['sass', 'compass']:
   provider => 'gem',
 }
 
-class { 'apache': }
+class  {'openssl':
+  require => Package['openssl'],
+}
+
+class apache::certificate {
+  file { '/etc/apache2/ssl':
+    ensure => 'directory',
+  }
+
+  openssl::certificate::x509 { 'server':
+    country      => 'BE',
+    organization => 'Joomlatools',
+    commonname   => 'localhost.ssl',
+    email        => 'info@joomlatools.com',
+    days         => 3650,
+    base_dir     => '/etc/apache2/ssl',
+  }
+}
+
+include apache::certificate
+
+class { 'apache':
+  require => Class['apache::certificate'],
+}
 
 apache::dotconf { 'custom':
-  content => 'EnableSendfile Off',
+  content => template("apache/custom.conf.erb"),
 }
 
 apache::module { 'rewrite': }
+apache::module { 'ssl': }
 
 class { 'php':
   service       => 'apache',
