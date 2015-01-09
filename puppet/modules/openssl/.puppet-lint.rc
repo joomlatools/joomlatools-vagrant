@@ -1,0 +1,5 @@
+--fail-on-warnings
+--relative
+--no-80chars
+--no-documentation
+--no-class_inherits_from_params_class-check

@@ -1,0 +1,50 @@
+{
+  "name": "camptocamp-openssl",
+  "version": "1.2.4",
+  "author": "Camptocamp",
+  "summary": "Camptocamp OpenSSL Module",
+  "license": "Apache-2.0",
+  "source": "https://github.com/camptocamp/puppet-openssl",
+  "project_page": "https://github.com/camptocamp/puppet-openssl",
+  "issues_url": "https://github.com/camptocamp/puppet-openssl/issues",
+  "description": "OpenSSL Module for Puppet",
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 2.0.0 < 5.0.0"
+    }
+  ],
+  "requirements": [
+    {
+      "name": "pe",
+      "version_requirement": "3.x"
+    },
+    {
+      "name": "puppet",
+      "version_requirement": "3.x"
+    }
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "12.04",
+        "14.04"
+      ]
+    },
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "5",
+        "6"
+      ]
+    }
+  ]
+}
