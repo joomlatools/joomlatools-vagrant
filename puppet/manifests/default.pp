@@ -56,11 +56,11 @@ class apache::certificate {
   }
 }
 
-include apache::certificate
-
-class { 'apache':
-  require => Class['apache::certificate'],
+class { 'apache::certificate':
+    require => Class['apache'],
 }
+
+class { 'apache': }
 
 apache::dotconf { 'custom':
   content => template("apache/custom.conf.erb"),
