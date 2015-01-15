@@ -94,8 +94,7 @@ foreach ($dir as $fileinfo)
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-<p>To install new sites, check out the documentation on <a href="https://github.com/joomlatools/joomla-console#create-sites">Github</a>.</p>
-          <!--<h2 class="sub-header">Websites on this box:</h2>-->
+        <p>To install new sites, check out the documentation on <a href="https://github.com/joomlatools/joomla-console#create-sites">Github</a>.</p>
           <div class="table-responsive">
             <table class="table table-striped">
               <thead>
@@ -117,34 +116,28 @@ foreach ($dir as $fileinfo)
                     <small>(v<?php echo $info->version; ?>)</small>
                   </td> 
                   <td>
+
+                    <div class="btn-group">
                       <a href="/<?php echo $site . '/administrator/'; ?>" class="btn btn-primary btn-sm">Administer</a>
+                      <!--
+                      <button type="button" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown">
+                        <span class="caret"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                      </button>
+                      <ul class="dropdown-menu" role="menu">
+                        <li><a href="/<?php echo $site . '/administrator/'; ?>">Administrate</a></li>
+                        <li><a href="#">Duplicate</a></li>
+                        <li class="divider"></li>
+                        <li class="delete"><a href="#" class="list-group-item-danger">Delete</a></li>
+                      </ul>
+                      -->
+                    </div>
                   </td>
                 </tr>
               <?php
                 $i++;
                 endforeach;
               ?>
-              <!--
-                <tr>
-                  <td>3</td>
-                  <td><a href="#" target="_blank">Site Three</a></td>
-                  <td>
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-primary btn-sm">Administer</button>
-                      <button type="button" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown">
-                        <span class="caret"></span>
-                        <span class="sr-only">Toggle Dropdown</span>
-                      </button>
-                      <ul class="dropdown-menu" role="menu">
-                        <li><a href="#">Administrate</a></li>
-                        <li><a href="#">Duplicate</a></li>
-                        <li class="divider"></li>
-                        <li class="delete"><a href="#" class="list-group-item-danger">Delete</a></li>
-                      </ul>
-                    </div>
-                  </td>
-                </tr>
-              -->
               </tbody>
             </table>
           </div>
