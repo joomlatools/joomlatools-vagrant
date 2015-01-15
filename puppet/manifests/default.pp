@@ -181,7 +181,15 @@ apache::vhost { 'phpmyadmin':
   require       => Class['phpmyadmin'],
 }
 
-class { 'mailcatcher': }
+exec { 'gem-i18n-legacy':
+  command => '/opt/vagrant_ruby/bin/gem install i18n -v=0.6.5',
+  unless  => 'test `/opt/vagrant_ruby/bin/gem list --local | grep -q 0.6.5; echo $?` -eq 0',
+  path    => ['/usr/bin', '/bin'],
+}
+
+class { 'mailcatcher':
+  require => Exec['gem-i18n-legacy']
+}
 
 class { 'less': }
 
