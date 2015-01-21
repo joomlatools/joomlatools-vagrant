@@ -88,6 +88,7 @@ foreach ($dir as $fileinfo)
             <li role="presentation" class="dropdown-header">Tools</li>
             <li><a href="http://phpmyadmin.joomla.dev/">phpMyAdmin</a></li>
             <li><a href="/phpinfo">phpinfo</a></li>
+            <li><a href="http://joomla.dev:1080/">MailCatcher</a></li>
             <?php if (function_exists('apc_cache_info') && @apc_cache_info('opcode')): ?>
                 <li><a href="/apc">APC dashboard</a></li>
             <?php endif; ?>
