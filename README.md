@@ -188,3 +188,20 @@ Use following details to connect:
     Port: 2222
     User: vagrant
     Password: vagrant
+
+Reporting issues
+----------------
+
+We deliberately keep the Issues section on Github closed for now as we want to encourage people to submit code to add features or fix bugs by opening up Pull Requests instead of Issues.
+
+Of course, it's not always easy to fix an obscure bug in someone else's code, but we still want to encourage everyone to make an effort. We do not have the intention to maintain a support forum here just yet!
+
+Contributing
+------------
+
+Fork the project, create a feature branch from the `develop` branch, and send us a pull request.
+
+Authors
+-------
+
+See the list of [contributors](https://github.com/joomlatools/joomla-vagrant/contributors).
