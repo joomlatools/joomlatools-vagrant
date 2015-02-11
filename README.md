@@ -35,7 +35,7 @@ Note that this requires a 700 MB download for the first run and Vagrant version 
     $ vagrant init joomlatools/box /path/to/download/joomlatools-box-1.2.box
     $ vagrant up
         
-Add the following line into your ***hosts file*** (/etc/hosts on Linux and MacOS, for other operating systems see [here](http://en.wikipedia.org/wiki/Hosts_(file)#Location_in_the_file_system))
+Add the following line into your ***hosts file*** (/etc/hosts on Linux and MacOS, for other operating systems see [here](http://en.wikipedia.org/wiki/Hosts_(file)#Location_in_the_file_system)):
 
     33.33.33.58 joomla.dev webgrind.joomla.dev phpmyadmin.joomla.dev
 
