@@ -6,7 +6,10 @@ class mailcatcher{
 
 class mailcatcher::packages{
   package{["sqlite3", "libsqlite3-dev"]:}
-  -> package{"mailcatcher": provider => gem}
+  -> package{"mailcatcher":
+    ensure => '0.5.12',
+    provider => gem
+  }
 }
 
 class mailcatcher::configs{
