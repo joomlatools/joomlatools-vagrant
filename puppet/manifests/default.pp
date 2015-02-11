@@ -174,7 +174,7 @@ class { 'phpmyadmin':
 
 apache::vhost { 'phpmyadmin':
   server_name   => 'phpmyadmin',
-  serveraliases => 'phpmyadmin.joomla.dev',
+  serveraliases => 'phpmyadmin.joomla.box',
   docroot       => '/usr/share/phpmyadmin',
   port          => 80,
   priority      => '10',
@@ -201,7 +201,7 @@ class { 'webgrind':
 
 apache::vhost { 'webgrind':
   server_name   => 'webgrind',
-  serveraliases => 'webgrind.joomla.dev',
+  serveraliases => 'webgrind.joomla.box',
   docroot       => '/usr/share/webgrind',
   port          => 80,
   priority      => '10',
@@ -210,7 +210,7 @@ apache::vhost { 'webgrind':
 
 apache::vhost { 'default':
   server_admin  => 'webmaster@localhost',
-  serveraliases => 'joomla.dev',
+  serveraliases => 'joomla.box',
   port          => 80,
   priority      => '',
   docroot       => '/var/www',
