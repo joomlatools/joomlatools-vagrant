@@ -40,7 +40,7 @@ package { ['sass', 'compass']:
 class apache::certificate {
   class { 'openssl': }
 
-  file { ['etc/apache2',  '/etc/apache2/ssl']:
+  file { ['/etc/apache2',  '/etc/apache2/ssl']:
     ensure => 'directory',
   }
 
