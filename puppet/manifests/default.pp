@@ -37,11 +37,9 @@ package { ['sass', 'compass']:
   provider => 'gem',
 }
 
-class  {'openssl':
-  require => Package['openssl'],
-}
-
 class apache::certificate {
+  class { 'openssl': }
+
   file { '/etc/apache2/ssl':
     ensure => 'directory',
   }
@@ -56,11 +54,11 @@ class apache::certificate {
   }
 }
 
-class { 'apache::certificate':
-    require => Class['apache'],
-}
+class { 'apache::certificate':}
 
-class { 'apache': }
+class { 'apache':
+    require => Class['apache::certificate'],
+}
 
 apache::dotconf { 'custom':
   content => template("apache/custom.conf.erb"),
