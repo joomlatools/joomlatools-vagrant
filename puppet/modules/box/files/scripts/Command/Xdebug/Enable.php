@@ -21,8 +21,8 @@ class Enable extends Xdebug
             `sudo sed -i 's#^; zend_extension=#zend_extension=#' $file`;
         }
 
-        `sudo /etc/init.d/apache2 restart`;
+        `sudo service apache2 restart 2>&1 1> /dev/null`;
 
-        $output->writeln('Done');
+        $output->writeln('Xdebug has been enabled');
     }
 }

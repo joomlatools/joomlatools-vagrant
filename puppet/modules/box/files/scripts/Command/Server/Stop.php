@@ -23,10 +23,11 @@ class Stop extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $task = $input->getOption('restart') ? 'restart' : 'stop';
+        $txt  = $task == 'stop' ? 'stopped' : 'restarted';
 
-        `sudo service apache2 $task`;
-        `sudo service mysql $task`;
+        `sudo service apache2 $task 2>&1 1> /dev/null`;
+        `sudo service mysql $task 2>&1 1> /dev/null`;
 
-        $output->writeln('Done');
+        $output->writeln("Server has been $txt");
     }
 }

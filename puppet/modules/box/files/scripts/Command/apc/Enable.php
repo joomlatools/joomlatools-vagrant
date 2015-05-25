@@ -21,8 +21,8 @@ class Enable extends Apc
             `sudo sed -i 's#^; extension=#extension=#' $file`;
         }
 
-        exec('sudo service apache2 restart');
+        exec('sudo service apache2 restart 2>&1 1> /dev/null');
 
-        $output->writeln('Done');
+        $output->writeln('APC has been enabled');
     }
 }

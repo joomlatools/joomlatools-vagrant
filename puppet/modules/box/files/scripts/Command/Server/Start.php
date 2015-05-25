@@ -15,9 +15,9 @@ class Start extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        `sudo service apache2 start`;
-        `sudo service mysql start`;
+        `sudo service apache2 start 2>&1 1> /dev/null`;
+        `sudo service mysql start 2>&1 1> /dev/null`;
 
-        $output->writeln('Done');
+        $output->writeln('Server has been started');
     }
 }
