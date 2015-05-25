@@ -181,14 +181,19 @@ apache::vhost { 'phpmyadmin':
   require       => Class['phpmyadmin'],
 }
 
-exec { 'gem-i18n-legacy':
-  command => '/opt/vagrant_ruby/bin/gem install i18n -v=0.6.5',
-  unless  => 'test `/opt/vagrant_ruby/bin/gem list --local | grep -q 0.6.5; echo $?` -eq 0',
-  path    => ['/usr/bin', '/bin'],
+user { 'vagrant': }
+
+single_user_rvm::install { 'vagrant': }
+single_user_rvm::install_ruby { 'ruby-2.0.0-p247':
+    user => vagrant
 }
 
-class { 'mailcatcher':
-  require => Exec['gem-i18n-legacy']
+exec {'set-default-ruby-for-vagrant':
+ user    => vagrant,
+ command => 'bash -c "source ~/.rvm/scripts/rvm; rvm --default use 2.0.0-p247"',
+ environment => ['HOME=/home/vagrant'],
+ path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
+ require => Single_user_rvm::Install_ruby['ruby-2.0.0-p247']
 }
 
 class { 'less': }
