@@ -1,16 +1,16 @@
 <?php
-namespace Command\Apc;
+namespace Command\Xdebug;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class Disable extends Apc
+class Enable extends Xdebug
 {
     protected function configure()
     {
-        $this->setName('apc:disable')
-             ->setDescription('Disable APC');
+        $this->setName('xdebug:enable')
+             ->setDescription('Enable Xdebug');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -18,7 +18,7 @@ class Disable extends Apc
         $files = $this->_getConfigFiles($this->_ini_files);
 
         foreach($files as $file) {
-            `sudo sed -i 's#^extension=#; extension=#' $file`;
+            `sudo sed -i 's#^; zend_extension=#zend_extension=#' $file`;
         }
 
         `sudo /etc/init.d/apache2 restart`;

@@ -28,4 +28,7 @@ $application->add(new Command\Apc\Enable());
 $application->add(new Command\Apc\Disable());
 $application->add(new Command\Apc\Clear());
 
+$application->add(new Command\Xdebug\Enable());
+$application->add(new Command\Xdebug\Disable());
+
 $application->run();
