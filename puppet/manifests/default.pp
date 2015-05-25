@@ -231,3 +231,7 @@ class { 'scripts': }
 
 class { 'phpmanager': }
 
+class { 'box':
+    require => [Class['composer'], Class['phpmanager']]
+}
+
