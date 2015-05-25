@@ -189,11 +189,15 @@ single_user_rvm::install_ruby { 'ruby-2.0.0-p247':
 }
 
 exec {'set-default-ruby-for-vagrant':
- user    => vagrant,
- command => 'bash -c "source ~/.rvm/scripts/rvm; rvm --default use 2.0.0-p247"',
- environment => ['HOME=/home/vagrant'],
- path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
- require => Single_user_rvm::Install_ruby['ruby-2.0.0-p247']
+    user        => vagrant,
+    command     => 'bash -c "source ~/.rvm/scripts/rvm; rvm --default use 2.0.0-p247"',
+    environment => ['HOME=/home/vagrant'],
+    path        => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
+    require     => Single_user_rvm::Install_ruby['ruby-2.0.0-p247']
+}
+
+class {'mailcatcher':
+    require => Exec['set-default-ruby-for-vagrant']
 }
 
 class { 'less': }

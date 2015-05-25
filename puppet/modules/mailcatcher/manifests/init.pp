@@ -6,9 +6,11 @@ class mailcatcher{
 
 class mailcatcher::packages{
   package{["sqlite3", "libsqlite3-dev"]:}
-  -> package{"mailcatcher":
-    ensure => '0.5.12',
-    provider => gem
+  -> exec {'install-mailcatcher-gem':
+        user    => vagrant,
+        command => 'bash -c "source ~/.rvm/scripts/rvm; gem install mailcatcher"',
+        environment => ['HOME=/home/vagrant'],
+        path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
   }
 }
 
