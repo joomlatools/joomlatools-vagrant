@@ -622,6 +622,8 @@ sub_cleanuprepo() {
         exit
     fi
 
+    echo "Syncing the PHP source, this can take a few minutes .."
+
     # Clean out the repository
     git reset --hard --quiet
     git clean -d -x -f --quiet

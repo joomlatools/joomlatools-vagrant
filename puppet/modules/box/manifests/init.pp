@@ -14,7 +14,7 @@ class box {
     user    => vagrant,
     require => File['/home/vagrant/box']
   }
-  
+
   exec { 'make-box-executable':
     command => 'chmod +x /home/vagrant/box/box',
     require => File['/home/vagrant/box']

@@ -21,7 +21,7 @@ class Enable extends Apc
             `sudo sed -i 's#^; extension=#extension=#' $file`;
         }
 
-        `sudo /etc/init.d/apache2 restart`;
+        exec('sudo service apache2 restart');
 
         $output->writeln('Done');
     }
