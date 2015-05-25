@@ -14,13 +14,7 @@ class box {
     user    => vagrant,
     require => File['/home/vagrant/box']
   }
-
-  file { '/etc/bash_completion.d/box':
-    ensure => 'link',
-    target => '/home/vagrant/box/box.complete',
-    require => File['/home/vagrant/box']
-  }
-
+  
   exec { 'make-box-executable':
     command => 'chmod +x /home/vagrant/box/box',
     require => File['/home/vagrant/box']
