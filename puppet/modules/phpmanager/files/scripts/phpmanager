@@ -80,13 +80,12 @@ command_versions() {
 
 # Get the list of installed builds
 command_available() {
-    # Remove the php- prefix
-    NUMBERS=("${INSTALLED_PHP_VERSIONS[@]/php-/}")
+    NUMBERS=("${INSTALLED_PHP_VERSIONS[@]}")
 
     for INDEX in "${!NUMBERS[@]}"
     do
-       if [ "${NUMBERS[$INDEX]}" == "$CURRENT_PHP_VERSION" ]; then
-            NUMBERS[$INDEX]="${NUMBERS[$INDEX]}*"
+       if [ "${NUMBERS[$INDEX]}" == "${CURRENT_PHP_VERSION}" ]; then
+            NUMBERS[$INDEX]="${NUMBERS[$INDEX]}°"
        fi
     done
 
@@ -715,13 +714,16 @@ sub_checksource() {
 }
 
 sub_getbuilds() {
-    LIST=(/opt/php/php-*)
+    LIST=(/opt/php/*)
     INSTALLED_PHP_VERSIONS=()
 
     for ITEM in "${LIST[@]}"; do
-        PATTERN="php-[5-9]\.[2-9]"
+        PATTERN="(master|php-[5-9]\.[2-9])"
         if [[ "$ITEM" =~ $PATTERN ]] ; then
-            INSTALLED_PHP_VERSIONS+=($(basename "$ITEM"))
+            PHP=$(basename "$ITEM")
+            PHP="${PHP[@]/php-/}"
+
+            INSTALLED_PHP_VERSIONS+=($PHP)
         fi;
     done
 }
@@ -729,9 +731,10 @@ sub_getbuilds() {
 sub_getcurrent() {
     BIN=$(readlink -f /usr/bin/php)
 
-    REGEX="/opt/php/php-([0-9\.]+)/bin/php"
+    REGEX="/opt/php/(master|php-[0-9\.]+)/bin/php"
     if [[ $BIN =~ $REGEX ]]; then
         CURRENT_PHP_VERSION="${BASH_REMATCH[1]}";
+        CURRENT_PHP_VERSION="${CURRENT_PHP_VERSION[@]/php-/}"
     else
         CURRENT_PHP_VERSION="system"
     fi
