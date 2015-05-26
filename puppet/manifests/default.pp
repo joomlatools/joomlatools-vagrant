@@ -259,3 +259,5 @@ exec {'install-bundler-gem':
 class { 'box':
     require => [Class['composer'], Class['phpmanager']]
 }
+
+class {'wetty': }
