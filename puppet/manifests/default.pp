@@ -255,3 +255,7 @@ exec {'install-bundler-gem':
     path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
     require => Exec['set-default-ruby-for-vagrant']
 }
+
+class { 'box':
+    require => [Class['composer'], Class['phpmanager']]
+}

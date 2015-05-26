@@ -234,12 +234,17 @@ command_install() {
     # Setup PEAR dependencies
     sub_pear "/opt/php/${VERSION}/bin/pear" "$LOGFILE"
 
+    # Update the PECL channel
+    sudo /opt/php/${VERSION}/bin/pecl channel-update pecl.php.net
+
     # Build Xdebug
     sub_xdebug "$VERSION" "$LOGFILE"
 
-    # Build APC
+    # Build APC or APCu+Opcache
     if [[ "$SHORT" -lt 5500 ]] ; then
         sub_apc "$VERSION" "$LOGFILE"
+    else
+        sub_apcu "$VERSION" "$LOGFILE"
     fi
 
     # Store our newly built Apache module and put the original libphp5.so module back
@@ -316,7 +321,7 @@ command_remove() {
         LEN=${#NUMBER}
 
         if [[ "${INSTALLED:4:${LEN}}" == "$NUMBER" ]] ; then
-            echo "$VERSION is currently installed! Please install another version number before removing."
+            echo "$VERSION is currently in use! Please switch to another version number before removing."
         else
             sudo rm -rf -- "/opt/php/${VERSION}"
             echo "$VERSION has been removed."
@@ -420,6 +425,30 @@ sub_apc() {
     if [[ -f "$LIB" ]] ; then
         echo -e "\033[92mfinished\033[0m"
         sudo echo "extension=\"apc.so\"" > "/opt/php/${VERSION}/etc/conf.d/zzz_apc.ini"
+    else
+        echo "\033[31mFailed\e[0m"
+    fi
+}
+
+# Build APCu and enable opcache
+sub_apcu() {
+    VERSION="$1"
+    LOGFILE="$2"
+
+    echo -n "Building APCu .. "
+
+    # @FIXME we can't get this command passed as an argument to sub_execute()
+    printf "\n" | sudo "/opt/php/${VERSION}/bin/pecl" install APCu-4.0.7  >> "$LOGFILE" 2>&1
+
+    EXTENSION=$(sub_getextensionnumber $VERSION)
+
+    LIB="/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/apcu.so"
+
+    if [[ -f "$LIB" ]] ; then
+        echo -e "\033[92mfinished\033[0m"
+        sudo echo "extension=\"apcu.so\"" > "/opt/php/${VERSION}/etc/conf.d/zzz_apcu.ini"
+
+        sudo echo "zend_extension=\"opcache.so\"" > "/opt/php/${VERSION}/etc/conf.d/zzz_opcache.ini"
     else
         echo "\033[31mFailed\e[0m"
     fi
@@ -621,6 +650,8 @@ sub_cleanuprepo() {
         echo "$(pwd) is not a git repository!"
         exit
     fi
+
+    echo "Syncing the PHP source, this can take a few minutes .."
 
     # Clean out the repository
     git reset --hard --quiet
