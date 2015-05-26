@@ -261,3 +261,9 @@ class { 'box':
 }
 
 class {'wetty': }
+
+file { '/etc/update-motd.d/999-joomlatools':
+  ensure => 'present',
+  mode   => 'ug+rwx,o+rx',
+  source => 'puppet:///modules/motd/joomlatools',
+}
