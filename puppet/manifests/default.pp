@@ -267,3 +267,7 @@ file { '/etc/update-motd.d/999-joomlatools':
   mode   => 'ug+rwx,o+rx',
   source => 'puppet:///modules/motd/joomlatools',
 }
+
+file { ['/etc/update-motd.d/10-help-text', '/etc/update-motd.d/91-release-upgrade']:
+    ensure => absent
+}
