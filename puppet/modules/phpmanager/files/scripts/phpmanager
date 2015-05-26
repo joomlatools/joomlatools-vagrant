@@ -379,8 +379,14 @@ sub_xdebug() {
 
     sub_cleanuprepo
 
-    # Find the tag of the latest tagged commit in all branches
-    TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+    SHORT=$(sub_getshortversion $VERSION)
+    if [[ "$SHORT" -ge 5400 ]] ; then
+        # Find the tag of the latest tagged commit in all branches
+        TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+    else
+        # Support for PHP versions older than 5.4.0 has been dropped in 2.3.0
+        TAG="XDEBUG_2_2_7"
+    fi
 
     git checkout $TAG &> /dev/null
 
