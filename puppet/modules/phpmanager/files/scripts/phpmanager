@@ -18,7 +18,9 @@
 SCRIPT_VERSION=0.1
 BASENAME=$(basename $0)
 
-VERSIONS=()
+AVAILABLE_PHP_VERSIONS=()
+INSTALLED_PHP_VERSIONS=()
+CURRENT_PHP_VERSION=''
 BINARIES=('php' 'pear' 'pecl' 'phar' 'phing' 'php-config' 'phpize')
 
 SOURCE=/usr/local/src/php
@@ -67,7 +69,7 @@ command_versions() {
     sub_getversions
 
     # Remove the php- prefix
-    NUMBERS=("${VERSIONS[@]/php-/}")
+    NUMBERS=("${AVAILABLE_PHP_VERSIONS[@]/php-/}")
 
     # Print out each element of the array on a separate line
     STRING=$(printf "%s\n" "${NUMBERS[@]}")
@@ -78,17 +80,17 @@ command_versions() {
 
 # Get the list of installed builds
 command_available() {
-    LIST=(/opt/php/php-*)
-    AVAILABLE=()
+    # Remove the php- prefix
+    NUMBERS=("${INSTALLED_PHP_VERSIONS[@]/php-/}")
 
-    for ITEM in "${LIST[@]}"; do
-        PATTERN="php-[5-9]\.[2-9]"
-        if [[ "$ITEM" =~ $PATTERN ]] ; then
-            AVAILABLE+=($(basename "$ITEM"))
-        fi;
+    for INDEX in "${!NUMBERS[@]}"
+    do
+       if [ "${NUMBERS[$INDEX]}" == "$CURRENT_PHP_VERSION" ]; then
+            NUMBERS[$INDEX]="${NUMBERS[$INDEX]}*"
+       fi
     done
 
-    STRING=$(printf "%s\n" "${AVAILABLE[@]}")
+    STRING=$(printf "%s\n" "${NUMBERS[@]}")
 
     printf "%-18s  %-18s  %-18s  %-18s %-18s\n" $STRING
 }
@@ -272,6 +274,16 @@ command_install() {
 
 # Restore the original PHP binaries and Apache module
 command_restore() {
+    if [ ${#INSTALLED_PHP_VERSIONS[@]} -eq 0 ]; then
+        echo "Nothing to restore"
+        exit 0
+    fi
+
+    if [ "$CURRENT_PHP_VERSION" == "system" ]; then
+        echo "Current PHP version is the system default"
+        exit 0
+    fi
+
     for BINARY in "${BINARIES[@]}"
     do
         # Remove the symlink
@@ -317,10 +329,8 @@ command_remove() {
         echo "$VERSION does not exist. Skipping"
     else
         NUMBER="${VERSION/php-/}"
-        INSTALLED=$(php -v | head -1)
-        LEN=${#NUMBER}
 
-        if [[ "${INSTALLED:4:${LEN}}" == "$NUMBER" ]] ; then
+        if [[ "$CURRENT_PHP_VERSION" == "$NUMBER" ]] ; then
             echo "$VERSION is currently in use! Please switch to another version number before removing."
         else
             sudo rm -rf -- "/opt/php/${VERSION}"
@@ -589,13 +599,13 @@ sub_getversions() {
         # Only list PHP versions greater than or equal to 5.2
         PATTERN="refs/tags/php-[5-9]\.[2-9]"
         if [[ $TAG =~ $PATTERN ]] ; then
-            VERSIONS+=(${TAG/refs\/tags\//})
+            AVAILABLE_PHP_VERSIONS+=(${TAG/refs\/tags\//})
         fi;
     done
 
     # Sort the tags
-    VERSIONS=(
-        $(for el in "${VERSIONS[@]}"
+    AVAILABLE_PHP_VERSIONS=(
+        $(for el in "${AVAILABLE_PHP_VERSIONS[@]}"
             do
                 echo "$el"
             done | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n
@@ -603,7 +613,7 @@ sub_getversions() {
     )
 
     # Append master
-    VERSIONS+=("master")
+    AVAILABLE_PHP_VERSIONS+=("master")
 }
 
 # Convert a tag to a version string which we can use in comparisons
@@ -704,11 +714,34 @@ sub_checksource() {
     fi
 }
 
+sub_getbuilds() {
+    LIST=(/opt/php/php-*)
+    INSTALLED_PHP_VERSIONS=()
+
+    for ITEM in "${LIST[@]}"; do
+        PATTERN="php-[5-9]\.[2-9]"
+        if [[ "$ITEM" =~ $PATTERN ]] ; then
+            INSTALLED_PHP_VERSIONS+=($(basename "$ITEM"))
+        fi;
+    done
+}
+
+sub_getcurrent() {
+    BIN=$(readlink -f /usr/bin/php)
+
+    REGEX="/opt/php/php-([0-9\.]+)/bin/php"
+    if [[ $BIN =~ $REGEX ]]; then
+        CURRENT_PHP_VERSION="${BASH_REMATCH[1]}";
+    else
+        CURRENT_PHP_VERSION="system"
+    fi
+}
+
 # Check if a value exists in an array
 in_array() {
     local needle=$1
 
-    for HAY in "${VERSIONS[@]}"; do
+    for HAY in "${AVAILABLE_PHP_VERSIONS[@]}"; do
         [[ $HAY == $needle ]] && return 0
     done
     return 1
@@ -722,6 +755,8 @@ case $SUBCOMMAND in
         ;;
     *)
         sub_checksource
+        sub_getcurrent
+        sub_getbuilds
 
         shift
         command_${SUBCOMMAND} $@
