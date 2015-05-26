@@ -9,7 +9,7 @@ abstract class Apc extends Command
 {
     public static $files;
 
-    protected $_ini_files = array('20-apc.ini', 'zzz_apc.ini');
+    protected $_ini_files = array('20-apc.ini', 'zzz_apc.ini', 'zzz_apcu.ini', 'zzz_opcache.ini');
 
     public function __construct($name = null)
     {
