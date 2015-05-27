@@ -18,10 +18,12 @@ class pimpmylog {
     }
 
     exec { 'make-apache-logs-world-readable':
-        command => 'sed -i \'s/create [0-9]\+ root adm/create 644 root adm/g\' /etc/logrotate.d/apache2'
+        command => 'sed -i \'s/apache2\/\*.log/apache2\/*log/g\' /etc/logrotate.d/apache2 && sed -i \'s/create [0-9]\+ root adm/create 644 root adm/g\' /etc/logrotate.d/apache2',
+        notify  => Service['apache']
     }
 
     exec { 'make-log-directories-world-readable':
-        command => 'find /var/log -type d -exec chmod 755 {} \; && find /var/log/apache2 -type f -exec chmod 644 {} \; '
+        command => 'find /var/log -type d -exec chmod 755 {} \; && find /var/log/apache2 -type f -exec chmod 644 {} \; ',
+        notify  => Service['apache']
     }
 }

@@ -239,10 +239,8 @@ apache::vhost { 'webgrind':
   require       => Class['webgrind'],
 }
 
-apache::vhost { 'joomla-box':
-  server_name   => 'default',
+apache::vhost { 'joomla.box':
   server_admin  => 'webmaster@localhost',
-  serveraliases => 'joomla.box',
   port          => 80,
   priority      => '',
   docroot       => '/var/www',
@@ -256,7 +254,7 @@ exec { 'set-env-for-debugging':
   command => "echo \"\nSetEnv JOOMLATOOLS_BOX 1\" >> /etc/apache2/apache2.conf",
   unless  => "grep JOOMLATOOLS_BOX /etc/apache2/apache2.conf",
   notify  => Service['apache'],
-  require => Apache::Vhost['joomla-box']
+  require => Apache::Vhost['joomla.box']
 }
 
 class { 'scripts': }
