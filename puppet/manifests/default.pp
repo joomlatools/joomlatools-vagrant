@@ -91,7 +91,7 @@ package { 'libyaml-dev':
 php::pecl::module { 'yaml':
   use_package => no,
   ensure => present,
-  require => [php::pear::config['download_dir'], Package['libyaml-dev']]
+  require => [Php::Pear::Config['download_dir'], Package['libyaml-dev']]
 }
 
 puphpet::ini { 'yaml':
@@ -100,7 +100,7 @@ puphpet::ini { 'yaml':
   ],
   ini     => '/etc/php5/conf.d/zzz_yaml.ini',
   notify  => Service['apache'],
-  require => [Class['php'], php::pecl::module['yaml']]
+  require => [Class['php'], Php::Pecl::Module['yaml']]
 }
 
 class { 'xdebug':
@@ -217,7 +217,8 @@ apache::vhost { 'webgrind':
   require       => Class['webgrind'],
 }
 
-apache::vhost { 'default':
+apache::vhost { 'joomla-box':
+  server_name   => 'default',
   server_admin  => 'webmaster@localhost',
   serveraliases => 'joomla.box',
   port          => 80,
@@ -233,7 +234,7 @@ exec { 'set-env-for-debugging':
   command => "echo \"\nSetEnv JOOMLATOOLS_BOX 1\" >> /etc/apache2/apache2.conf",
   unless  => "grep JOOMLATOOLS_BOX /etc/apache2/apache2.conf",
   notify  => Service['apache'],
-  require => Apache::Vhost['default']
+  require => Apache::Vhost['joomla-box']
 }
 
 class { 'scripts': }
@@ -271,3 +272,5 @@ file { '/etc/update-motd.d/999-joomlatools':
 file { ['/etc/update-motd.d/10-help-text', '/etc/update-motd.d/91-release-upgrade']:
     ensure => absent
 }
+
+class { 'pimpmylog': }
