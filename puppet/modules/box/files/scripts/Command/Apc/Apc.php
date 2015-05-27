@@ -9,7 +9,7 @@ abstract class Apc extends Command
 {
     public static $files;
 
-    protected $_ini_files = array('20-apc.ini', 'zzz_apc.ini', 'zzz_apcu.ini', 'zzz_opcache.ini');
+    protected $_ini_files = array('apc.ini', 'apcu.ini', 'opcache.ini', 'zzz_apc.ini', 'zzz_apcu.ini', 'zzz_opcache.ini');
 
     public function __construct($name = null)
     {
@@ -23,7 +23,7 @@ abstract class Apc extends Command
     protected function _getConfigFiles($basenames = array())
     {
         $inis  = array();
-        $paths = array('/etc/php5/conf.d/', '/etc/php5/mods-available/');
+        $paths = array('/etc/php5/mods-available/');
 
         $installs = glob('/opt/php/php-*/etc/conf.d', GLOB_ONLYDIR);
         $installs = array_unique(array_filter($installs));

@@ -4,6 +4,7 @@ class wetty {
     exec { 'npm-install-wetty':
         command => 'npm install -g wetty@0.0.9',
         unless  => 'which wetty',
+        environment => ['HOME=/home/vagrant'],
         require => Package['nodejs']
     }
 
@@ -20,6 +21,7 @@ class wetty {
         group   => 'root',
         mode    => '0777',
         source  => 'puppet:///modules/wetty/app.js',
+        require => Exec['npm-install-wetty']
     }
 
     service {'wetty':

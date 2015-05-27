@@ -75,7 +75,7 @@ class XDebug
     protected function _getConfigFiles($basenames = array())
     {
         $inis  = array();
-        $paths = array('/etc/php5/conf.d/', '/etc/php5/mods-available/');
+        $paths = array('/etc/php5/mods-available/', '/etc/php5/mods-available/');
 
         $installs = glob('/opt/php/php-*/etc/conf.d', GLOB_ONLYDIR);
         $installs = array_unique(array_filter($installs));

@@ -7,12 +7,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class Xdebug extends Command
 {
-    protected $_ini_files = array('20-xdebug.ini', 'xdebug.ini', 'zzz_xdebug.ini');
+    protected $_ini_files = array('xdebug.ini', 'zzz_xdebug.ini');
 
     protected function _getConfigFiles($basenames = array())
     {
         $inis  = array();
-        $paths = array('/etc/php5/conf.d/', '/etc/php5/mods-available/');
+        $paths = array('/etc/php5/mods-available/');
 
         $installs = glob('/opt/php/php-*/etc/conf.d', GLOB_ONLYDIR);
         $installs = array_unique(array_filter($installs));

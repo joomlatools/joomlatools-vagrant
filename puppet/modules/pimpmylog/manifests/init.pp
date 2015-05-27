@@ -14,6 +14,7 @@ class pimpmylog {
         unless  => '[ -d /usr/share/pimpmylog/vendor ]',
         path    => '/usr/bin',
         user    => vagrant,
+        environment => 'COMPOSER_HOME=/home/vagrant/.composer',
         require => File['/usr/share/pimpmylog']
     }
 

@@ -5,6 +5,6 @@ start on runlevel [23]
 stop on shutdown
 
 # run with -f to be in foreground + bind on 0.0.0.0 to allow vagrant port forwarding
-exec sudo -u vagrant bash -c "source /home/vagrant/.rvm/scripts/rvm && /home/vagrant/.rvm/gems/ruby-2.0.0-p247/bin/mailcatcher --http-ip 0.0.0.0 -f"
+exec sudo -u vagrant bash -c "source /home/vagrant/.rvm/scripts/rvm && mailcatcher --http-ip 0.0.0.0 -f"
 
 respawn
