@@ -16,7 +16,7 @@ abstract class Apc extends Command
         parent::__construct($name);
 
         if (!self::$files) {
-            self::$files = __DIR__.'../../util';
+            self::$files = __DIR__.'/../../util';
         }
     }
 
