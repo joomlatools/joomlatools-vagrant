@@ -18,7 +18,7 @@
         "Referer": 7
       },
       "types": {
-        "Date": "date:H:i:s",
+        "Date": "H:i:s",
         "IP": "ip:http",
         "Log": "pre",
         "Severity": "badge:severity",
@@ -95,7 +95,7 @@
         "Referer": 7
       },
       "types": {
-        "Date": "date:H:i:s",
+        "Date": "H:i:s",
         "IP": "ip:http",
         "Log": "pre",
         "Severity": "badge:severity",
