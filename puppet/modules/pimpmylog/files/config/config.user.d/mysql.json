@@ -1,0 +1,33 @@
+{
+  "mysql": {
+    "display"   : "[mysql] error log",
+    "path"      : "/var/log/mysql/error.log",
+    "tags" : ["MySQL"],
+    "format"    : {
+      "multiline": "",
+      "regex"    : "|^(.{2})(.{2})(.{2}) (.*):(.*):(.*) (.*) (.*)$|U",
+      "match"    : {
+        "Date" : [
+          1,
+          "-",
+          2,
+          "-",
+          3,
+          " ",
+          4,
+          ":",
+          5,
+          ":",
+          6
+        ],
+        "Engine" : 7,
+        "Log"    : 8
+      },
+      "types"    : {
+        "Date"   : "date:d\/m\/Y H:i:s \/100",
+        "Engine" : "txt",
+        "Log"    : "txt"
+      }
+    }
+  }
+}
