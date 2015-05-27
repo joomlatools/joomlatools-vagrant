@@ -569,7 +569,6 @@ sub_setupini() {
     fi
 
     sudo cp /etc/php5/apache2/conf.d/zzz_custom.ini "/opt/php/${VERSION}/etc/conf.d/zzz_custom.ini"
-    sudo cp /etc/php5/apache2/conf.d/zzz_php.ini "/opt/php/${VERSION}/etc/conf.d/zzz_php.ini"
 
     sudo chown vagrant:vagrant "/opt/php/${VERSION}/lib/php.ini"
     sudo chown -R vagrant:vagrant "/opt/php/${VERSION}/etc/conf.d"
@@ -578,7 +577,7 @@ sub_setupini() {
     # according to the docs at http://be2.php.net/dl but for most builds this isn't the case.
     # So let's make sure we properly set the extension_dir directive :
     EXTENSION=$(sub_getextensionnumber $VERSION)
-    echo "extension_dir=/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/" >> "/opt/php/${VERSION}/etc/conf.d/zzz_php.ini"
+    echo "extension_dir=/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/" >> "/opt/php/${VERSION}/etc/conf.d/zzz_custom.ini"
 
     # Configure the MySQL socket
     echo "mysql.default_socket=/var/run/mysqld/mysqld.sock" > "/opt/php/${VERSION}/etc/conf.d/zzz_mysql.ini"

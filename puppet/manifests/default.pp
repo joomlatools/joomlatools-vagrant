@@ -1,5 +1,5 @@
 group { 'puppet': ensure => present }
-Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/' ] }
+Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/' ] }
 File { owner => 0, group => 0, mode => 0644 }
 
 class {'apt':
@@ -153,24 +153,16 @@ puphpet::ini { 'xdebug':
   require => Class['php'],
 }
 
-puphpet::ini { 'php':
-  value   => [
-    'date.timezone = "UTC"'
-  ],
-  ini     => '/etc/php5/conf.d/zzz_php.ini',
-  notify  => Service['apache'],
-  require => Class['php'],
-}
-
 puphpet::ini { 'custom':
   value   => [
-    'sendmail_path = /opt/vagrant_ruby/bin/catchmail -fnoreply@example.com',
+    'sendmail_path = /home/vagrant/.rvm/gems/ruby-2.0.0-p247/bin/catchmail -fnoreply@example.com',
     'display_errors = On',
     'error_reporting = -1',
     'display_startup_errors = On',
     'upload_max_filesize = "256M"',
     'post_max_size = "256M"',
-    'memory_limit = "64M"'
+    'memory_limit = "256M"',
+    'date.timezone = "UTC"'
   ],
   ini     => '/etc/php5/conf.d/zzz_custom.ini',
   notify  => Service['apache'],
@@ -294,3 +286,6 @@ file { ['/etc/update-motd.d/10-help-text', '/etc/update-motd.d/91-release-upgrad
 }
 
 class { 'pimpmylog': }
+class { 'phpmetrics':
+    require => Class['composer']
+}
