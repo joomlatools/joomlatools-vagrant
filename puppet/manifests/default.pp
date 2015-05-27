@@ -177,7 +177,7 @@ puphpet::ini { 'custom':
 
 exec {'symlink-custom-ini-files-apache':
     command => 'find /etc/php5/mods-available/ -name "zzz_*" -exec /bin/bash -c \'ln -s {} /etc/php5/apache2/conf.d/`basename $0`\' {} \;',
-    unless  => 'bash -c "test -f etc/php5/apache2/conf.d/zzz_custom.ini"',
+    unless  => 'bash -c "test -f /etc/php5/apache2/conf.d/zzz_custom.ini"',
     require => [Puphpet::Ini['custom'], Puphpet::Ini['yaml'], Puphpet::Ini['xdebug']]
 }
 
@@ -250,6 +250,7 @@ apache::vhost { 'webgrind':
 
 apache::vhost { 'joomla.box':
   server_admin  => 'webmaster@localhost',
+  serveraliases => 'localhost',
   port          => 80,
   priority      => '',
   docroot       => '/var/www',
