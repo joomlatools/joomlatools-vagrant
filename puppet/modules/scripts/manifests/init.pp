@@ -22,7 +22,7 @@ class scripts::install {
   }
 
   exec { 'add-console':
-    command => 'composer global require joomlatools/joomla-console:dev-feature/148-ssl --no-interaction',
+    command => 'composer global require joomlatools/joomla-console:1.* --no-interaction',
     unless  => '[ -d /home/vagrant/.composer/vendor/joomlatools/joomla-console ]',
     require => [File['/home/vagrant/scripts'], Class['Composer']],
     user    => vagrant,
