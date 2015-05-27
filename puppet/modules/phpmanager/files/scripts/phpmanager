@@ -193,7 +193,7 @@ command_install() {
 
     # Setup the PATH to include legacy build tools if needed
     SHORT=$(sub_getshortversion $VERSION)
-    if [[ "$SHORT" -le 5500 ]] ; then
+    if [[ "$SHORT" -lt 5500 ]] ; then
         export PATH=/opt/bison-2.2/bin:/opt/flex-2.5.4/bin:$PATH
     else
         export PATH=/opt/bison-2.4/bin:$PATH
@@ -206,12 +206,6 @@ command_install() {
     # Use g++ 4.4 to compile
     export CC=gcc-4.4
     export CXX=g++-4.4
-
-    if [[ "$SHORT" -le 5400 ]]; then
-        # See: https://bugs.php.net/bug.php?id=48795
-        sed -i '/^BUILD_/ s/\$(CC)/\$(CXX)/g' "$SOURCE/Makefile"
-        sed -i '/EXTRA_LIBS = /s|$| -lstdc++|' "$SOURCE/Makefile"
-    fi
 
     echo "Logging to ${LOGFILE}"
 
@@ -226,6 +220,12 @@ command_install() {
 
     CMD="./configure ${OPTIONS}"
     sub_execute "$CMD" "configure" "$LOGFILE" "Configuring makefile"
+
+    if [[ "$SHORT" -le 5400 ]]; then
+        # See: https://bugs.php.net/bug.php?id=48795
+        sed -i '/^BUILD_/ s/\$(CC)/\$(CXX)/g' "$SOURCE/Makefile"
+        sed -i '/EXTRA_LIBS = /s|$| -lstdc++|' "$SOURCE/Makefile"
+    fi
 
     # Start the build
     sub_execute "make" "make" "$LOGFILE" "Building ${VERSION}"
@@ -508,7 +508,6 @@ sub_getoptions() {
               --with-pcre-regex \
               --with-readline \
               --with-xmlrpc
-              --with-xsl \
               --with-zlib"
 
     # Build the mysql configuration string
@@ -529,10 +528,8 @@ sub_getoptions() {
     fi
     OPTIONS="$OPTIONS $MYSQL"
 
-    # Use an older libxml2 version when needed
-    if [[ "$SHORT" -lt 5400 ]]; then
-        OPTIONS="$OPTIONS --with-libxml-dir=/opt/libxml2-2.7.8"
-    fi
+    # Use an older libxml2 that works with all versions
+    OPTIONS="$OPTIONS --with-libxml-dir=/opt/libxml2-2.7.8 --with-xsl=/opt/libxslt-1.1.26"
 
     # Can we build with OpenSSL ?
     OPENSSL=""

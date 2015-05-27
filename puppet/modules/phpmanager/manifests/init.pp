@@ -119,6 +119,14 @@ class phpmanager::buildtools {
     require => Package['build-essential']
   }
 
+  puppi::netinstall { 'libxslt-1.1.26':
+    url => 'ftp://xmlsoft.org/libxslt/libxslt-1.1.26.tar.gz',
+    extracted_dir => 'libxslt-1.1.26',
+    destination_dir => $phpmanager::source_path,
+    postextract_command => "${phpmanager::source_path}/libxslt-1.1.26/configure --prefix=${phpmanager::installation_path}/libxslt-1.1.26 --with-libxml-prefix=/opt/libxml2-2.7.8/ --with-libxml-libs-prefix=/opt/libxml2-2.7.8/ --with-libxml-include-prefix=/opt/libxml2-2.7.8/  && make && sudo make install",
+    require => Puppi::Netinstall['libxml2-2.7.8']
+  }
+
   puppi::netinstall { 'curl-7.15.3':
     url => 'http://ftp.sunet.se/pub/www/utilities/curl/curl-7.15.3.tar.gz',
     extracted_dir => 'curl-7.15.3',
