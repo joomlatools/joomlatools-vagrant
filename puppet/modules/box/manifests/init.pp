@@ -12,6 +12,7 @@ class box {
     unless  => '[ -d /home/vagrant/box/vendor/symfony ]',
     path    => '/usr/bin',
     user    => vagrant,
+    environment => 'COMPOSER_HOME=/home/vagrant/.composer',
     require => File['/home/vagrant/box']
   }
 

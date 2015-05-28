@@ -66,7 +66,7 @@ class phpmanager::install {
 }
 
 class phpmanager::buildtools {
-  package { ['autoconf2.13', 're2c', 'apache2-prefork-dev', 'bison']: ensure  => 'installed' }
+  package { ['autoconf2.13', 're2c', 'apache2-prefork-dev', 'bison', 'g++-4.4', 'gcc-4.4']: ensure  => 'installed' }
   package { ['libcurl4-openssl-dev', 'libmysqlclient-dev', 'libmcrypt-dev', 'libbz2-dev', 'libjpeg-dev', 'libpng12-dev', 'libfreetype6-dev', 'libicu-dev', 'libxml2-dev', 'libxslt-dev', 'libssl-dev']: ensure => 'installed' }
 
   puppi::netinstall { 'bison-2.2':
@@ -74,6 +74,14 @@ class phpmanager::buildtools {
     extracted_dir => 'bison-2.2',
     destination_dir => $phpmanager::source_path,
     postextract_command => "${phpmanager::source_path}/bison-2.2/configure --prefix=${phpmanager::installation_path}/bison-2.2 && make && sudo make install",
+    require => Package['build-essential']
+  }
+
+  puppi::netinstall { 'bison-2.4':
+    url => 'http://ftp.gnu.org/gnu/bison/bison-2.4.tar.gz',
+    extracted_dir => 'bison-2.4',
+    destination_dir => $phpmanager::source_path,
+    postextract_command => "${phpmanager::source_path}/bison-2.4/configure --prefix=${phpmanager::installation_path}/bison-2.4 && make && sudo make install",
     require => Package['build-essential']
   }
 
@@ -103,10 +111,33 @@ class phpmanager::buildtools {
     require => Package['build-essential']
   }
 
+  puppi::netinstall { 'libxml2-2.7.8':
+    url => 'ftp://xmlsoft.org/libxml2/libxml2-2.7.8.tar.gz',
+    extracted_dir => 'libxml2-2.7.8',
+    destination_dir => $phpmanager::source_path,
+    postextract_command => "${phpmanager::source_path}/libxml2-2.7.8/configure --prefix=${phpmanager::installation_path}/libxml2-2.7.8 && make && sudo make install",
+    require => Package['build-essential']
+  }
+
+  puppi::netinstall { 'libxslt-1.1.26':
+    url => 'ftp://xmlsoft.org/libxslt/libxslt-1.1.26.tar.gz',
+    extracted_dir => 'libxslt-1.1.26',
+    destination_dir => $phpmanager::source_path,
+    postextract_command => "${phpmanager::source_path}/libxslt-1.1.26/configure --prefix=${phpmanager::installation_path}/libxslt-1.1.26 --with-libxml-prefix=/opt/libxml2-2.7.8/ --with-libxml-libs-prefix=/opt/libxml2-2.7.8/ --with-libxml-include-prefix=/opt/libxml2-2.7.8/  && make && sudo make install",
+    require => Puppi::Netinstall['libxml2-2.7.8']
+  }
+
   puppi::netinstall { 'curl-7.15.3':
     url => 'http://ftp.sunet.se/pub/www/utilities/curl/curl-7.15.3.tar.gz',
     extracted_dir => 'curl-7.15.3',
     destination_dir => $phpmanager::source_path,
     require => File["$phpmanager::source_path"]
   }
+
+  exec { 'symlink-freetype.h':
+    command => 'mkdir /usr/include/freetype2/freetype && ln -s /usr/include/freetype2/freetype.h /usr/include/freetype2/freetype/freetype.h',
+    unless  => 'bash -c "test -f /usr/include/freetype2/freetype/freetype.h"',
+    require => Package['libfreetype6-dev']
+  }
+
 }

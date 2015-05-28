@@ -48,6 +48,11 @@ Clone this repository
 
     $ git clone https://github.com/joomlatools/joomla-vagrant.git
 
+We recommend to install these Vagrant plugins first:
+
+    $ vagrant plugin install vagrant-puppet-install
+    $ vagrant plugin install vagrant-vbguest
+
 Go to the repository folder and provision the box
 
     $ cd joomla-vagrant

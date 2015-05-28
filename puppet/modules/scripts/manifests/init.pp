@@ -1,8 +1,5 @@
 class scripts {
-  class {"scripts::install": }
-}
 
-class scripts::install {
   file { '/home/vagrant/scripts':
     source => 'puppet:///modules/scripts/scripts',
     recurse => true,
@@ -28,4 +25,5 @@ class scripts::install {
     user    => vagrant,
     environment => 'COMPOSER_HOME=/home/vagrant/.composer'
   }
+
 }
