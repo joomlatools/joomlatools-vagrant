@@ -252,7 +252,7 @@ apache::vhost { 'joomla.box':
   server_admin  => 'webmaster@localhost',
   serveraliases => 'localhost',
   port          => 80,
-  priority      => '',
+  priority      => '00',
   docroot       => '/var/www',
   directory     => '/var/www',
   directory_allow_override   => 'All',

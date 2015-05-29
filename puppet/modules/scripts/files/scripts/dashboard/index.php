@@ -95,7 +95,7 @@ foreach ($dir as $fileinfo)
           <ul class="nav nav-sidebar">
             <li role="presentation" class="dropdown-header">System</li>
               <li><a href="/phpinfo">phpinfo</a></li>
-              <li><a href="http://joomla.box/pimpmylog">Log Files</a></li>
+              <li><a href="/pimpmylog">Log Files</a></li>
               <li><a href="http://joomla.box:3000/">Terminal</a></li>
           </ul>
         </div>
