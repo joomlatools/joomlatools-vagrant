@@ -47,7 +47,7 @@ class Ini extends Command
 
                 `sudo service apache2 restart 2>&1 1> /dev/null`;
 
-                $output->writeln("$key value is now '$value', was '$current''");
+                $output->writeln("$key value is now '$value', was '$current'");
             }
             else $output->write('Error: failed to find PHP\'s additional config directory (config-file-scan-dir)!');
         }
@@ -91,8 +91,11 @@ class Ini extends Command
         $values[$key] = $value;
 
         $string = '';
-        foreach($values as $k => $v) {
-            $string .= "$k = $v" . PHP_EOL;
+        foreach($values as $k => $v)
+        {
+            if (!empty($v)) {
+                $string .= "$k = $v" . PHP_EOL;
+            }
         }
 
         `sudo chmod o+rw $ini`;
