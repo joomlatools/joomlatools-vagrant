@@ -280,6 +280,7 @@ exec {'install-capistrano-gem':
     user    => vagrant,
     command => 'bash -c "source ~/.rvm/scripts/rvm; gem install capistrano"',
     environment => ['HOME=/home/vagrant'],
+    timeout => 900,
     path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
     require => Exec['set-default-ruby-for-vagrant']
 }
@@ -288,6 +289,7 @@ exec {'install-bundler-gem':
     user    => vagrant,
     command => 'bash -c "source ~/.rvm/scripts/rvm; gem install bundler"',
     environment => ['HOME=/home/vagrant'],
+    timeout => 900,
     path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
     require => Exec['set-default-ruby-for-vagrant']
 }
@@ -296,6 +298,7 @@ exec {'install-sass-gem':
     user    => vagrant,
     command => 'bash -c "source ~/.rvm/scripts/rvm; gem install sass compass"',
     environment => ['HOME=/home/vagrant'],
+    timeout => 900,
     path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
     require => Exec['set-default-ruby-for-vagrant']
 }
