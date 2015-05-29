@@ -41,23 +41,6 @@ Add the following line into your ***hosts file*** (/etc/hosts on Linux and MacOS
 
 And you are done. There will be two new folders created called www and Projects.
 
-For hacking on the box
-----------------------
-
-Clone this repository
-
-    $ git clone https://github.com/joomlatools/joomla-vagrant.git
-
-We recommend to install these Vagrant plugins first:
-
-    $ vagrant plugin install vagrant-puppet-install
-    $ vagrant plugin install vagrant-vbguest
-
-Go to the repository folder and provision the box
-
-    $ cd joomla-vagrant
-    $ vagrant up
-
 Apache
 ------
 
@@ -193,6 +176,23 @@ Use following details to connect:
     Port: 2222
     User: vagrant
     Password: vagrant
+
+For hacking on the box
+----------------------
+
+Clone this repository:
+
+    $ git clone https://github.com/joomlatools/joomla-vagrant.git
+
+We recommend to install these Vagrant plugins first:
+
+    $ vagrant plugin install vagrant-puppet-install
+    $ vagrant plugin install vagrant-vbguest
+
+Go to the repository folder and provision the box:
+
+    $ cd joomla-vagrant
+    $ vagrant up
 
 Reporting issues
 ----------------
