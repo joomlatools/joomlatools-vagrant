@@ -195,11 +195,11 @@ class { 'mysql::server':
 }
 
 $phpmyadmin_facts = "mysql_root_password=root
-        controluser_password=awesome"
+controluser_password=awesome"
 
 file { '/etc/phpmyadmin.facts':
   ensure => 'present',
-  mode   => 'ug+rw,o-rwx',
+  mode   => 'ugo+r',
   content => "$phpmyadmin_facts",
 }
 
@@ -289,7 +289,6 @@ exec {'install-capistrano-gem':
     user    => vagrant,
     command => 'bash -c "source ~/.rvm/scripts/rvm; gem install capistrano"',
     environment => ['HOME=/home/vagrant'],
-    path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
     require => Exec['set-default-ruby-for-vagrant']
 }
 
@@ -297,7 +296,6 @@ exec {'install-bundler-gem':
     user    => vagrant,
     command => 'bash -c "source ~/.rvm/scripts/rvm; gem install bundler"',
     environment => ['HOME=/home/vagrant'],
-    path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
     require => Exec['set-default-ruby-for-vagrant']
 }
 
@@ -305,7 +303,6 @@ exec {'install-sass-gem':
     user    => vagrant,
     command => 'bash -c "source ~/.rvm/scripts/rvm; gem install sass compass"',
     environment => ['HOME=/home/vagrant'],
-    path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
     require => Exec['set-default-ruby-for-vagrant']
 }
 

@@ -3,9 +3,6 @@
     "name": "kotuha/joomlatools-box",
     "vcs": true
   },
-  "variables": {
-    "version": "1.3.0"
-  },
   "builders": [
     {
       "type": "virtualbox-iso",
@@ -65,7 +62,11 @@
     {
       "type": "puppet-masterless",
       "manifest_file": "puppet/manifests/default.pp",
-      "module_paths": ["puppet/modules"]
+      "module_paths": ["puppet/modules"],
+      "facter": {
+        "pma_mysql_root_password": "root",
+        "pma_controluser_password": "awesome"
+      }
     },
     {
       "type": "shell",
@@ -79,7 +80,6 @@
   "post-processors": [
     {
       "type": "vagrant",
-      "output": "joomlatools-{{user `version`}}.box",
       "vagrantfile_template": "Vagrantfile.pkg"
     },
     {
@@ -89,7 +89,7 @@
       "artifact_type": "vagrant.box",
       "metadata": {
         "provider": "virtualbox",
-        "version": "{{user `version` }}"
+        "version": "1.3.0"
       }
     }
   ]
