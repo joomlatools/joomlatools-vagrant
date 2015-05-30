@@ -1,39 +1,11 @@
 {
+  "push": {
+    "name": "kotuha/joomlatools-box",
+    "vcs": true
+  },
   "variables": {
     "version": "1.3.0"
   },
-  "provisioners": [
-    {
-      "type": "shell",
-      "execute_command": "echo 'vagrant'|sudo -S sh '{{.Path}}'",
-      "scripts": [
-        "packer/scripts/base.sh",
-        "packer/scripts/vagrant.sh",
-        "packer/scripts/virtualbox.sh",
-        "packer/scripts/puppet.sh"
-      ]
-    },
-    {
-      "type": "puppet-masterless",
-      "manifest_file": "puppet/manifests/default.pp",
-      "module_paths": ["puppet/modules"]
-    },
-    {
-      "type": "shell",
-      "execute_command": "echo 'vagrant'|sudo -S sh '{{.Path}}'",
-      "scripts": [
-        "packer/scripts/cleanup.sh",
-        "packer/scripts/zerodisk.sh"
-      ]
-    }
-  ],
-  "post-processors": [
-    {
-      "type": "vagrant",
-      "output": "joomlatools-{{user `version`}}.box",
-      "vagrantfile_template": "Vagrantfile.pkg"
-    }
-  ],
   "builders": [
     {
       "type": "virtualbox-iso",
@@ -77,6 +49,48 @@
         [ "modifyvm", "{{.Name}}", "--memory", "512" ],
         [ "modifyvm", "{{.Name}}", "--cpus", "1" ]
       ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "execute_command": "echo 'vagrant'|sudo -S sh '{{.Path}}'",
+      "scripts": [
+        "packer/scripts/base.sh",
+        "packer/scripts/vagrant.sh",
+        "packer/scripts/virtualbox.sh",
+        "packer/scripts/puppet.sh"
+      ]
+    },
+    {
+      "type": "puppet-masterless",
+      "manifest_file": "puppet/manifests/default.pp",
+      "module_paths": ["puppet/modules"]
+    },
+    {
+      "type": "shell",
+      "execute_command": "echo 'vagrant'|sudo -S sh '{{.Path}}'",
+      "scripts": [
+        "packer/scripts/cleanup.sh",
+        "packer/scripts/zerodisk.sh"
+      ]
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "output": "joomlatools-{{user `version`}}.box",
+      "vagrantfile_template": "Vagrantfile.pkg"
+    },
+    {
+      "type": "atlas",
+      "only": ["virtualbox-iso"],
+      "artifact": "kotuha/joomlatools-box",
+      "artifact_type": "vagrant.box",
+      "metadata": {
+        "provider": "virtualbox",
+        "version": "{{user `version` }}"
+      }
     }
   ]
 }
