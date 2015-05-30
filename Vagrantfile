@@ -58,9 +58,6 @@ Vagrant.configure("2") do |config|
     config.vm.provision :shell, :inline => shell_cmd, :run => "always"
   end
 
-  config.vm.provision :shell, :inline => 'echo -e "mysql_root_password=root
-controluser_password=awesome" > /etc/phpmyadmin.facts;'
-
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "puppet/manifests"
     puppet.module_path = "puppet/modules"
