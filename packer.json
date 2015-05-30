@@ -1,6 +1,6 @@
 {
   "push": {
-    "name": "kotuha/joomlatools-box",
+    "name": "joomlatools/box",
     "vcs": true
   },
   "builders": [
@@ -85,7 +85,7 @@
     {
       "type": "atlas",
       "only": ["virtualbox-iso"],
-      "artifact": "kotuha/joomlatools-box",
+      "artifact": "joomlatools/box",
       "artifact_type": "vagrant.box",
       "metadata": {
         "provider": "virtualbox",
