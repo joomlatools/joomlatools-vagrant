@@ -194,22 +194,13 @@ class { 'mysql::server':
   }
 }
 
-$phpmyadmin_facts = "mysql_root_password=root
-controluser_password=awesome"
-
-file { '/etc/phpmyadmin.facts':
-  ensure => 'present',
-  mode   => 'ugo+r',
-  content => "$phpmyadmin_facts",
-}
-
 exec { 'grant-all-to-root':
   command     => "mysql --user='root' --password='root' --execute=\"GRANT ALL ON *.* TO 'root'@'%' IDENTIFIED BY 'root' WITH GRANT OPTION;\"",
   require => Class['phpmyadmin']
 }
 
 class { 'phpmyadmin':
-  require => [Class['mysql::server'], Class['mysql::config'], Class['php'], File['/etc/phpmyadmin.facts']],
+  require => [Class['mysql::server'], Class['mysql::config'], Class['php']],
 }
 
 apache::vhost { 'phpmyadmin':

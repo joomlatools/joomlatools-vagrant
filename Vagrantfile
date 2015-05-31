@@ -62,5 +62,9 @@ Vagrant.configure("2") do |config|
     puppet.manifests_path = "puppet/manifests"
     puppet.module_path = "puppet/modules"
     puppet.options = ['--verbose']
+    puppet.facter = {
+        "pma_mysql_root_password"  => "root",
+        "pma_controluser_password" => "awesome"
+    }
   end
 end
