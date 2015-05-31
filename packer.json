@@ -31,7 +31,7 @@
         "<enter><wait>"
       ],
       "boot_wait": "10s",
-      "disk_size": 2048,
+      "disk_size": 8000,
       "guest_os_type": "Ubuntu_64",
       "http_directory": "packer/http",
       "iso_checksum": "83aabd8dcf1e8f469f3c72fff2375195",
