@@ -80,7 +80,8 @@
   "post-processors": [
     {
       "type": "vagrant",
-      "vagrantfile_template": "Vagrantfile.pkg"
+      "vagrantfile_template": "Vagrantfile.pkg",
+      "keep_input_artifact": false
     },
     {
       "type": "atlas",
