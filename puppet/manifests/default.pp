@@ -274,6 +274,17 @@ exec { 'disable-default-vhost':
     require => Apache::Vhost['joomla.box']
 }
 
+file { '/etc/apache2/conf-available/shared_paths':
+    ensure => file,
+    require => Apache::Vhost['joomla.box']
+}
+
+exec { 'enable-shared-paths-config':
+    command => 'a2enconf shared_paths',
+    require => File['/etc/apache2/conf-available/shared_paths']
+}
+
+
 exec { 'set-env-for-debugging':
   command => "echo \"\nSetEnv JOOMLATOOLS_BOX 1\" >> /etc/apache2/apache2.conf",
   unless  => "grep JOOMLATOOLS_BOX /etc/apache2/apache2.conf",

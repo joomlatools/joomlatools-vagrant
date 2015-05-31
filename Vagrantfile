@@ -53,7 +53,7 @@ Vagrant.configure("2") do |config|
 
     json = mapping.to_json.gsub(/"/, '\\\\\\\\\"')
     paths = 'SetEnv BOX_SHARED_PATHS \"' + json + '\"'
-    shell_cmd = '[ -d /etc/apache2/conf.d ] && { echo "' + paths + '" > /etc/apache2/conf.d/shared_paths && service apache2 restart; } || echo "Apache2 is not installed yet"'
+    shell_cmd = '[ -d /etc/apache2/conf.d ] && { echo "' + paths + '" > /etc/apache2/conf-available/shared_paths && service apache2 restart; } || echo "Apache2 is not installed yet"'
 
     config.vm.provision :shell, :inline => shell_cmd, :run => "always"
   end
