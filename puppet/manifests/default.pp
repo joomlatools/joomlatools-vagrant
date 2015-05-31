@@ -194,13 +194,22 @@ class { 'mysql::server':
   }
 }
 
+$phpmyadmin_facts = "mysql_root_password=root
+controluser_password=awesome"
+
+file { '/etc/phpmyadmin.facts':
+  ensure => 'present',
+  mode   => 'ugo+r',
+  content => "$phpmyadmin_facts",
+}
+
 exec { 'grant-all-to-root':
   command     => "mysql --user='root' --password='root' --execute=\"GRANT ALL ON *.* TO 'root'@'%' IDENTIFIED BY 'root' WITH GRANT OPTION;\"",
   require => Class['phpmyadmin']
 }
 
 class { 'phpmyadmin':
-  require => [Class['mysql::server'], Class['mysql::config'], Class['php']],
+  require => [Class['mysql::server'], Class['mysql::config'], Class['php'], File['/etc/phpmyadmin.facts']],
 }
 
 apache::vhost { 'phpmyadmin':
@@ -281,7 +290,6 @@ exec {'install-capistrano-gem':
     command => 'bash -c "source ~/.rvm/scripts/rvm; gem install capistrano"',
     environment => ['HOME=/home/vagrant'],
     timeout => 900,
-    path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
     require => Exec['set-default-ruby-for-vagrant']
 }
 
@@ -290,7 +298,6 @@ exec {'install-bundler-gem':
     command => 'bash -c "source ~/.rvm/scripts/rvm; gem install bundler"',
     environment => ['HOME=/home/vagrant'],
     timeout => 900,
-    path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
     require => Exec['set-default-ruby-for-vagrant']
 }
 
@@ -299,7 +306,6 @@ exec {'install-sass-gem':
     command => 'bash -c "source ~/.rvm/scripts/rvm; gem install sass compass"',
     environment => ['HOME=/home/vagrant'],
     timeout => 900,
-    path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
     require => Exec['set-default-ruby-for-vagrant']
 }
 
