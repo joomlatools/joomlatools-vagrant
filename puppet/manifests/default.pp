@@ -161,7 +161,7 @@ puphpet::ini { 'xdebug':
 
 puphpet::ini { 'custom':
   value   => [
-    'sendmail_path = /home/vagrant/.rvm/gems/ruby-2.0.0-p247/bin/catchmail -fnoreply@example.com',
+    'sendmail_path = /home/vagrant/.rvm/gems/ruby-2.2.1/bin/catchmail -fnoreply@example.com',
     'display_errors = On',
     'error_reporting = E_ALL & ~E_NOTICE',
     'display_startup_errors = On',
