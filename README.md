@@ -14,14 +14,18 @@ Installation
 
 1. Run the following commands in a folder of your choice:
 
-    $ vagrant init joomlatools/box
-    $ vagrant up
+    ```
+vagrant init joomlatools/box
+vagrant up
+    ```
 
     This will download the Vagrant box and get it running.
 
 1. Add the following line into your ***hosts file*** (/etc/hosts on Linux and MacOS, for other operating systems see [here](http://en.wikipedia.org/wiki/Hosts_(file)#Location_in_the_file_system))
 
-    33.33.33.58 joomla.box webgrind.joomla.box phpmyadmin.joomla.box
+    ```
+33.33.33.58 joomla.box webgrind.joomla.box phpmyadmin.joomla.box
+    ```
 
 1. The dashboard is now available at [joomla.box](http://joomla.box)
 
@@ -32,11 +36,15 @@ Getting started
 
 1. Once you have installed the box as described above, SSH into the box:
 
-      $ vagrant ssh
+      ```
+vagrant ssh
+```
 
 1. Create your first Joomla website with this command:
 
-      $ joomla site:create mysite
+    ```
+joomla site:create mysite
+    ```
 
 1. Your new site is available at [joomla.box/mysite](http://joomla.box/mysite). You can login using the credentials  `admin` / `admin`.
 
@@ -50,22 +58,29 @@ If you want to make changes to the box's infrastructure, you can do so by buildi
 
 1. Clone this repository:
 
-    $ git clone https://github.com/joomlatools/joomla-vagrant.git
+    ```
+git clone https://github.com/joomlatools/joomla-vagrant.git
+    ```
 
 1. Install required Vagrant plugins
 
-    $ vagrant plugin install vagrant-puppet-install
-    $ vagrant plugin install vagrant-vbguest
+    ```
+vagrant plugin install vagrant-puppet-install
+vagrant plugin install vagrant-vbguest
+    ```
 
 1. Go to the repository folder and provision the box:
 
-    $ cd joomla-vagrant
-    $ vagrant up
+    ```
+cd joomla-vagrant
+vagrant up
+    ```
 
 1. You can now edit the Puppet configuration. To apply your changes, provision the box again:
 
-    $ vagrant provision
-
+    ```
+vagrant provision
+    ```
 
 Reporting issues
 ----------------
