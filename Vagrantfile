@@ -26,8 +26,7 @@ end
 CONF = _config
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "precise64"
-  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
+  config.vm.box = "ubuntu/trusty64"
   config.vm.hostname = "joomlatools.dev"
 
   config.vm.network :private_network, ip: "33.33.33.58"
@@ -54,18 +53,18 @@ Vagrant.configure("2") do |config|
 
     json = mapping.to_json.gsub(/"/, '\\\\\\\\\"')
     paths = 'SetEnv BOX_SHARED_PATHS \"' + json + '\"'
-    shell_cmd = '[ -d /etc/apache2/conf.d ] && { echo "' + paths + '" > /etc/apache2/conf.d/shared_paths && service apache2 restart; } || echo "Apache2 is not installed yet"'
+    shell_cmd = '[ -d /etc/apache2/conf.d ] && { echo "' + paths + '" > /etc/apache2/conf-available/shared_paths.conf && service apache2 restart; } || echo "Apache2 is not installed yet"'
 
     config.vm.provision :shell, :inline => shell_cmd, :run => "always"
   end
-
-  config.vm.provision :shell, :inline => "sudo apt-get update"
-  config.vm.provision :shell, :inline => 'echo -e "mysql_root_password=root
-controluser_password=awesome" > /etc/phpmyadmin.facts;'
 
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "puppet/manifests"
     puppet.module_path = "puppet/modules"
     puppet.options = ['--verbose']
+    puppet.facter = {
+        "pma_mysql_root_password"  => "root",
+        "pma_controluser_password" => "awesome"
+    }
   end
 end

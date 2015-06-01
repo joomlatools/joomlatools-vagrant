@@ -1,6 +1,8 @@
 group { 'puppet': ensure => present }
-Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/' ] }
+Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/' ] }
 File { owner => 0, group => 0, mode => 0644 }
+
+user { 'vagrant': }
 
 class {'apt':
   always_apt_update => true,
@@ -11,10 +13,19 @@ Class['::apt::update'] -> Package <|
 and title != 'software-properties-common'
 |>
 
-    apt::key { '4F4EA0AAE5267A6C': }
+apt::key { '4F4EA0AAE5267A6C': }
 
-apt::ppa { 'ppa:ondrej/php5-oldstable':
+apt::ppa { 'ppa:ondrej/php5':
   require => Apt::Key['4F4EA0AAE5267A6C']
+}
+
+include '::gnupg'
+gnupg_key { 'gpg-rvm-signature':
+  ensure     => present,
+  key_id     => 'D39DC0E3',
+  user       => 'vagrant',
+  key_server => 'hkp://keys.gnupg.net',
+  key_type   => public,
 }
 
 file { '/home/vagrant/.bash_aliases':
@@ -32,21 +43,39 @@ package { [
   ensure  => 'installed',
 }
 
-package { ['sass', 'compass']:
-  ensure   => 'installed',
-  provider => 'gem',
+class apache::certificate {
+  class { 'openssl': }
+
+  file { ['/etc/apache2',  '/etc/apache2/ssl']:
+    ensure => 'directory',
+  }
+
+  openssl::certificate::x509 { 'server':
+    country      => 'BE',
+    organization => 'Joomlatools',
+    commonname   => 'localhost.ssl',
+    email        => 'info@joomlatools.com',
+    days         => 3650,
+    base_dir     => '/etc/apache2/ssl',
+  }
 }
 
-class { 'apache': }
+class { 'apache::certificate':}
+
+class { 'apache':
+    require => Class['apache::certificate'],
+}
 
 apache::dotconf { 'custom':
-  content => 'EnableSendfile Off',
+  content => template("apache/custom.conf.erb"),
 }
 
 apache::module { 'rewrite': }
+apache::module { 'ssl': }
 
 class { 'php':
   service       => 'apache',
+  version       => 'latest',
   module_prefix => '',
   require       => Package['apache'],
 }
@@ -59,8 +88,7 @@ php::module { 'php5-imagick': }
 php::module { 'php5-intl': }
 php::module { 'php5-mcrypt': }
 php::module { 'php5-sqlite': }
-php::module { 'php5-xcache': }
-php::module { 'php-apc': }
+php::module { 'php5-apcu': }
 
 class { 'php::devel':
   require => Class['php'],
@@ -91,16 +119,16 @@ package { 'libyaml-dev':
 php::pecl::module { 'yaml':
   use_package => no,
   ensure => present,
-  require => [php::pear::config['download_dir'], Package['libyaml-dev']]
+  require => [Php::Pear::Config['download_dir'], Package['libyaml-dev']]
 }
 
 puphpet::ini { 'yaml':
   value   => [
     'extension=yaml.so'
   ],
-  ini     => '/etc/php5/conf.d/zzz_yaml.ini',
+  ini     => '/etc/php5/mods-available/zzz_yaml.ini',
   notify  => Service['apache'],
-  require => [Class['php'], php::pecl::module['yaml']]
+  require => [Class['php'], Php::Pecl::Module['yaml']]
 }
 
 class { 'xdebug':
@@ -126,35 +154,38 @@ puphpet::ini { 'xdebug':
     'xdebug.max_nesting_level = 1000',
     'xdebug.profiler_output_dir = /var/www/logs/xdebug/'
   ],
-  ini     => '/etc/php5/conf.d/zzz_xdebug.ini',
-  notify  => Service['apache'],
-  require => Class['php'],
-}
-
-puphpet::ini { 'php':
-  value   => [
-    'date.timezone = "UTC"'
-  ],
-  ini     => '/etc/php5/conf.d/zzz_php.ini',
+  ini     => '/etc/php5/mods-available/zzz_xdebug.ini',
   notify  => Service['apache'],
   require => Class['php'],
 }
 
 puphpet::ini { 'custom':
   value   => [
-    'sendmail_path = /opt/vagrant_ruby/bin/catchmail -fnoreply@example.com',
+    'sendmail_path = /home/vagrant/.rvm/gems/ruby-2.0.0-p247/bin/catchmail -fnoreply@example.com',
     'display_errors = On',
-    'error_reporting = -1',
+    'error_reporting = E_ALL & ~E_NOTICE',
     'display_startup_errors = On',
     'upload_max_filesize = "256M"',
     'post_max_size = "256M"',
-    'memory_limit = "64M"'
+    'memory_limit = "256M"',
+    'date.timezone = "UTC"'
   ],
-  ini     => '/etc/php5/conf.d/zzz_custom.ini',
+  ini     => '/etc/php5/mods-available/zzz_custom.ini',
   notify  => Service['apache'],
   require => Class['php'],
 }
 
+exec {'symlink-custom-ini-files-apache':
+    command => 'find /etc/php5/mods-available/ -name "zzz_*" -exec /bin/bash -c \'ln -s {} /etc/php5/apache2/conf.d/`basename $0`\' {} \;',
+    unless  => 'bash -c "test -f /etc/php5/apache2/conf.d/zzz_custom.ini"',
+    require => [Puphpet::Ini['custom'], Puphpet::Ini['yaml'], Puphpet::Ini['xdebug']]
+}
+
+exec {'symlink-custom-ini-files-cli':
+    command => 'find /etc/php5/mods-available/ -name "zzz_*" -exec /bin/bash -c \'ln -s {} /etc/php5/cli/conf.d/`basename $0`\' {} \;',
+    unless  => 'bash -c "test -f etc/php5/cli/conf.d/zzz_custom.ini"',
+    require => [Puphpet::Ini['custom'], Puphpet::Ini['yaml'], Puphpet::Ini['xdebug']]
+}
 
 class { 'mysql::server':
   config_hash   => {
@@ -181,14 +212,23 @@ apache::vhost { 'phpmyadmin':
   require       => Class['phpmyadmin'],
 }
 
-exec { 'gem-i18n-legacy':
-  command => '/opt/vagrant_ruby/bin/gem install i18n -v=0.6.5',
-  unless  => 'test `/opt/vagrant_ruby/bin/gem list --local | grep -q 0.6.5; echo $?` -eq 0',
-  path    => ['/usr/bin', '/bin'],
+single_user_rvm::install { 'vagrant':
+    require => Gnupg_key['gpg-rvm-signature']
+}
+single_user_rvm::install_ruby { '2.2':
+    user => vagrant
 }
 
-class { 'mailcatcher':
-  require => Exec['gem-i18n-legacy']
+exec {'set-default-ruby-for-vagrant':
+    user        => vagrant,
+    command     => 'bash -c "source ~/.rvm/scripts/rvm; rvm --default use 2.2"',
+    environment => ['HOME=/home/vagrant'],
+    path        => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
+    require     => Single_user_rvm::Install_ruby['2.2']
+}
+
+class {'mailcatcher':
+    require => Exec['set-default-ruby-for-vagrant']
 }
 
 class { 'less': }
@@ -208,11 +248,11 @@ apache::vhost { 'webgrind':
   require       => Class['webgrind'],
 }
 
-apache::vhost { 'default':
+apache::vhost { 'joomla.box':
   server_admin  => 'webmaster@localhost',
-  serveraliases => 'joomla.box',
+  serveraliases => 'localhost',
   port          => 80,
-  priority      => '',
+  priority      => '00',
   docroot       => '/var/www',
   directory     => '/var/www',
   directory_allow_override   => 'All',
@@ -220,14 +260,76 @@ apache::vhost { 'default':
   template     => 'apache/virtualhost/joomlatools.vhost.conf.erb',
 }
 
+exec { 'disable-default-vhost':
+    command => 'a2dissite 000-default',
+    require => Apache::Vhost['joomla.box']
+}
+
+file { '/etc/apache2/conf-available/shared_paths.conf':
+    ensure => file,
+    require => Apache::Vhost['joomla.box']
+}
+
+exec { 'enable-shared-paths-config':
+    command => 'a2enconf shared_paths',
+    require => File['/etc/apache2/conf-available/shared_paths.conf']
+}
+
 exec { 'set-env-for-debugging':
   command => "echo \"\nSetEnv JOOMLATOOLS_BOX 1\" >> /etc/apache2/apache2.conf",
   unless  => "grep JOOMLATOOLS_BOX /etc/apache2/apache2.conf",
   notify  => Service['apache'],
-  require => Apache::Vhost['default']
+  require => Apache::Vhost['joomla.box']
 }
 
 class { 'scripts': }
 
 class { 'phpmanager': }
 
+exec {'install-capistrano-gem':
+    user    => vagrant,
+    command => 'bash -c "source ~/.rvm/scripts/rvm; gem install capistrano"',
+    environment => ['HOME=/home/vagrant'],
+    timeout => 900,
+    require => Exec['set-default-ruby-for-vagrant']
+}
+
+exec {'install-bundler-gem':
+    user    => vagrant,
+    command => 'bash -c "source ~/.rvm/scripts/rvm; gem install bundler"',
+    environment => ['HOME=/home/vagrant'],
+    timeout => 900,
+    require => Exec['set-default-ruby-for-vagrant']
+}
+
+exec {'install-sass-gem':
+    user    => vagrant,
+    command => 'bash -c "source ~/.rvm/scripts/rvm; gem install sass compass"',
+    environment => ['HOME=/home/vagrant'],
+    timeout => 900,
+    require => Exec['set-default-ruby-for-vagrant']
+}
+
+class { 'box':
+    require => [Class['composer'], Class['phpmanager']]
+}
+
+class {'wetty': }
+
+file { '/etc/update-motd.d/999-joomlatools':
+  ensure => 'present',
+  mode   => 'ug+rwx,o+rx',
+  source => 'puppet:///modules/motd/joomlatools',
+}
+
+file { ['/etc/update-motd.d/10-help-text', '/etc/update-motd.d/91-release-upgrade', '/etc/update-motd.d/50-landscape-sysinfo', '/etc/update-motd.d/51-cloudguest', '/etc/update-motd.d/90-updates-available', '/etc/update-motd.d/98-cloudguest']:
+    ensure => absent
+}
+
+class { 'pimpmylog':
+    require => [Package['apache'], Package['mysql-server']]
+}
+
+class { 'phpmetrics':
+    require => [Class['composer'], Class['scripts']]
+}

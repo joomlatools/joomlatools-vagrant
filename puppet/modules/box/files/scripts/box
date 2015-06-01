@@ -1,0 +1,44 @@
+#!/usr/bin/php5
+<?php
+$autoload = __DIR__.'/vendor/autoload.php';
+
+require_once $autoload;
+
+use Symfony\Component\Console\Application;
+
+spl_autoload_register(function($className) {
+    $className = ltrim($className, '\\');
+    $fileName  = __DIR__.'/';
+
+    if ($lastNsPos = strrpos($className, '\\'))
+    {
+        $namespace = substr($className, 0, $lastNsPos);
+        $className = substr($className, $lastNsPos + 1);
+        $fileName  .= str_replace('\\', DIRECTORY_SEPARATOR, $namespace) . DIRECTORY_SEPARATOR;
+    }
+
+    $fileName .= str_replace('_', DIRECTORY_SEPARATOR, $className) . '.php';
+
+    require $fileName;
+});
+
+$application = new Application('Joomlatools Box', '0.1');
+
+$application->add(new Command\Apc\Enable());
+$application->add(new Command\Apc\Disable());
+$application->add(new Command\Apc\Clear());
+
+$application->add(new Command\Xdebug\Enable());
+$application->add(new Command\Xdebug\Disable());
+
+$application->add(new Command\Server\Start());
+$application->add(new Command\Server\Stop());
+
+$application->add(new Command\Php\Ini());
+$application->add(new Command\Php\UseVersion());
+$application->add(new Command\Php\ListVersion());
+$application->add(new Command\Php\Versions());
+$application->add(new Command\Php\Remove());
+$application->add(new Command\Php\Reset());
+
+$application->run();

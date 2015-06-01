@@ -91,6 +91,12 @@ body {
   margin-top: 0;
 }
 
+/*
+ * Dashboard main table
+ */
+.table-dashboard tbody td {
+    vertical-align: middle !important;
+}
 
 /*
  * Placeholder dashboard ideas
@@ -117,5 +123,4 @@ body {
 }
 .dropdown-menu li.delete a:hover{
   background-color: #ebcccc;
-  
 }
