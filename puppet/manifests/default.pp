@@ -161,7 +161,7 @@ puphpet::ini { 'xdebug':
 
 puphpet::ini { 'custom':
   value   => [
-    'sendmail_path = /home/vagrant/.rvm/gems/ruby-2.0.0-p247/bin/catchmail -fnoreply@example.com',
+    'sendmail_path = /home/vagrant/.rvm/gems/ruby-2.2.1/bin/catchmail -fnoreply@example.com',
     'display_errors = On',
     'error_reporting = E_ALL & ~E_NOTICE',
     'display_startup_errors = On',
@@ -194,22 +194,13 @@ class { 'mysql::server':
   }
 }
 
-$phpmyadmin_facts = "mysql_root_password=root
-controluser_password=awesome"
-
-file { '/etc/phpmyadmin.facts':
-  ensure => 'present',
-  mode   => 'ugo+r',
-  content => "$phpmyadmin_facts",
-}
-
 exec { 'grant-all-to-root':
   command     => "mysql --user='root' --password='root' --execute=\"GRANT ALL ON *.* TO 'root'@'%' IDENTIFIED BY 'root' WITH GRANT OPTION;\"",
   require => Class['phpmyadmin']
 }
 
 class { 'phpmyadmin':
-  require => [Class['mysql::server'], Class['mysql::config'], Class['php'], File['/etc/phpmyadmin.facts']],
+  require => [Class['mysql::server'], Class['mysql::config'], Class['php']],
 }
 
 apache::vhost { 'phpmyadmin':
@@ -274,6 +265,16 @@ exec { 'disable-default-vhost':
     require => Apache::Vhost['joomla.box']
 }
 
+file { '/etc/apache2/conf-available/shared_paths.conf':
+    ensure => file,
+    require => Apache::Vhost['joomla.box']
+}
+
+exec { 'enable-shared-paths-config':
+    command => 'a2enconf shared_paths',
+    require => File['/etc/apache2/conf-available/shared_paths.conf']
+}
+
 exec { 'set-env-for-debugging':
   command => "echo \"\nSetEnv JOOMLATOOLS_BOX 1\" >> /etc/apache2/apache2.conf",
   unless  => "grep JOOMLATOOLS_BOX /etc/apache2/apache2.conf",
@@ -289,6 +290,7 @@ exec {'install-capistrano-gem':
     user    => vagrant,
     command => 'bash -c "source ~/.rvm/scripts/rvm; gem install capistrano"',
     environment => ['HOME=/home/vagrant'],
+    timeout => 900,
     require => Exec['set-default-ruby-for-vagrant']
 }
 
@@ -296,6 +298,7 @@ exec {'install-bundler-gem':
     user    => vagrant,
     command => 'bash -c "source ~/.rvm/scripts/rvm; gem install bundler"',
     environment => ['HOME=/home/vagrant'],
+    timeout => 900,
     require => Exec['set-default-ruby-for-vagrant']
 }
 
@@ -303,6 +306,7 @@ exec {'install-sass-gem':
     user    => vagrant,
     command => 'bash -c "source ~/.rvm/scripts/rvm; gem install sass compass"',
     environment => ['HOME=/home/vagrant'],
+    timeout => 900,
     require => Exec['set-default-ruby-for-vagrant']
 }
 

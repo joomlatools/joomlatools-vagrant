@@ -78,19 +78,20 @@
     }
   ],
   "post-processors": [
-    {
-      "type": "vagrant",
-      "vagrantfile_template": "Vagrantfile.pkg"
-    },
-    {
-      "type": "atlas",
-      "only": ["virtualbox-iso"],
-      "artifact": "joomlatools/box",
-      "artifact_type": "vagrant.box",
-      "metadata": {
-        "provider": "virtualbox",
-        "version": "1.3.0"
-      }
-    }
+        [{
+            "type": "vagrant",
+            "vagrantfile_template": "Vagrantfile.pkg",
+            "keep_input_artifact": false
+        },
+        {
+            "type": "atlas",
+            "only": ["virtualbox-iso"],
+            "artifact": "joomlatools/box",
+            "artifact_type": "vagrant.box",
+            "metadata": {
+                "provider": "virtualbox",
+                "version": "1.3.0"
+            }
+        }]
   ]
 }

@@ -6,7 +6,7 @@ class mailcatcher {
         user    => vagrant,
         command => 'bash -c "source ~/.rvm/scripts/rvm; gem install mailcatcher"',
         environment => ['HOME=/home/vagrant'],
-        path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
+        timeout => 900,
         require => [Package['sqlite3'], Package['libsqlite3-dev']]
   }
 

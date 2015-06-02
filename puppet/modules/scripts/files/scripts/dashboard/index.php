@@ -102,11 +102,11 @@ foreach ($dir as $fileinfo)
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
         <p>To install new sites, check out the documentation on <a href="https://github.com/joomlatools/joomla-console#create-sites">Github</a>.</p>
           <div class="table-responsive">
-            <table class="table table-striped">
+            <table class="table table-striped table-dashboard">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>Site Running On This Box</th>
+                  <th width="10">#</th>
+                  <th>Sites Running On This Box</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -124,7 +124,7 @@ foreach ($dir as $fileinfo)
                   <td>
 
                     <div class="btn-group">
-                      <a href="/<?php echo $site . '/administrator/'; ?>" class="btn btn-primary btn-sm">Administer</a>
+                      <a href="/<?php echo $site . '/administrator/'; ?>" class="btn btn-primary btn-xs">Administer</a>
                       <!--
                       <button type="button" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown">
                         <span class="caret"></span>
