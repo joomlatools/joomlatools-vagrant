@@ -1,6 +1,8 @@
 Joomlatools Vagrant box
 =======================
 
+![Screenshot](http://www.joomlatools.com/images/blog/2015/joomla-vagrant-13-dashboard.png)
+
 This project automates the setup of a Joomla development environment.
 
 It is capable of running a full featured LAMP stack with a single command so that you can start working on your Joomla projects quickly.
