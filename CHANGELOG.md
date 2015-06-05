@@ -11,6 +11,9 @@ To view the diff between two versions, go to https://github.com/joomlatools/joom
 * Improved - Upgraded default PHP to 5.5
 * Improved - Upgraded OS and stack: Ubuntu 14.04, Apache 2.4, Puppet 3.4, Ruby 2.2
 * Improved - Add "getting started" instructions to MOTD
+* Improved - Installed RVM for the `vagrant` user
+* Improved - Install mailcatcher for the vagrant user instead of globally
+* Improved - Consolidated all server-related commands into a single `box` command. (apc, xdebug, phpmanager, ..)
 * Added - Created the box dashboard available at joomla.box
 * Added - Installed Wetty (web terminal)
 * Added - Installed PimpMyLog for access to server logs via browser
@@ -19,9 +22,6 @@ To view the diff between two versions, go to https://github.com/joomlatools/joom
 * Added - Enable SSL by default to joomla.box and all newly created hosts
 * Added - Capistrano gem
 * Added - Bundler gem
-* Improved - Installed RVM for the `vagrant` user
-* Improved - Install mailcatcher for the vagrant user instead of globally
-* Improved - Consolidated all server-related commands into a single `box` command. (apc, xdebug, phpmanager, ..)
 * Fixed - Fix gsub error when adding incorrect shared folders
 * Fixed - Broken dependencies for Mailcatcher
 * Fixed - Fix phpmyadmin puppet manifest on Windows (#8)
