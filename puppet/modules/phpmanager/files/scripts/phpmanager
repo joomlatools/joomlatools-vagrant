@@ -193,7 +193,7 @@ command_install() {
 
     # Setup the PATH to include legacy build tools if needed
     SHORT=$(sub_getshortversion $VERSION)
-    if [[ "$SHORT" -lt 5500 ]] ; then
+    if [[ "$SHORT" -lt 5419 ]] ; then
         export PATH=/opt/bison-2.2/bin:/opt/flex-2.5.4/bin:$PATH
     else
         export PATH=/opt/bison-2.4/bin:$PATH
