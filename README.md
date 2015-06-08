@@ -1,7 +1,7 @@
+![Screenshot](http://www.joomlatools.com/images/blog/2015/joomla-vagrant-13-dashboard.png)
+
 Joomlatools Vagrant box
 =======================
-
-![Screenshot](http://www.joomlatools.com/images/blog/2015/joomla-vagrant-13-dashboard.png)
 
 This project automates the setup of a Joomla development environment.
 
