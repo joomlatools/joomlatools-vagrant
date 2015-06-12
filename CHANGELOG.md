@@ -7,29 +7,29 @@ in 1.x versions.
 To get the diff for a specific change, go to https://github.com/joomlatools/joomla-vagrant/commit/xxx where xxx is the change hash.
 To view the diff between two versions, go to https://github.com/joomlatools/joomla-vagrant/compare/v1.0.0...v1.0.1
 
-1.3.0 (2015-06-01)
-* Improved - Upgraded default PHP to 5.5
-* Improved - Upgraded OS and stack: Ubuntu 14.04, Apache 2.4, Puppet 3.4, Ruby 2.2
-* Improved - Add "getting started" instructions to MOTD
-* Improved - Installed RVM for the `vagrant` user
-* Improved - Install mailcatcher for the vagrant user instead of globally
-* Improved - Consolidated all server-related commands into a single `box` command. (apc, xdebug, phpmanager, ..)
-* Added - Created the box dashboard available at joomla.box
-* Added - Installed Wetty (web terminal)
-* Added - Installed PimpMyLog for access to server logs via browser
-* Added - Installed PhpMetrics
-* Added - Create a Packer template
-* Added - Enable SSL by default to joomla.box and all newly created hosts
-* Added - Capistrano gem
-* Added - Bundler gem
-* Fixed - Fix gsub error when adding incorrect shared folders
-* Fixed - Broken dependencies for Mailcatcher
-* Fixed - Fix phpmyadmin puppet manifest on Windows (#8)
-* Fixed - Suppress STDERR output when restarting Apache
-* Fixed - Compile and configure Opcache and APCu by default when building PHP versions greater than 5.5
-* Fixed - Use Xdebug v2.2.7 for PHP versions older than 5.4.0
-* Fixed - Do not delete php binaries on `phpmanager restore` if using system default
-* Removed - Removed XHProf
+* 1.3.0 (2015-06-01)
+ * Improved - Upgraded default PHP to 5.5
+ * Improved - Upgraded OS and stack: Ubuntu 14.04, Apache 2.4, Puppet 3.4, Ruby 2.2
+ * Improved - Add "getting started" instructions to MOTD
+ * Improved - Installed RVM for the `vagrant` user
+ * Improved - Install mailcatcher for the vagrant user instead of globally
+ * Improved - Consolidated all server-related commands into a single `box` command. (apc, xdebug, phpmanager, ..)
+ * Added - Created the box dashboard available at joomla.box
+ * Added - Installed Wetty (web terminal)
+ * Added - Installed PimpMyLog for access to server logs via browser
+ * Added - Installed PhpMetrics
+ * Added - Create a Packer template
+ * Added - Enable SSL by default to joomla.box and all newly created hosts
+ * Added - Capistrano gem
+ * Added - Bundler gem
+ * Fixed - Fix gsub error when adding incorrect shared folders
+ * Fixed - Broken dependencies for Mailcatcher
+ * Fixed - Fix phpmyadmin puppet manifest on Windows (#8)
+ * Fixed - Suppress STDERR output when restarting Apache
+ * Fixed - Compile and configure Opcache and APCu by default when building PHP versions greater than 5.5
+ * Fixed - Use Xdebug v2.2.7 for PHP versions older than 5.4.0
+ * Fixed - Do not delete php binaries on `phpmanager restore` if using system default
+ * Removed - Removed XHProf
 
 * 1.2.2 (2014-08-21)
  * Added - Share the path mappings with guest box through BOX_SHARED_PATHS environment variable.
