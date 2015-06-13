@@ -84,6 +84,55 @@ vagrant up
 vagrant provision
     ```
 
+Building and releasing using Packer
+-----------------------------------
+
+We use [Packer](https://www.packer.io/) to automatically build and deploy the box on [Atlas](https://atlas.hashicorp.com/joomlatools/box). To launch a build, follow these steps:
+
+1. Clone this repository:
+
+    ```
+git clone https://github.com/joomlatools/joomla-vagrant.git
+    ```
+
+1. Install [Packer](https://www.packer.io/)
+1. Generate a new token for your [Atlas account](https://atlas.hashicorp.com/settings/tokens).
+1. Make the token available to Packer in the current terminal session:
+
+    ```
+export ATLAS_TOKEN=<token>
+    ```
+
+1. Now edit the `packer.json` file. Look for the current version and increase the version number.
+The version number is defined in the post-processor section and can be found at the bottom of the file. It looks like this:
+
+    ```js
+"post-processors": [
+       ...
+      {
+          "type": "atlas",
+          ...
+          "metadata": {
+              "provider": "virtualbox",
+              "version": "1.3.0"
+          }
+      }]
+]
+    ```
+
+    If you are not updating the `joomlatools/box` but want to create your own version, be sure to replace all occurences of `joomlatools/box` with your account and box name in the `packer.json` file.
+
+    *Note* A build cannot overwrite an existing version. If you want to replace an existing version, you will have to delete it on Atlas first!
+
+1. Commit the change and push back to GitHub.
+1. Instruct packer to start the build:
+
+    ```
+packer push packer.json
+    ```
+
+You can follow-up the build progress on the [Builds](https://atlas.hashicorp.com/builds) page. Once it's finished, the new version will be automatically available on the [your boxes](https://atlas.hashicorp.com/vagrant) section. Add a changelog and release it to the public.
+
 Reporting issues
 ----------------
 
