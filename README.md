@@ -1,3 +1,5 @@
+![Screenshot](http://www.joomlatools.com/images/blog/2015/joomla-vagrant-13-dashboard.png)
+
 Joomlatools Vagrant box
 =======================
 
@@ -5,189 +7,131 @@ This project automates the setup of a Joomla development environment.
 
 It is capable of running a full featured LAMP stack with a single command so that you can start working on your Joomla projects quickly.
 
-The setup includes:
--------------------
-* LAMP (Ubuntu 12.10, Apache, MySQL 5.5, PHP 5.4)
-* Phpmyadmin
-* Composer
-* Xdebug
-* Webgrind
-* Mailcatcher
-* Less and SASS compilers
-* UglifyJS
-
 Installation
 ------------
 
-Install [VirtualBox](http://www.virtualbox.org/)
+1. Install [VirtualBox](http://www.virtualbox.org/)
 
-Install [Vagrant](http://www.vagrantup.com/)
+1. Install [Vagrant](http://www.vagrantup.com/)
 
-Run the following commands in a folder of your choice:
+1. Run the following commands in a folder of your choice:
 
-    $ vagrant init joomlatools/box
-    $ vagrant up
+    ```
+vagrant init joomlatools/box
+vagrant up
+    ```
 
-This will download the Vagrant box and get it running.
+    This will download the Vagrant box and get it running.
 
-Note that this requires a 700 MB download for the first run and Vagrant version 1.5 or later. If you want to perform an offline installation or on an older Vagrant version, [download the box here](https://vagrantcloud.com/joomlatools/box/version/3/provider/virtualbox.box) and run the following commands instead:
+1. Add the following line into your ***hosts file*** (/etc/hosts on Linux and MacOS, for other operating systems see [here](http://en.wikipedia.org/wiki/Hosts_(file)#Location_in_the_file_system))
 
-    $ vagrant init joomlatools/box /path/to/download/joomlatools-box-1.2.box
-    $ vagrant up
+    ```
+33.33.33.58 joomla.box webgrind.joomla.box phpmyadmin.joomla.box
+    ```
 
-Add the following line into your ***hosts file*** (/etc/hosts on Linux and MacOS, for other operating systems see [here](http://en.wikipedia.org/wiki/Hosts_(file)#Location_in_the_file_system))
+1. The dashboard is now available at [joomla.box](http://joomla.box)
 
-    33.33.33.58 joomla.box webgrind.joomla.box phpmyadmin.joomla.box
+There will be two new folders created called `www` and `Projects`. These folders act as shared folders between your host computer and the box.
 
-And you are done. There will be two new folders created called www and Projects.
+Getting started
+---------------
+
+1. Once you have installed the box as described above, SSH into the box:
+
+      ```
+vagrant ssh
+```
+
+1. Create your first Joomla website with this command:
+
+    ```
+joomla site:create mysite
+    ```
+
+1. Your new site is available at [joomla.box/mysite](http://joomla.box/mysite). You can login using the credentials  `admin` / `admin`.
+
+1. You can now symlink and install your custom extensions into the site, manage PHP versions and much more. Head over to our [documentation pages](http://developer.joomlatools.com/tools/vagrant/introduction.html) to learn more about the box and its possibilities.
+
 
 For hacking on the box
 ----------------------
 
-Clone this repository
+If you want to make changes to the box's infrastructure, you can do so by building the box from scratch. Follow these steps to get started:
 
-    $ git clone https://github.com/joomlatools/joomla-vagrant.git
+1. Clone this repository:
 
-Go to the repository folder and provision the box
+    ```
+git clone https://github.com/joomlatools/joomla-vagrant.git
+    ```
 
-    $ cd joomla-vagrant
-    $ vagrant up
+1. Install required Vagrant plugins
 
-Apache
-------
+    ```
+vagrant plugin install vagrant-puppet-install
+vagrant plugin install vagrant-vbguest
+    ```
 
-Apache serves files from the www/ folder using the IP:
+1. Go to the repository folder and provision the box:
 
-    http://33.33.33.58/
+    ```
+cd joomla-vagrant
+vagrant up
+    ```
 
-If you have setup your hosts file correctly as shown above, you can now also access the default www/ folder at:
+1. You can now edit the Puppet configuration. To apply your changes, provision the box again:
 
-    http://joomla.box/
+    ```
+vagrant provision
+    ```
 
-It is advised to use virtual hosts for development. See below for our virtual host manager.
+Building and releasing using Packer
+-----------------------------------
 
-SSH
----
-You can reach the box by using the command:
+We use [Packer](https://www.packer.io/) to automatically build and deploy the box on [Atlas](https://atlas.hashicorp.com/joomlatools/box). To launch a build, follow these steps:
 
-    $ vagrant ssh
+1. Clone this repository:
 
-Joomla Site Manager
--------------------
+    ```
+git clone https://github.com/joomlatools/joomla-vagrant.git
+    ```
 
-The Vagrant box has our [Joomla Console](https://github.com/joomlatools/joomla-console) script pre-installed.
-To create a site with the latest Joomla version, run:
+1. Install [Packer](https://www.packer.io/)
+1. Generate a new token for your [Atlas account](https://atlas.hashicorp.com/settings/tokens).
+1. Make the token available to Packer in the current terminal session:
 
-    joomla site:create testsite
+    ```
+export ATLAS_TOKEN=<token>
+    ```
 
-The newly installed site will be available in the /testsite subfolder at http://joomla.box/testsite after that. The files are located at /var/www/testsite.
-You can login into your fresh Joomla installation using these credentials: `admin` / `admin`.
+1. Now edit the `packer.json` file. Look for the current version and increase the version number.
+The version number is defined in the post-processor section and can be found at the bottom of the file. It looks like this:
 
-For more information, please refer to the [Joomla Console](https://github.com/joomlatools/joomla-console) repository.
+    ```js
+"post-processors": [
+       ...
+      {
+          "type": "atlas",
+          ...
+          "metadata": {
+              "provider": "virtualbox",
+              "version": "1.3.0"
+          }
+      }]
+]
+    ```
 
-*Note*: The script also creates a new virtual host when creating a new site. If you add the following line into your /etc/hosts file on your host machine:
+    If you are not updating the `joomlatools/box` but want to create your own version, be sure to replace all occurences of `joomlatools/box` with your account and box name in the `packer.json` file.
 
-    33.33.33.58 testsite.dev
+    *Note* A build cannot overwrite an existing version. If you want to replace an existing version, you will have to delete it on Atlas first!
 
-you can access it directly at http://testsite.dev.
+1. Commit the change and push back to GitHub.
+1. Instruct packer to start the build:
 
-Symlink your code into a Joomla installation
---------------------------------------------
-Let's say you are working on your own Joomla component called _Awesome_ and want to continue working on it using the Vagrant box. You can use the _Projects_ folder in the repository root for your projects.
+    ```
+packer push packer.json
+    ```
 
-But if you would like to use a custom folder we should start by making the source code available to the Vagrant box. Let's assume the source code is located at _/Users/myname/Projects/awesome_ :
-
-Copy the ```config.custom.yaml-dist``` file to ```config.custom.yaml``` and edit with your favorite text editor. Make it look like this:
-
-    synced_folders:
-      /home/vagrant/Projects: /Users/myname/Projects
-
-Save this file and restart the Vagrant box. (```vagrant reload```)
-
-The "Projects" folder from your host machine will now be available inside the Vagrant box through _/home/vagrant/Projects_.
-
-Next step is to create the new site you'll be working on. SSH into the box (```vagrant ssh```) and execute the following command:
-
-    joomla site:create testsite --joomla=3.2 --symlink=awesome
-
-Or to symlink your code into an existing site:
-
-    joomla extension:symlink testsite awesome
-
-Run discover install to make your component available to Joomla and you are good to go!
-
-For more information on the symlinker, refer to the [Joomla Console README](https://github.com/joomlatools/joomla-console) or run:
-
-      joomla extension:symlink  --help
-
-
-MySQL
------
-
-After you modify /etc/hosts as shown above you can use phpMyAdmin at
-
-    http://phpmyadmin.joomla.box
-
-You can also connect using any MySQL client with these details:
-
-    Host: 33.33.33.58
-    User: root
-    Password: root
-
-
-Managing multiple PHP Versions
-------------------------------
-
-We have included a script that can build and install any PHP version from 5.2.0 and up automatically. This is ideal to try out your code on new PHP releases or to fix bugs that have been reported on older PHP installations.
-
-To get a list of available PHP versions, SSH into the box and run:
-
-    phpmanager versions
-
-To install one of the available versions, for example 5.2.16, execute:
-
-    phpmanager use 5.2.16
-
-The script will check if this version has been installed and if not, will attempt to build it. Please note that building PHP might take a while. Depending on your system, this could take between 5 and 45 minutes.
-
-If you want to test your code against the latest and greatest of PHP, you can call ```phpmanager use master```. Each time you build the master branch the script will pull in the latest changes from the PHP Git repository.
-
-To restore the original PHP installation again, run:
-
-    phpmanager restore
-
-For more options, run ```phpmanager --help```. To see this script in action, refer to this [screencast](http://quick.as/5aw1ulxx).
-
-APC and XDebug
---------------
-
-You can easily turn XDebug and APC on or off after SSHing into the Vagrant box:
-
-    xdebug enable|disable
-    apc enable|disable
-
-To clear the APC cache, run:
-
-    apc clear
-
-You can always access the APC dashboard through the /apc folder. (```http://joomla.box/apc```)
-
-Webgrind
---------
-
-After you modify /etc/hosts as shown above go to
-
-    http://webgrind.joomla.box
-
-SFTP
-----
-
-Use following details to connect:
-
-    Host: 127.0.0.1
-    Port: 2222
-    User: vagrant
-    Password: vagrant
+You can follow-up the build progress on the [Builds](https://atlas.hashicorp.com/builds) page. Once it's finished, the new version will be automatically available on the [your boxes](https://atlas.hashicorp.com/vagrant) section. Add a changelog and release it to the public.
 
 Reporting issues
 ----------------
@@ -196,10 +140,12 @@ We deliberately keep the Issues section on Github closed for now as we want to e
 
 Of course, it's not always easy to fix an obscure bug in someone else's code, but we still want to encourage everyone to make an effort. We do not have the intention to maintain a support forum here just yet!
 
+
 Contributing
 ------------
 
 Fork the project, create a feature branch from the `develop` branch, and send us a pull request.
+
 
 Authors
 -------

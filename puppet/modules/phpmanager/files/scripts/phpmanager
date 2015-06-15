@@ -18,7 +18,9 @@
 SCRIPT_VERSION=0.1
 BASENAME=$(basename $0)
 
-VERSIONS=()
+AVAILABLE_PHP_VERSIONS=()
+INSTALLED_PHP_VERSIONS=()
+CURRENT_PHP_VERSION=''
 BINARIES=('php' 'pear' 'pecl' 'phar' 'phing' 'php-config' 'phpize')
 
 SOURCE=/usr/local/src/php
@@ -67,7 +69,7 @@ command_versions() {
     sub_getversions
 
     # Remove the php- prefix
-    NUMBERS=("${VERSIONS[@]/php-/}")
+    NUMBERS=("${AVAILABLE_PHP_VERSIONS[@]/php-/}")
 
     # Print out each element of the array on a separate line
     STRING=$(printf "%s\n" "${NUMBERS[@]}")
@@ -78,17 +80,16 @@ command_versions() {
 
 # Get the list of installed builds
 command_available() {
-    LIST=(/opt/php/php-*)
-    AVAILABLE=()
+    NUMBERS=("${INSTALLED_PHP_VERSIONS[@]}")
 
-    for ITEM in "${LIST[@]}"; do
-        PATTERN="php-[5-9]\.[2-9]"
-        if [[ "$ITEM" =~ $PATTERN ]] ; then
-            AVAILABLE+=($(basename "$ITEM"))
-        fi;
+    for INDEX in "${!NUMBERS[@]}"
+    do
+       if [ "${NUMBERS[$INDEX]}" == "${CURRENT_PHP_VERSION}" ]; then
+            NUMBERS[$INDEX]="${NUMBERS[$INDEX]}°"
+       fi
     done
 
-    STRING=$(printf "%s\n" "${AVAILABLE[@]}")
+    STRING=$(printf "%s\n" "${NUMBERS[@]}")
 
     printf "%-18s  %-18s  %-18s  %-18s %-18s\n" $STRING
 }
@@ -192,13 +193,19 @@ command_install() {
 
     # Setup the PATH to include legacy build tools if needed
     SHORT=$(sub_getshortversion $VERSION)
-    if [[ "$SHORT" -le 5306 ]] ; then
+    if [[ "$SHORT" -lt 5419 ]] ; then
         export PATH=/opt/bison-2.2/bin:/opt/flex-2.5.4/bin:$PATH
+    else
+        export PATH=/opt/bison-2.4/bin:$PATH
     fi
 
     if [[ "$SHORT" -le 5301 ]] && [[ "$SHORT" -ge 5300 ]]; then
         export PATH=/opt/openssl-0.9.7g/bin:$PATH
     fi
+
+    # Use g++ 4.4 to compile
+    export CC=gcc-4.4
+    export CXX=g++-4.4
 
     echo "Logging to ${LOGFILE}"
 
@@ -213,6 +220,12 @@ command_install() {
 
     CMD="./configure ${OPTIONS}"
     sub_execute "$CMD" "configure" "$LOGFILE" "Configuring makefile"
+
+    if [[ "$SHORT" -le 5400 ]]; then
+        # See: https://bugs.php.net/bug.php?id=48795
+        sed -i '/^BUILD_/ s/\$(CC)/\$(CXX)/g' "$SOURCE/Makefile"
+        sed -i '/EXTRA_LIBS = /s|$| -lstdc++|' "$SOURCE/Makefile"
+    fi
 
     # Start the build
     sub_execute "make" "make" "$LOGFILE" "Building ${VERSION}"
@@ -234,12 +247,17 @@ command_install() {
     # Setup PEAR dependencies
     sub_pear "/opt/php/${VERSION}/bin/pear" "$LOGFILE"
 
+    # Update the PECL channel
+    sudo /opt/php/${VERSION}/bin/pecl channel-update pecl.php.net
+
     # Build Xdebug
     sub_xdebug "$VERSION" "$LOGFILE"
 
-    # Build APC
+    # Build APC or APCu+Opcache
     if [[ "$SHORT" -lt 5500 ]] ; then
         sub_apc "$VERSION" "$LOGFILE"
+    else
+        sub_apcu "$VERSION" "$LOGFILE"
     fi
 
     # Store our newly built Apache module and put the original libphp5.so module back
@@ -267,6 +285,16 @@ command_install() {
 
 # Restore the original PHP binaries and Apache module
 command_restore() {
+    if [ ${#INSTALLED_PHP_VERSIONS[@]} -eq 0 ]; then
+        echo "Nothing to restore"
+        exit 0
+    fi
+
+    if [ "$CURRENT_PHP_VERSION" == "system" ]; then
+        echo "Current PHP version is the system default"
+        exit 0
+    fi
+
     for BINARY in "${BINARIES[@]}"
     do
         # Remove the symlink
@@ -312,11 +340,9 @@ command_remove() {
         echo "$VERSION does not exist. Skipping"
     else
         NUMBER="${VERSION/php-/}"
-        INSTALLED=$(php -v | head -1)
-        LEN=${#NUMBER}
 
-        if [[ "${INSTALLED:4:${LEN}}" == "$NUMBER" ]] ; then
-            echo "$VERSION is currently installed! Please install another version number before removing."
+        if [[ "$CURRENT_PHP_VERSION" == "$NUMBER" ]] ; then
+            echo "$VERSION is currently in use! Please switch to another version number before removing."
         else
             sudo rm -rf -- "/opt/php/${VERSION}"
             echo "$VERSION has been removed."
@@ -374,8 +400,14 @@ sub_xdebug() {
 
     sub_cleanuprepo
 
-    # Find the tag of the latest tagged commit in all branches
-    TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+    SHORT=$(sub_getshortversion $VERSION)
+    if [[ "$SHORT" -ge 5400 ]] ; then
+        # Find the tag of the latest tagged commit in all branches
+        TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+    else
+        # Support for PHP versions older than 5.4.0 has been dropped in 2.3.0
+        TAG="XDEBUG_2_2_7"
+    fi
 
     git checkout $TAG &> /dev/null
 
@@ -425,6 +457,30 @@ sub_apc() {
     fi
 }
 
+# Build APCu and enable opcache
+sub_apcu() {
+    VERSION="$1"
+    LOGFILE="$2"
+
+    echo -n "Building APCu .. "
+
+    # @FIXME we can't get this command passed as an argument to sub_execute()
+    printf "\n" | sudo "/opt/php/${VERSION}/bin/pecl" install APCu-4.0.7  >> "$LOGFILE" 2>&1
+
+    EXTENSION=$(sub_getextensionnumber $VERSION)
+
+    LIB="/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/apcu.so"
+
+    if [[ -f "$LIB" ]] ; then
+        echo -e "\033[92mfinished\033[0m"
+        sudo echo "extension=\"apcu.so\"" > "/opt/php/${VERSION}/etc/conf.d/zzz_apcu.ini"
+
+        sudo echo "zend_extension=\"opcache.so\"" > "/opt/php/${VERSION}/etc/conf.d/zzz_opcache.ini"
+    else
+        echo "\033[31mFailed\e[0m"
+    fi
+}
+
 # Build the configure string
 sub_getoptions() {
     VERSION=$1
@@ -452,7 +508,6 @@ sub_getoptions() {
               --with-pcre-regex \
               --with-readline \
               --with-xmlrpc
-              --with-xsl \
               --with-zlib"
 
     # Build the mysql configuration string
@@ -472,6 +527,9 @@ sub_getoptions() {
         MYSQL="--with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-mysql-sock=/var/run/mysqld/mysqld.sock"
     fi
     OPTIONS="$OPTIONS $MYSQL"
+
+    # Use an older libxml2 that works with all versions
+    OPTIONS="$OPTIONS --with-libxml-dir=/opt/libxml2-2.7.8 --with-xsl=/opt/libxslt-1.1.26"
 
     # Can we build with OpenSSL ?
     OPENSSL=""
@@ -525,7 +583,6 @@ sub_setupini() {
     fi
 
     sudo cp /etc/php5/apache2/conf.d/zzz_custom.ini "/opt/php/${VERSION}/etc/conf.d/zzz_custom.ini"
-    sudo cp /etc/php5/apache2/conf.d/zzz_php.ini "/opt/php/${VERSION}/etc/conf.d/zzz_php.ini"
 
     sudo chown vagrant:vagrant "/opt/php/${VERSION}/lib/php.ini"
     sudo chown -R vagrant:vagrant "/opt/php/${VERSION}/etc/conf.d"
@@ -534,7 +591,7 @@ sub_setupini() {
     # according to the docs at http://be2.php.net/dl but for most builds this isn't the case.
     # So let's make sure we properly set the extension_dir directive :
     EXTENSION=$(sub_getextensionnumber $VERSION)
-    echo "extension_dir=/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/" >> "/opt/php/${VERSION}/etc/conf.d/zzz_php.ini"
+    echo "extension_dir=/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/" >> "/opt/php/${VERSION}/etc/conf.d/zzz_custom.ini"
 
     # Configure the MySQL socket
     echo "mysql.default_socket=/var/run/mysqld/mysqld.sock" > "/opt/php/${VERSION}/etc/conf.d/zzz_mysql.ini"
@@ -554,13 +611,13 @@ sub_getversions() {
         # Only list PHP versions greater than or equal to 5.2
         PATTERN="refs/tags/php-[5-9]\.[2-9]"
         if [[ $TAG =~ $PATTERN ]] ; then
-            VERSIONS+=(${TAG/refs\/tags\//})
+            AVAILABLE_PHP_VERSIONS+=(${TAG/refs\/tags\//})
         fi;
     done
 
     # Sort the tags
-    VERSIONS=(
-        $(for el in "${VERSIONS[@]}"
+    AVAILABLE_PHP_VERSIONS=(
+        $(for el in "${AVAILABLE_PHP_VERSIONS[@]}"
             do
                 echo "$el"
             done | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n
@@ -568,7 +625,7 @@ sub_getversions() {
     )
 
     # Append master
-    VERSIONS+=("master")
+    AVAILABLE_PHP_VERSIONS+=("master")
 }
 
 # Convert a tag to a version string which we can use in comparisons
@@ -622,6 +679,8 @@ sub_cleanuprepo() {
         exit
     fi
 
+    echo "Syncing the PHP source, this can take a few minutes .."
+
     # Clean out the repository
     git reset --hard --quiet
     git clean -d -x -f --quiet
@@ -667,11 +726,38 @@ sub_checksource() {
     fi
 }
 
+sub_getbuilds() {
+    LIST=(/opt/php/*)
+    INSTALLED_PHP_VERSIONS=()
+
+    for ITEM in "${LIST[@]}"; do
+        PATTERN="(master|php-[5-9]\.[2-9])"
+        if [[ "$ITEM" =~ $PATTERN ]] ; then
+            PHP=$(basename "$ITEM")
+            PHP="${PHP[@]/php-/}"
+
+            INSTALLED_PHP_VERSIONS+=($PHP)
+        fi;
+    done
+}
+
+sub_getcurrent() {
+    BIN=$(readlink -f /usr/bin/php)
+
+    REGEX="/opt/php/(master|php-[0-9\.]+)/bin/php"
+    if [[ $BIN =~ $REGEX ]]; then
+        CURRENT_PHP_VERSION="${BASH_REMATCH[1]}";
+        CURRENT_PHP_VERSION="${CURRENT_PHP_VERSION[@]/php-/}"
+    else
+        CURRENT_PHP_VERSION="system"
+    fi
+}
+
 # Check if a value exists in an array
 in_array() {
     local needle=$1
 
-    for HAY in "${VERSIONS[@]}"; do
+    for HAY in "${AVAILABLE_PHP_VERSIONS[@]}"; do
         [[ $HAY == $needle ]] && return 0
     done
     return 1
@@ -685,6 +771,8 @@ case $SUBCOMMAND in
         ;;
     *)
         sub_checksource
+        sub_getcurrent
+        sub_getbuilds
 
         shift
         command_${SUBCOMMAND} $@

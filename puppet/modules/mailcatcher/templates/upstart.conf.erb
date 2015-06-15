@@ -3,9 +3,8 @@
 description "Mailcatcher"
 start on runlevel [23]
 stop on shutdown
-<% bin_path = (`echo "$(gem env)"|grep DIREC|grep EXEC| awk '{print $4}'`).strip %>
 
 # run with -f to be in foreground + bind on 0.0.0.0 to allow vagrant port forwarding
-exec sudo -u vagrant <%= bin_path %>/mailcatcher  --http-ip 0.0.0.0 -f
+exec sudo -u vagrant bash -c "source /home/vagrant/.rvm/scripts/rvm && mailcatcher --http-ip 0.0.0.0 -f"
 
 respawn

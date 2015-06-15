@@ -1,0 +1,1 @@
+The files in this directory are based on https://github.com/shiguredo/packer-templates/tree/develop/ubuntu-14.04

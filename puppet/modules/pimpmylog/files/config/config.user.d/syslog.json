@@ -1,0 +1,27 @@
+{
+  "syslog": {
+    "display": "syslog",
+    "tags": ["System Logs"],
+    "path": "/var/log/syslog",
+    "refresh": 5,
+    "max": 50,
+    "notify": false,
+    "format": {
+      "regex": "|(.*?) ([0-9]{1,2}) ([0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}) ([a-zA-Z0-9_\\-\\.]{1,256}) ([A-Za-z0-9_\\-\/\\.]{1,32})\\[(.*?)\\]:(.*)|",
+      "match": {
+        "Date": 3,
+        "Source": 4,
+        "Tag_ID": 5,
+        "PID": 6,
+        "Message": 7
+      },
+      "types": {
+        "Date": "date:H:i:s",
+        "Source": "txt",
+        "Tag_ID": "txt",
+        "PID": "numeral",
+        "Message": "txt"
+      }
+    }
+  }
+}
