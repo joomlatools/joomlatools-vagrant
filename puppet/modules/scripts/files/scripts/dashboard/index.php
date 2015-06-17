@@ -117,14 +117,14 @@ foreach ($dir as $fileinfo)
                 <tr>
                   <td><?php echo $i; ?></td>
                   <td>
-                    <a href="/<?php echo $site ?>">
+                    <a target="__blank" href="/<?php echo $site . '/administrator/'; ?>">
                       <?php echo $site ?></a>
                     <small>(v<?php echo $info->version; ?>)</small>
                   </td> 
                   <td>
 
                     <div class="btn-group">
-                      <a href="/<?php echo $site . '/administrator/'; ?>" class="btn btn-primary btn-xs">Administer</a>
+                      <a target='__blank' href="/<?php echo $site; ?>" class="btn btn-primary btn-xs">Site</a>
                       <!--
                       <button type="button" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown">
                         <span class="caret"></span>
