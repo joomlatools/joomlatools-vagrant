@@ -124,7 +124,7 @@ foreach ($dir as $fileinfo)
                   <td>
 
                     <div class="btn-group">
-                      <a target='__blank' href="/<?php echo $site; ?>" class="btn btn-primary btn-xs">Site</a>
+                      <a target='__blank' href="/<?php echo $site; ?>" class="btn btn-primary">Site</a>
                       <!--
                       <button type="button" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown">
                         <span class="caret"></span>
