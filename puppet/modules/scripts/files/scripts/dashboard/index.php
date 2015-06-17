@@ -117,26 +117,18 @@ foreach ($dir as $fileinfo)
                 <tr>
                   <td><?php echo $i; ?></td>
                   <td>
-                    <a href="/<?php echo $site ?>">
+                    <a target="_blank" href="/<?php echo $site . '/administrator/'; ?>">
                       <?php echo $site ?></a>
                     <small>(v<?php echo $info->version; ?>)</small>
                   </td> 
                   <td>
 
                     <div class="btn-group">
-                      <a href="/<?php echo $site . '/administrator/'; ?>" class="btn btn-primary btn-xs">Administer</a>
-                      <!--
-                      <button type="button" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown">
-                        <span class="caret"></span>
-                        <span class="sr-only">Toggle Dropdown</span>
-                      </button>
+                      <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Options <span class="caret"></span></a>
                       <ul class="dropdown-menu" role="menu">
-                        <li><a href="/<?php echo $site . '/administrator/'; ?>">Administrate</a></li>
-                        <li><a href="#">Duplicate</a></li>
-                        <li class="divider"></li>
-                        <li class="delete"><a href="#" class="list-group-item-danger">Delete</a></li>
+                          <li><a href="/<?php echo $site; ?>" target="_blank">Site</a></li>
+                          <li><a href="/<?php echo $site . '/administrator/'; ?>" target="_blank">Administrator</a></li>
                       </ul>
-                      -->
                     </div>
                   </td>
                 </tr>
