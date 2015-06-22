@@ -142,10 +142,30 @@ command_use() {
         sudo cp "/usr/lib/apache2/modules/libphp5.so" "/usr/lib/apache2/modules/libphp5.so.original"
     fi
 
-    sudo cp "/opt/php/${VERSION}/lib/apache/libphp5.so" "/usr/lib/apache2/modules/libphp5.so"
+    SHORT=$(sub_getshortversion $VERSION)
+    if [[ "$SHORT" -lt 7000 ]] ; then
+        LIBNAME="libphp5.so"
+        DELNAME="libphp7.so"
+
+        sudo a2dismod php7 &> /dev/null
+        sudo a2enmod php5 &> /dev/null
+    else
+        LIBNAME="libphp7.so"
+        DELNAME="libphp5.so"
+
+        if [[ ! -f "/etc/apache2/mods-available/php7.conf" ]] ; then
+            sudo cp /etc/apache2/mods-available/php5.conf /etc/apache2/mods-available/php7.conf
+        fi
+
+        sudo a2dismod php5 &> /dev/null
+        sudo a2enmod php7 &> /dev/null
+    fi
+
+    [[ -f "/usr/lib/apache2/modules/${DELNAME}" ]] && sudo rm "/usr/lib/apache2/modules/${DELNAME}"
+    sudo cp "/opt/php/${VERSION}/lib/apache/${LIBNAME}" "/usr/lib/apache2/modules/${LIBNAME}"
 
     echo -n "Restarting Apache .. "
-    sudo /etc/init.d/apache2 restart &> /dev/null
+    sudo service apache2 restart &> /dev/null
 
     if [ $? -ne 0 ] ; then
         echo -e "\033[31mFAILED\e[0m"
@@ -230,8 +250,14 @@ command_install() {
     # Start the build
     sub_execute "make" "make" "$LOGFILE" "Building ${VERSION}"
 
-    # Backup the libphp5.so file as "make install" will overwrite it automatically
-    sudo mv /usr/lib/apache2/modules/libphp5.so /usr/lib/apache2/modules/libphp5.so.bak
+    if [[ "$SHORT" -lt 7000 ]] ; then
+        LIBNAME="libphp5.so"
+    else
+        LIBNAME="libphp7.so"
+    fi
+
+    # Backup the libphpX.so files as "make install" will overwrite them automatically
+    [[ -f "/usr/lib/apache2/modules/${LIBNAME}" ]] && sudo mv "/usr/lib/apache2/modules/${LIBNAME}" "/usr/lib/apache2/modules/${LIBNAME}.bak"
 
     # Install the new binaries and module
     sub_execute "sudo make install" "install" "$LOGFILE" "Installing ${VERSION}"
@@ -251,32 +277,36 @@ command_install() {
     sudo /opt/php/${VERSION}/bin/pecl channel-update pecl.php.net
 
     # Build Xdebug
-    sub_xdebug "$VERSION" "$LOGFILE"
-
-    # Build APC or APCu+Opcache
-    if [[ "$SHORT" -lt 5500 ]] ; then
-        sub_apc "$VERSION" "$LOGFILE"
-    else
-        sub_apcu "$VERSION" "$LOGFILE"
+    if [[ "$SHORT" -lt 7000 ]] ; then
+        sub_xdebug "$VERSION" "$LOGFILE"
     fi
 
-    # Store our newly built Apache module and put the original libphp5.so module back
-    if [[ -f "${SOURCE}/.libs/libphp5.so" ]] ; then
-        sudo cp "${SOURCE}/.libs/libphp5.so" "/opt/php/${VERSION}/lib/apache/libphp5.so"
-    elif [[ -f /usr/lib/apache2/modules/libphp5.so ]] ; then
-        sudo mv "/usr/lib/apache2/modules/libphp5.so" "/opt/php/${VERSION}/lib/apache/libphp5.so"
-    else
-        [[ -f /usr/lib/apache2/modules/libphp5.so ]] && sudo rm /usr/lib/apache2/modules/libphp5.so
-        sudo mv /usr/lib/apache2/modules/libphp5.so.bak /usr/lib/apache2/modules/libphp5.so
+    # Build APC or APCu+Opcache
+    if [[ "$SHORT" -lt 7000 ]] ; then
+        if [[ "$SHORT" -lt 5500 ]] ; then
+            sub_apc "$VERSION" "$LOGFILE"
+        else
+            sub_apcu "$VERSION" "$LOGFILE"
+        fi
+    fi
 
-        echo -e "\033[31mERROR: Failed to build libphp5.so!\e[0m"
+    # Store our newly built Apache module and put the original libphpX.so module back
+    if [[ -f "${SOURCE}/.libs/${LIBNAME}" ]] ; then
+        sudo cp "${SOURCE}/.libs/${LIBNAME}" "/opt/php/${VERSION}/lib/apache/${LIBNAME}"
+    elif [[ -f "/usr/lib/apache2/modules/${LIBNAME}" ]] ; then
+        sudo mv "/usr/lib/apache2/modules/${LIBNAME}" "/opt/php/${VERSION}/lib/apache/${LIBNAME}"
+    else
+        [[ -f /usr/lib/apache2/modules/${LIBNAME} ]] && sudo rm "/usr/lib/apache2/modules/${LIBNAME}"
+        sudo mv "/usr/lib/apache2/modules/${LIBNAME}.bak" "/usr/lib/apache2/modules/${LIBNAME}"
+
+        echo -e "\033[31mERROR: Failed to build ${LIBNAME}!\e[0m"
         echo "See ${LOGFILE} for more details or try again."
         exit 1
     fi
 
     # Put the original apache module back in place
-    [[ -f /usr/lib/apache2/modules/libphp5.so ]] && sudo rm /usr/lib/apache2/modules/libphp5.so
-    sudo mv /usr/lib/apache2/modules/libphp5.so.bak /usr/lib/apache2/modules/libphp5.so
+    [[ -f "/usr/lib/apache2/modules/${LIBNAME}" ]] && sudo rm "/usr/lib/apache2/modules/${LIBNAME}"
+    [[ -f "/usr/lib/apache2/modules/${LIBNAME}.bak" ]] sudo mv "/usr/lib/apache2/modules/${LIBNAME}.bak" "/usr/lib/apache2/modules/${LIBNAME}"
 
     echo -e "\n${VERSION} has been built and can be found at /opt/php/${VERSION} -- happy coding!"
 
@@ -314,7 +344,7 @@ command_restore() {
     sudo cp "/usr/lib/apache2/modules/libphp5.so.original" "/usr/lib/apache2/modules/libphp5.so"
 
     echo -n "Restarting Apache .. "
-    sudo /etc/init.d/apache2 restart &> /dev/null
+    sudo service apache2 restart &> /dev/null
 
     if [ $? -ne 0 ] ; then
         echo -e "\033[31mFAILED\e[0m"

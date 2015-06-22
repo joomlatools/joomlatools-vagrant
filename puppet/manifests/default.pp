@@ -342,5 +342,5 @@ package { 'git-ftp':
 
 swap_file::files { 'default':
   ensure   => present,
-  swapfilesize => '1 GB'
+  swapfilesize => '512 MB'
 }
