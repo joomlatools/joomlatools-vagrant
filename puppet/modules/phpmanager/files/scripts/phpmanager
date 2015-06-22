@@ -609,7 +609,7 @@ sub_getversions() {
     eval "$(git for-each-ref --shell --format='TAGS+=(%(refname))' refs/tags/)"
     for TAG in "${TAGS[@]}"; do
         # Only list PHP versions greater than or equal to 5.2
-        PATTERN="refs/tags/php-[5-9]\.[2-9]"
+        PATTERN="refs/tags/php-([5-9]\.[2-9]+|7\.[0-9]+)"
         if [[ $TAG =~ $PATTERN ]] ; then
             AVAILABLE_PHP_VERSIONS+=(${TAG/refs\/tags\//})
         fi;
@@ -620,7 +620,7 @@ sub_getversions() {
         $(for el in "${AVAILABLE_PHP_VERSIONS[@]}"
             do
                 echo "$el"
-            done | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n
+            done | sort --version-sort
         )
     )
 
@@ -731,7 +731,7 @@ sub_getbuilds() {
     INSTALLED_PHP_VERSIONS=()
 
     for ITEM in "${LIST[@]}"; do
-        PATTERN="(master|php-[5-9]\.[2-9])"
+        PATTERN="(master|php-[5-9])"
         if [[ "$ITEM" =~ $PATTERN ]] ; then
             PHP=$(basename "$ITEM")
             PHP="${PHP[@]/php-/}"
