@@ -306,7 +306,7 @@ command_install() {
 
     # Put the original apache module back in place
     [[ -f "/usr/lib/apache2/modules/${LIBNAME}" ]] && sudo rm "/usr/lib/apache2/modules/${LIBNAME}"
-    [[ -f "/usr/lib/apache2/modules/${LIBNAME}.bak" ]] sudo mv "/usr/lib/apache2/modules/${LIBNAME}.bak" "/usr/lib/apache2/modules/${LIBNAME}"
+    [[ -f "/usr/lib/apache2/modules/${LIBNAME}.bak" ]] && sudo mv "/usr/lib/apache2/modules/${LIBNAME}.bak" "/usr/lib/apache2/modules/${LIBNAME}"
 
     echo -e "\n${VERSION} has been built and can be found at /opt/php/${VERSION} -- happy coding!"
 
@@ -341,9 +341,15 @@ command_restore() {
         sudo rm "/usr/lib/apache2/modules/libphp5.so"
     fi
 
+    if [ -f "/usr/lib/apache2/modules/libphp7.so" ] ; then
+        sudo a2dismod php7 &> /dev/null
+        sudo rm "/usr/lib/apache2/modules/libphp7.so"
+    fi
+
     sudo cp "/usr/lib/apache2/modules/libphp5.so.original" "/usr/lib/apache2/modules/libphp5.so"
 
     echo -n "Restarting Apache .. "
+    sudo a2enmod php5 &> /dev/null
     sudo service apache2 restart &> /dev/null
 
     if [ $? -ne 0 ] ; then
@@ -774,7 +780,7 @@ sub_getbuilds() {
 sub_getcurrent() {
     BIN=$(readlink -f /usr/bin/php)
 
-    REGEX="/opt/php/(master|php-[0-9\.]+)/bin/php"
+    REGEX="/opt/php/(master|php-[0-9a-zA-Z\.]+)/bin/php"
     if [[ $BIN =~ $REGEX ]]; then
         CURRENT_PHP_VERSION="${BASH_REMATCH[1]}";
         CURRENT_PHP_VERSION="${CURRENT_PHP_VERSION[@]/php-/}"
