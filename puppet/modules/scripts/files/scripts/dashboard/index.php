@@ -100,7 +100,7 @@ foreach ($dir as $fileinfo)
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-        <p>To install new sites, check out the documentation on <a href="https://github.com/joomlatools/joomla-console#create-sites">Github</a>.</p>
+        <p>To install new sites, check out the <a href="http://developer.joomlatools.com/tools/console/usage.html">documentation</a>.</p>
           <div class="table-responsive">
             <table class="table table-striped table-dashboard">
               <thead>
