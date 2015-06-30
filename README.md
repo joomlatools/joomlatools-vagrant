@@ -44,9 +44,9 @@ vagrant ssh
 
 1. Create your first Joomla website with this command:
 
-    ```
+```
 joomla site:create mysite
-    ```
+```
 
 1. Your new site is available at [joomla.box/mysite](http://joomla.box/mysite). You can login using the credentials  `admin` / `admin`.
 
