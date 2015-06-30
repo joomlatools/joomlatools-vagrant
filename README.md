@@ -38,9 +38,9 @@ Getting started
 
 1. Once you have installed the box as described above, SSH into the box:
 
-      ```
+    ```
 vagrant ssh
-```
+    ```
 
 1. Create your first Joomla website with this command:
 
