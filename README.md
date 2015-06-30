@@ -44,9 +44,9 @@ vagrant ssh
 
 1. Create your first Joomla website with this command:
 
-```
+    ```
 joomla site:create mysite
-```
+    ```
 
 1. Your new site is available at [joomla.box/mysite](http://joomla.box/mysite). You can login using the credentials  `admin` / `admin`.
 
@@ -59,9 +59,9 @@ One of the great features of Vagrant is [Vagrant Share](https://docs.vagrantup.c
 
 To share access, run this command and follow the instructions:
 
-    ```
+```
 vagrant share --http 80
-    ```
+```
 
 For more options please refer to the [Vagrant docs](https://docs.vagrantup.com/v2/share/index.html).
 
