@@ -52,6 +52,18 @@ joomla site:create mysite
 
 1. You can now symlink and install your custom extensions into the site, manage PHP versions and much more. Head over to our [documentation pages](http://developer.joomlatools.com/tools/vagrant/introduction.html) to learn more about the box and its possibilities.
 
+Sharing access to the box
+-------------------------
+
+One of the great features of Vagrant is [Vagrant Share](https://docs.vagrantup.com/v2/share/index.html). Please note that Vagrant Share requires an account with [HashiCorp's Atlas](https://atlas.hashicorp.com/).
+
+To share access, run this command and follow the instructions:
+
+    ```
+vagrant share --http 80
+    ```
+
+For more options please refer to the [Vagrant docs](https://docs.vagrantup.com/v2/share/index.html).
 
 For hacking on the box
 ----------------------
