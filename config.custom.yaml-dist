@@ -2,4 +2,4 @@
 # Put the folders you want to sync to the VM here.
 
 synced_folders:
-  /home/vagrant/path/in/VM: /path/in/your/computer
+  /home/vagrant/Projects: /path/in/your/computer
