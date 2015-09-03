@@ -4,6 +4,7 @@ namespace Command\Php;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Ini extends Command
@@ -14,12 +15,16 @@ class Ini extends Command
              ->setDescription('Get or set PHP config directive for the currently active PHP version')
              ->addArgument(
                 'key',
-                InputArgument::REQUIRED,
-                'Name of the directive'
+                InputArgument::OPTIONAL,
+                'Name of the directive to lookup or update'
              )->addArgument(
                 'value',
                 InputArgument::OPTIONAL,
-                'Value to set'
+                'New value'
+            )->addOption(
+                'list-files',
+                'l',
+                InputOption::VALUE_NONE
             );
     }
 
@@ -27,6 +32,14 @@ class Ini extends Command
     {
         $key   = $input->getArgument('key');
         $value = $input->getArgument('value');
+
+        if ($input->getOPtion('list-files') || empty($key)) {
+            $this->_listIniFiles();
+        }
+
+        if (empty($key)) {
+            return;
+        }
 
         $current = $this->_getConfigValue($key);
 
@@ -55,7 +68,7 @@ class Ini extends Command
             }
             else $output->write('Error: failed to find PHP\'s additional config directory (config-file-scan-dir)!');
         }
-        else $output->writeln($current);
+        else $output->writeln("$key value is $current");
     }
 
     protected function _getConfigValue($key)
@@ -84,6 +97,22 @@ class Ini extends Command
             }
 
             return $path;
+        }
+
+        return false;
+    }
+
+    protected function _listIniFiles()
+    {
+        $filelist = `php -r 'echo php_ini_scanned_files();'`;
+
+        if (strpos($filelist, ','))
+        {
+            $files = explode(',', $filelist);
+
+            foreach ($files as $file) {
+                echo trim($file) . PHP_EOL;
+            }
         }
 
         return false;
