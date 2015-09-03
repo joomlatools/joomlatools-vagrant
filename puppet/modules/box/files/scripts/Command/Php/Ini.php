@@ -37,6 +37,10 @@ class Ini extends Command
             return;
         }
 
+        if (empty($current)) {
+            $current = 'no value (0 or empty string)';
+        }
+
         if (!is_null($value))
         {
             $ini = $this->_getIniOverride();
@@ -93,7 +97,7 @@ class Ini extends Command
         $string = '';
         foreach($values as $k => $v)
         {
-            if (!empty($v)) {
+            if (!empty($v) || $v === '0') {
                 $string .= "$k = $v" . PHP_EOL;
             }
         }
