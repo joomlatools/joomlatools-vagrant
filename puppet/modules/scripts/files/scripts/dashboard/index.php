@@ -1,5 +1,6 @@
 <?php
 define('_JEXEC', true);
+define('JPATH_BASE', true);
 define('JPATH_PLATFORM', true);
 
 $dir = new DirectoryIterator('/var/www');
@@ -13,7 +14,8 @@ foreach ($dir as $fileinfo)
     {
         $files = array(
             'joomla-cms'      => $fileinfo->getPathname() . '/libraries/cms/version/version.php',
-            'joomla-platform' => $fileinfo->getPathname() . '/lib/libraries/cms/version/version.php'
+            'joomla-platform' => $fileinfo->getPathname() . '/lib/libraries/cms/version/version.php',
+            'joomla-1.5'      => $fileinfo->getPathname() . '/libraries/joomla/version.php'
         );
 
         foreach ($files as $type => $file)
