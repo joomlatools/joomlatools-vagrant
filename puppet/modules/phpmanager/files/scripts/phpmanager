@@ -142,10 +142,30 @@ command_use() {
         sudo cp "/usr/lib/apache2/modules/libphp5.so" "/usr/lib/apache2/modules/libphp5.so.original"
     fi
 
-    sudo cp "/opt/php/${VERSION}/lib/apache/libphp5.so" "/usr/lib/apache2/modules/libphp5.so"
+    SHORT=$(sub_getshortversion $VERSION)
+    if [[ "$SHORT" -lt 7000 ]] ; then
+        LIBNAME="libphp5.so"
+        DELNAME="libphp7.so"
+
+        sudo a2dismod php7 &> /dev/null
+        sudo a2enmod php5 &> /dev/null
+    else
+        LIBNAME="libphp7.so"
+        DELNAME="libphp5.so"
+
+        if [[ ! -f "/etc/apache2/mods-available/php7.conf" ]] ; then
+            sudo cp /etc/apache2/mods-available/php5.conf /etc/apache2/mods-available/php7.conf
+        fi
+
+        sudo a2dismod php5 &> /dev/null
+        sudo a2enmod php7 &> /dev/null
+    fi
+
+    [[ -f "/usr/lib/apache2/modules/${DELNAME}" ]] && sudo rm "/usr/lib/apache2/modules/${DELNAME}"
+    sudo cp "/opt/php/${VERSION}/lib/apache/${LIBNAME}" "/usr/lib/apache2/modules/${LIBNAME}"
 
     echo -n "Restarting Apache .. "
-    sudo /etc/init.d/apache2 restart &> /dev/null
+    sudo service apache2 restart &> /dev/null
 
     if [ $? -ne 0 ] ; then
         echo -e "\033[31mFAILED\e[0m"
@@ -230,8 +250,14 @@ command_install() {
     # Start the build
     sub_execute "make" "make" "$LOGFILE" "Building ${VERSION}"
 
-    # Backup the libphp5.so file as "make install" will overwrite it automatically
-    sudo mv /usr/lib/apache2/modules/libphp5.so /usr/lib/apache2/modules/libphp5.so.bak
+    if [[ "$SHORT" -lt 7000 ]] ; then
+        LIBNAME="libphp5.so"
+    else
+        LIBNAME="libphp7.so"
+    fi
+
+    # Backup the libphpX.so files as "make install" will overwrite them automatically
+    [[ -f "/usr/lib/apache2/modules/${LIBNAME}" ]] && sudo mv "/usr/lib/apache2/modules/${LIBNAME}" "/usr/lib/apache2/modules/${LIBNAME}.bak"
 
     # Install the new binaries and module
     sub_execute "sudo make install" "install" "$LOGFILE" "Installing ${VERSION}"
@@ -251,32 +277,36 @@ command_install() {
     sudo /opt/php/${VERSION}/bin/pecl channel-update pecl.php.net
 
     # Build Xdebug
-    sub_xdebug "$VERSION" "$LOGFILE"
-
-    # Build APC or APCu+Opcache
-    if [[ "$SHORT" -lt 5500 ]] ; then
-        sub_apc "$VERSION" "$LOGFILE"
-    else
-        sub_apcu "$VERSION" "$LOGFILE"
+    if [[ "$SHORT" -lt 7000 ]] ; then
+        sub_xdebug "$VERSION" "$LOGFILE"
     fi
 
-    # Store our newly built Apache module and put the original libphp5.so module back
-    if [[ -f "${SOURCE}/.libs/libphp5.so" ]] ; then
-        sudo cp "${SOURCE}/.libs/libphp5.so" "/opt/php/${VERSION}/lib/apache/libphp5.so"
-    elif [[ -f /usr/lib/apache2/modules/libphp5.so ]] ; then
-        sudo mv "/usr/lib/apache2/modules/libphp5.so" "/opt/php/${VERSION}/lib/apache/libphp5.so"
-    else
-        [[ -f /usr/lib/apache2/modules/libphp5.so ]] && sudo rm /usr/lib/apache2/modules/libphp5.so
-        sudo mv /usr/lib/apache2/modules/libphp5.so.bak /usr/lib/apache2/modules/libphp5.so
+    # Build APC or APCu+Opcache
+    if [[ "$SHORT" -lt 7000 ]] ; then
+        if [[ "$SHORT" -lt 5500 ]] ; then
+            sub_apc "$VERSION" "$LOGFILE"
+        else
+            sub_apcu "$VERSION" "$LOGFILE"
+        fi
+    fi
 
-        echo -e "\033[31mERROR: Failed to build libphp5.so!\e[0m"
+    # Store our newly built Apache module and put the original libphpX.so module back
+    if [[ -f "${SOURCE}/.libs/${LIBNAME}" ]] ; then
+        sudo cp "${SOURCE}/.libs/${LIBNAME}" "/opt/php/${VERSION}/lib/apache/${LIBNAME}"
+    elif [[ -f "/usr/lib/apache2/modules/${LIBNAME}" ]] ; then
+        sudo mv "/usr/lib/apache2/modules/${LIBNAME}" "/opt/php/${VERSION}/lib/apache/${LIBNAME}"
+    else
+        [[ -f /usr/lib/apache2/modules/${LIBNAME} ]] && sudo rm "/usr/lib/apache2/modules/${LIBNAME}"
+        sudo mv "/usr/lib/apache2/modules/${LIBNAME}.bak" "/usr/lib/apache2/modules/${LIBNAME}"
+
+        echo -e "\033[31mERROR: Failed to build ${LIBNAME}!\e[0m"
         echo "See ${LOGFILE} for more details or try again."
         exit 1
     fi
 
     # Put the original apache module back in place
-    [[ -f /usr/lib/apache2/modules/libphp5.so ]] && sudo rm /usr/lib/apache2/modules/libphp5.so
-    sudo mv /usr/lib/apache2/modules/libphp5.so.bak /usr/lib/apache2/modules/libphp5.so
+    [[ -f "/usr/lib/apache2/modules/${LIBNAME}" ]] && sudo rm "/usr/lib/apache2/modules/${LIBNAME}"
+    [[ -f "/usr/lib/apache2/modules/${LIBNAME}.bak" ]] && sudo mv "/usr/lib/apache2/modules/${LIBNAME}.bak" "/usr/lib/apache2/modules/${LIBNAME}"
 
     echo -e "\n${VERSION} has been built and can be found at /opt/php/${VERSION} -- happy coding!"
 
@@ -311,10 +341,16 @@ command_restore() {
         sudo rm "/usr/lib/apache2/modules/libphp5.so"
     fi
 
+    if [ -f "/usr/lib/apache2/modules/libphp7.so" ] ; then
+        sudo a2dismod php7 &> /dev/null
+        sudo rm "/usr/lib/apache2/modules/libphp7.so"
+    fi
+
     sudo cp "/usr/lib/apache2/modules/libphp5.so.original" "/usr/lib/apache2/modules/libphp5.so"
 
     echo -n "Restarting Apache .. "
-    sudo /etc/init.d/apache2 restart &> /dev/null
+    sudo a2enmod php5 &> /dev/null
+    sudo service apache2 restart &> /dev/null
 
     if [ $? -ne 0 ] ; then
         echo -e "\033[31mFAILED\e[0m"
@@ -609,7 +645,7 @@ sub_getversions() {
     eval "$(git for-each-ref --shell --format='TAGS+=(%(refname))' refs/tags/)"
     for TAG in "${TAGS[@]}"; do
         # Only list PHP versions greater than or equal to 5.2
-        PATTERN="refs/tags/php-[5-9]\.[2-9]"
+        PATTERN="refs/tags/php-([5-9]\.[2-9]+|7\.[0-9]+)"
         if [[ $TAG =~ $PATTERN ]] ; then
             AVAILABLE_PHP_VERSIONS+=(${TAG/refs\/tags\//})
         fi;
@@ -620,7 +656,7 @@ sub_getversions() {
         $(for el in "${AVAILABLE_PHP_VERSIONS[@]}"
             do
                 echo "$el"
-            done | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n -k 5,5n -k 6,6n -k 7,7n -k 8,8n -k 9,9n
+            done | sort --version-sort
         )
     )
 
@@ -731,7 +767,7 @@ sub_getbuilds() {
     INSTALLED_PHP_VERSIONS=()
 
     for ITEM in "${LIST[@]}"; do
-        PATTERN="(master|php-[5-9]\.[2-9])"
+        PATTERN="(master|php-[5-9])"
         if [[ "$ITEM" =~ $PATTERN ]] ; then
             PHP=$(basename "$ITEM")
             PHP="${PHP[@]/php-/}"
@@ -744,7 +780,7 @@ sub_getbuilds() {
 sub_getcurrent() {
     BIN=$(readlink -f /usr/bin/php)
 
-    REGEX="/opt/php/(master|php-[0-9\.]+)/bin/php"
+    REGEX="/opt/php/(master|php-[0-9a-zA-Z\.]+)/bin/php"
     if [[ $BIN =~ $REGEX ]]; then
         CURRENT_PHP_VERSION="${BASH_REMATCH[1]}";
         CURRENT_PHP_VERSION="${CURRENT_PHP_VERSION[@]/php-/}"
