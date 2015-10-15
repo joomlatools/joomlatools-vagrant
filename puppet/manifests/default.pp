@@ -19,6 +19,8 @@ apt::ppa { 'ppa:ondrej/php5':
   require => Apt::Key['4F4EA0AAE5267A6C']
 }
 
+apt::ppa { 'ppa:resmo/git-ftp': }
+
 include '::gnupg'
 gnupg_key { 'gpg-rvm-signature':
   ensure     => present,
@@ -40,7 +42,7 @@ package { [
     'git-core',
     'unzip'
   ]:
-  ensure  => 'installed',
+  ensure  => 'installed'
 }
 
 class apache::certificate {
@@ -332,4 +334,13 @@ class { 'pimpmylog':
 
 class { 'phpmetrics':
     require => [Class['composer'], Class['scripts']]
+}
+
+package { 'git-ftp':
+    require => Apt::Ppa['ppa:resmo/git-ftp']
+}
+
+swap_file::files { 'default':
+  ensure   => present,
+  swapfilesize => '512 MB'
 }

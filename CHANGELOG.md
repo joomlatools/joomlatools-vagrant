@@ -7,6 +7,17 @@ in 1.x versions.
 To get the diff for a specific change, go to https://github.com/joomlatools/joomla-vagrant/commit/xxx where xxx is the change hash.
 To view the diff between two versions, go to https://github.com/joomlatools/joomla-vagrant/compare/v1.0.0...v1.0.1
 
+* 1.3.1 (2015-09-03)
+ * Added - Support for PHP7
+ * Added - Support for [joomla-platform](https://github.com/joomlatools/joomla-platform) installations
+ * Added - Installed git-ftp
+ * Added - `box server:restart` command
+ * Improved - Use the async option when mounting NFS on Linux
+ * Improved - Link to both site and administrator in dashboard listing
+ * Fixed - Allow value _0_ to be written to PHP ini using `box php:ini`
+ * Fixed - Use bison 2.4 when building PHP 5.4.19+
+ * Fixed - Point to global apc-dashboard.php file in `/apc` alias
+
 * 1.3.0 (2015-06-01)
  * Improved - Upgraded default PHP to 5.5
  * Improved - Upgraded OS and stack: Ubuntu 14.04, Apache 2.4, Puppet 3.4, Ruby 2.2

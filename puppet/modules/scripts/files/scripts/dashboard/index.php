@@ -1,5 +1,6 @@
 <?php
 define('_JEXEC', true);
+define('JPATH_BASE', true);
 define('JPATH_PLATFORM', true);
 
 $dir = new DirectoryIterator('/var/www');
@@ -7,25 +8,47 @@ $i   = 1;
 $sites = array();
 foreach ($dir as $fileinfo)
 {
-  if ($fileinfo->isDir() && !$fileinfo->isDot())
-  {
-    $code = $fileinfo->getPathname() . '/libraries/cms/version/version.php';
+    $code = $application = null;
 
-    if (file_exists($code))
+    if ($fileinfo->isDir() && !$fileinfo->isDot())
     {
-      $identifier = uniqid();
+        $files = array(
+            'joomla-cms'      => $fileinfo->getPathname() . '/libraries/cms/version/version.php',
+            'joomla-platform' => $fileinfo->getPathname() . '/lib/libraries/cms/version/version.php',
+            'joomla-1.5'      => $fileinfo->getPathname() . '/libraries/joomla/version.php'
+        );
 
-      $source = file_get_contents($code);
-      $source = preg_replace('/<\?php/', '', $source, 1);
-      $source = preg_replace('/class JVersion/i', 'class JVersion' . $identifier, $source);
+        foreach ($files as $type => $file)
+        {
+            if (file_exists($file))
+            {
+                $code        = $file;
+                $application = $type;
 
-      eval($source);
+                break;
+            }
+        }
 
-      $class   = 'JVersion'.$identifier;
-      $version = new $class();
-      $sites[$fileinfo->getFilename()] = (object) array('version' => $version->RELEASE.'.'.$version->DEV_LEVEL);
+        if (!is_null($code) && file_exists($code))
+        {
+            $identifier = uniqid();
+
+            $source = file_get_contents($code);
+            $source = preg_replace('/<\?php/', '', $source, 1);
+            $source = preg_replace('/class JVersion/i', 'class JVersion' . $identifier, $source);
+
+            eval($source);
+
+            $class   = 'JVersion'.$identifier;
+            $version = new $class();
+            $sites[] = (object) array(
+                'name'    => $fileinfo->getFilename(),
+                'docroot' => $fileinfo->getFilename() . '/' . ($application == 'joomla-platform' ? 'web' : ''),
+                'type'    => $application,
+                'version' => $version->RELEASE.'.'.$version->DEV_LEVEL
+            );
+        }
     }
-  }
 }
 ?>
 <!DOCTYPE html>
@@ -100,7 +123,6 @@ foreach ($dir as $fileinfo)
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-        <p>To install new sites, check out the documentation on <a href="https://github.com/joomlatools/joomla-console#create-sites">Github</a>.</p>
           <div class="table-responsive">
             <table class="table table-striped table-dashboard">
               <thead>
@@ -113,30 +135,22 @@ foreach ($dir as $fileinfo)
               <tbody>
               <?php
               $i = 1;
-              foreach ($sites as $site => $info): ?>
+              foreach ($sites as $site): ?>
                 <tr>
                   <td><?php echo $i; ?></td>
                   <td>
-                    <a href="/<?php echo $site ?>">
-                      <?php echo $site ?></a>
-                    <small>(v<?php echo $info->version; ?>)</small>
+                    <a target="_blank" href="/<?php echo $site->docroot . '/administrator/'; ?>">
+                      <?php echo $site->name ?></a>
+                    <small>(<?php echo $site->type ?> v<?php echo $site->version; ?>)</small>
                   </td> 
                   <td>
 
                     <div class="btn-group">
-                      <a href="/<?php echo $site . '/administrator/'; ?>" class="btn btn-primary btn-xs">Administer</a>
-                      <!--
-                      <button type="button" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown">
-                        <span class="caret"></span>
-                        <span class="sr-only">Toggle Dropdown</span>
-                      </button>
+                      <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Options <span class="caret"></span></a>
                       <ul class="dropdown-menu" role="menu">
-                        <li><a href="/<?php echo $site . '/administrator/'; ?>">Administrate</a></li>
-                        <li><a href="#">Duplicate</a></li>
-                        <li class="divider"></li>
-                        <li class="delete"><a href="#" class="list-group-item-danger">Delete</a></li>
+                          <li><a href="/<?php echo $site->docroot; ?>" target="_blank">Site</a></li>
+                          <li><a href="/<?php echo $site->docroot . '/administrator/'; ?>" target="_blank">Administrator</a></li>
                       </ul>
-                      -->
                     </div>
                   </td>
                 </tr>

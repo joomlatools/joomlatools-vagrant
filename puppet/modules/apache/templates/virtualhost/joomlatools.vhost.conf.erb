@@ -24,7 +24,7 @@
     ErrorLog  <%= scope.lookupvar('apache::log_dir') %>/<%= @name %>-error_log
     CustomLog <%= scope.lookupvar('apache::log_dir') %>/<%= @name %>-access_log combined
 
-    Alias /apc /home/vagrant/scripts/apc.php
+    Alias /apc /home/vagrant/scripts/apc-dashboard.php
     Alias /phpinfo /home/vagrant/scripts/phpinfo.php
 
     Alias /dashboard /home/vagrant/scripts/dashboard
