@@ -9,7 +9,7 @@ abstract class Apc extends Command
 {
     public static $files;
 
-    protected $_ini_files = array('apc.ini', 'apcu.ini', 'opcache.ini', 'zzz_apc.ini', 'zzz_apcu.ini', 'zzz_opcache.ini');
+    protected $_ini_files = array('apc.ini', 'apcu.ini', 'opcache.ini', 'zzz_apc.ini', 'zzz_apcu.ini');
 
     public function __construct($name = null)
     {
@@ -22,6 +22,10 @@ abstract class Apc extends Command
 
     protected function _getConfigFiles($basenames = array())
     {
+        if (\Helper\System::getEngine() === 'hhvm') {
+            return array('/etc/hhvm/php.ini');
+        }
+
         $inis  = array();
         $paths = array('/etc/php5/mods-available/');
 

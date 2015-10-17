@@ -3,12 +3,19 @@ namespace Helper;
 
 class System
 {
-    public static function getPHPVersion()
+    public static function getZendPHPVersion()
     {
         $version = `/usr/bin/php -r 'echo phpversion();'`;
         $version = trim($version);
 
         return $version;
+    }
+
+    public static function getPHPCommand()
+    {
+        $bin = self::getEngine() == 'hhvm' ? '/usr/bin/hhvm --php' : '/usr/bin/php';
+
+        return $bin;
     }
 
     public static function getEngine()

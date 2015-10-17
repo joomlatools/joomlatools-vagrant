@@ -3,6 +3,7 @@ namespace Command\Apc;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Disable extends Apc
@@ -17,12 +18,11 @@ class Disable extends Apc
     {
         $files = $this->_getConfigFiles($this->_ini_files);
 
-        foreach($files as $file)
-        {
-            `sudo sed -i 's#^\(extension\|zend_extension\)=#; \\1=#' $file`;
+        foreach($files as $file) {
+            \Helper\Ini::update($file, 'apc.enabled', '0');
         }
 
-        exec('sudo service apache2 restart 2>&1 1> /dev/null');
+        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart')), $output);
 
         $output->writeln('APC has been disabled');
     }
