@@ -84,7 +84,7 @@ class { 'php':
 }
 
 $apache_hhvm_proxy = "
-<FilesMatch \.php$>
+<FilesMatch \\.php$>
   SetHandler \"proxy:fcgi://127.0.0.1:9000\"
 </FilesMatch>"
 
