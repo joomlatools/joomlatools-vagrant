@@ -74,12 +74,24 @@ apache::dotconf { 'custom':
 
 apache::module { 'rewrite': }
 apache::module { 'ssl': }
+apache::module { 'proxy_fcgi': }
 
 class { 'php':
   service       => 'apache',
   version       => 'latest',
   module_prefix => '',
   require       => Package['apache'],
+}
+
+$apache_hhvm_proxy = "
+<FilesMatch \.php$>
+  SetHandler \"proxy:fcgi://127.0.0.1:9000\"
+</FilesMatch>"
+
+file { '/etc/apache2/conf-available/hhvm.conf':
+  ensure  => file,
+  content => $apache_hhvm_proxy,
+  require => Class['apache']
 }
 
 php::module { 'php5-mysql': }
@@ -343,4 +355,9 @@ package { 'git-ftp':
 swap_file::files { 'default':
   ensure   => present,
   swapfilesize => '512 MB'
+}
+
+class { '::hhvm':
+  manage_repos => true,
+  pgsql        => false
 }
