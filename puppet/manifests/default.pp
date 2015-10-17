@@ -329,6 +329,7 @@ class { 'box':
 }
 
 class {'wetty': }
+class {'cloudcommander': }
 
 file { '/etc/update-motd.d/999-joomlatools':
   ensure => 'present',
