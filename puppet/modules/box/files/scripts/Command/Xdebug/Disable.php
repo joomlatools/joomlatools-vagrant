@@ -15,6 +15,8 @@ class Disable extends Xdebug
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        parent::execute($input, $output);
+
         $files = $this->_getConfigFiles($this->_ini_files);
 
         foreach($files as $file) {

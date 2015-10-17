@@ -33,7 +33,7 @@ class Ini extends Command
         $key   = $input->getArgument('key');
         $value = $input->getArgument('value');
 
-        if ($input->getOPtion('list-files') || empty($key)) {
+        if ($input->getOption('list-files') || empty($key)) {
             $this->_listIniFiles();
         }
 
@@ -60,7 +60,7 @@ class Ini extends Command
 
             if ($ini !== false)
             {
-                $this->_updateIni($ini, $key, $value);
+                \Helper\Ini::update($ini, $key, $value);
 
                 `sudo service apache2 restart 2>&1 1> /dev/null`;
 
@@ -116,22 +116,5 @@ class Ini extends Command
         }
 
         return false;
-    }
-
-    protected function _updateIni($ini, $key, $value)
-    {
-        $values = parse_ini_file($ini);
-        $values[$key] = $value;
-
-        $string = '';
-        foreach($values as $k => $v)
-        {
-            if (!empty($v) || $v === '0') {
-                $string .= "$k = $v" . PHP_EOL;
-            }
-        }
-
-        `sudo chmod o+rw $ini`;
-        file_put_contents($ini, $string);
     }
 }

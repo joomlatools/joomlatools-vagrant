@@ -27,6 +27,13 @@ class Engine extends Command
             throw new \RuntimeException('Unknown engine "' . $engine. '"');
         }
 
+        if (\Helper\System::getEngine() === $engine)
+        {
+            $output->writeln(sprintf("<comment>[warning]</comment> Engine is already set to <info>%s</info>!", $engine));
+
+            return;
+        }
+
         switch ($engine)
         {
             case 'hhvm':
@@ -36,10 +43,7 @@ class Engine extends Command
             case 'zend':
                 `sudo a2disconf hhvm`;
 
-                $version = `php -r 'echo phpversion();'`;
-                $version = trim($version);
-
-                if (version_compare($version, '7.0.0RC1', '<')) {
+                if (version_compare(\Helper\System::getPHPVersion(), '7.0.0RC1', '<')) {
                     $php = 'php5';
                 }
                 else $php = 'php7';
@@ -50,6 +54,6 @@ class Engine extends Command
 
         `sudo service apache2 restart`;
 
-        $output->writeln('Switched to ' . $engine  . ' engine');
+        $output->writeln('Switched engine to <info>' . $engine  . '</info>');
     }
 }

@@ -19,6 +19,10 @@ class Restart extends Command
         `sudo service apache2 restart 2>&1 1> /dev/null`;
         `sudo service mysql restart 2>&1 1> /dev/null`;
 
+        if (\Helper\System::getEngine() === 'hhvm') {
+            `sudo service hhvm restart  2>&1 1> /dev/null`;
+        }
+
         $output->writeln("Server has been restarted");
     }
 }
