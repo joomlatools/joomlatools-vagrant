@@ -352,6 +352,10 @@ package { 'git-ftp':
     require => Apt::Ppa['ppa:resmo/git-ftp']
 }
 
+package { 'httpie':
+  ensure => latest
+}
+
 swap_file::files { 'default':
   ensure   => present,
   swapfilesize => '512 MB'
