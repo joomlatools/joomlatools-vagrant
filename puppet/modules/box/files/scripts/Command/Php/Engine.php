@@ -35,7 +35,16 @@ class Engine extends Command
                 break;
             case 'zend':
                 `sudo a2disconf hhvm`;
-                `sudo a2enmod php5`;
+
+                $version = `php -r 'echo phpversion();'`;
+                $version = trim($version);
+
+                if (version_compare($version, '7.0.0RC1', '<')) {
+                    $php = 'php5';
+                }
+                else $php = 'php7';
+
+                `sudo a2enmod $php`;
                 break;
         }
 
