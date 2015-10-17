@@ -31,4 +31,9 @@ class scripts {
     line    => '/home/vagrant/scripts/updater/login.sh',
     require => Exec['make-scripts-executable']
   }
+
+  file_line { 'cd-to-www-dir':
+    path    => '/home/vagrant/.bash_profile',
+    line    => 'cd /var/www'
+  }
 }
