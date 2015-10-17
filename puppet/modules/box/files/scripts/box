@@ -35,6 +35,7 @@ $application->add(new Command\Server\Restart());
 $application->add(new Command\Server\Start());
 $application->add(new Command\Server\Stop());
 
+$application->add(new Command\Php\Engine());
 $application->add(new Command\Php\Ini());
 $application->add(new Command\Php\UseVersion());
 $application->add(new Command\Php\ListVersion());

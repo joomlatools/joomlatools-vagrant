@@ -3,6 +3,7 @@ namespace Command\Php;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -33,7 +34,7 @@ class Ini extends Command
         $key   = $input->getArgument('key');
         $value = $input->getArgument('value');
 
-        if ($input->getOPtion('list-files') || empty($key)) {
+        if ($input->getOption('list-files') || empty($key)) {
             $this->_listIniFiles();
         }
 
@@ -60,9 +61,9 @@ class Ini extends Command
 
             if ($ini !== false)
             {
-                $this->_updateIni($ini, $key, $value);
+                \Helper\Ini::update($ini, $key, $value);
 
-                `sudo service apache2 restart 2>&1 1> /dev/null`;
+                $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart')), $output);
 
                 $output->writeln("$key value is now '$value', was '$current'");
             }
@@ -73,7 +74,8 @@ class Ini extends Command
 
     protected function _getConfigValue($key)
     {
-        $current = `php -r "\\\$value = ini_get('$key'); echo \\\$value === false ? 'unknown-directive' : \\\$value;"`;
+        $bin     = \Helper\System::getPHPCommand();
+        $current = `$bin -r "\\\$value = ini_get('$key'); echo \\\$value === false ? 'unknown-directive' : \\\$value;"`;
 
         if ($current == 'unknown-directive') {
             return false;
@@ -84,7 +86,11 @@ class Ini extends Command
 
     protected function _getIniOverride()
     {
-        $filelist = `php -r 'echo php_ini_scanned_files();'`;
+        if (\Helper\System::getEngine() === 'hhvm') {
+            return '/etc/hhvm/php.ini';
+        }
+
+        $filelist = `/usr/bin/php -r 'echo php_ini_scanned_files();'`;
 
         if (strpos($filelist, ','))
         {
@@ -104,7 +110,8 @@ class Ini extends Command
 
     protected function _listIniFiles()
     {
-        $filelist = `php -r 'echo php_ini_scanned_files();'`;
+        $bin      = \Helper\System::getPHPCommand();
+        $filelist = `$bin -r 'echo php_ini_scanned_files();'`;
 
         if (strpos($filelist, ','))
         {
@@ -116,22 +123,5 @@ class Ini extends Command
         }
 
         return false;
-    }
-
-    protected function _updateIni($ini, $key, $value)
-    {
-        $values = parse_ini_file($ini);
-        $values[$key] = $value;
-
-        $string = '';
-        foreach($values as $k => $v)
-        {
-            if (!empty($v) || $v === '0') {
-                $string .= "$k = $v" . PHP_EOL;
-            }
-        }
-
-        `sudo chmod o+rw $ini`;
-        file_put_contents($ini, $string);
     }
 }

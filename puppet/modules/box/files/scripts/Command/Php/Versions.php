@@ -15,6 +15,14 @@ class Versions extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (\Helper\System::getEngine() === 'hhvm')
+        {
+            $output->writeln('<comment>[notice]</comment> You are currently running the HHVM engine');
+            $output->writeln('<comment>[notice]</comment> Switch back to the Zend engine to manage Zend PHP versions');
+
+            exit();
+        }
+
         passthru('phpmanager versions');
     }
 }

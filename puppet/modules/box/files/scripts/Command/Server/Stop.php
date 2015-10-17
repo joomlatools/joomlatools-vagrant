@@ -19,6 +19,10 @@ class Stop extends Command
         `sudo service apache2 stop 2>&1 1> /dev/null`;
         `sudo service mysql stop 2>&1 1> /dev/null`;
 
+        if (\Helper\System::getEngine() === 'hhvm') {
+            `sudo service hhvm stop  2>&1 1> /dev/null`;
+        }
+
         $output->writeln("Server has been stopped");
     }
 }
