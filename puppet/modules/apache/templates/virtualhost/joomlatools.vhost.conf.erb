@@ -30,6 +30,9 @@
     Alias /dashboard /home/vagrant/scripts/dashboard
     Alias /pimpmylog /usr/share/pimpmylog/vendor/potsky/pimp-my-log
 
+    Redirect permanent /terminal http://joomla.box:3000
+    Redirect permanent /mailcatcher http://joomla.box:1080
+
     RewriteEngine on
     RewriteCond %{REQUEST_URI} ^/$
     RewriteRule (.*) /dashboard/ [R=301]
