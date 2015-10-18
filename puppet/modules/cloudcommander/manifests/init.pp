@@ -16,6 +16,12 @@ class cloudcommander {
       require => Exec['npm-install-cloudcommander']
     }
 
+    file { '/root/.cloudcmd.json':
+      ensure => file,
+      source => "puppet:///modules/cloudcommander/config.json",
+      notify => Service['cloudcommander']
+    }
+
     service {'cloudcommander':
         ensure    => 'running',
         provider  => 'upstart',
