@@ -30,9 +30,9 @@ class varnish {
 
   file { '/etc/varnish/default.vcl':
     ensure  => present,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0644',
+    owner   => vagrant,
+    group   => vagrant,
+    mode    => '0774',
     source  => "puppet:///modules/varnish/joomla.box.vcl",
     require => Package['varnish'],
     notify  => Service['varnish']

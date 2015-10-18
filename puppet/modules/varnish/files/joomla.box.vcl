@@ -1,6 +1,21 @@
-# Marker to tell the VCL compiler that this VCL has been adapted to the
-# new 4.0 format.
 vcl 4.0;
+
+# This Varnish configuration is a very basic template to get started with caching Joomla sites.
+# In no way is this configuration complete: every site is unique and needs customisation!
+#
+# Joomla creates a session cookie by default, even if you not logged in. To deal with this,
+# we need to let Varnish know when a user is logged in or not. If the user is not logged in,
+# we will prevent the Joomla response from setting any cookies so Varnish can cache the page.
+#
+# To set the X-Logged-In header, append the following line in to the onAfterInitialise() method
+# in /plugins/system/cache/cache.php, right after "$user = JFactory::getUser();" (line #60):
+#
+# JFactory::getApplication()->setHeader('X-Logged-In', $user->guest ? 'false' : 'true', true);
+#
+# Now enable the Cache plugin and Varnish cache. Your front-end pages will be cached
+# as long as you browse the site as a guest.
+#
+# This VCL is based on https://snipt.net/fevangelou/the-perfect-varnish-configuration-for-joomla-websites/
 
 import std;
 
@@ -49,15 +64,18 @@ sub vcl_recv {
 
         # Proxy (pass) any request that goes to the backend admin,
         # the banner component links or any post requests
-   		# You can add more pages or entire URL structure in the end of the "if"
-        if(req.http.cookie ~ "userID" || req.url ~ "^/administrator" || req.url ~ "^/component/banners" || req.method == "POST") {
-                return (pass);
+        if(req.url ~ "/administrator" || req.url ~ "/component/banners" || req.url ~ "/component/users" || req.method == "POST") {
+            return (pass);
         }
 
-        # Check for the custom "x-logged-in" header to identify if the visitor is a guest,
-        # then unset any cookie (including session cookies) provided it's not a POST request
-        if(req.http.x-logged-in == "False" && req.method != "POST"){
-                unset req.http.cookie;
+        # Do not cache if user is logged in
+        if (req.http.Authorization || req.http.Authenticate || req.http.Cookie) {
+            return (pass);
+        }
+
+        # Don't cache ajax requests
+        if(req.http.X-Requested-With == "XMLHttpRequest" || req.url ~ "nocache") {
+            return (pass);
         }
 
         # Properly handle different encoding types
@@ -75,33 +93,10 @@ sub vcl_recv {
           }
         }
 
-		# Cache files with these extensions
-        if (req.url ~ "\.(js|css|jpg|jpeg|png|gif|gz|tgz|bz2|tbz|mp3|ogg|swf)$") {
-                return (hash);
-        }
-
         return (hash);
 }
 
 sub vcl_backend_response {
-        # Check for the custom "x-logged-in" header to identify if the visitor is a guest,
-        # then unset any cookie (including session cookies) provided it's not a POST request
-        set beresp.do_esi = true;
-
-        if(bereq.method != "POST" && beresp.http.x-logged-in == "False") {
-                unset beresp.http.Set-Cookie;
-        }
-
-        # Allow items to be stale if needed (this value should be the same as with "set req.grace"
-        # inside the sub vcl_recv {.} block (the 2nd part of the if/else statement)
-        set beresp.grace = 1h;
-
-        # Serve pages from the cache should we get a sudden error and re-check in one minute
-        if (beresp.status == 503 || beresp.status == 502 || beresp.status == 501 || beresp.status == 500) {
-          set beresp.grace = 60s;
-          return (retry);
-        }
-
         # Unset the "etag" header (suggested)
         unset beresp.http.etag;
 
@@ -109,11 +104,30 @@ sub vcl_backend_response {
         # when caching is on - make sure to replace 300 with the number of seconds that
         # you want the browser to cache content
         if(beresp.http.Cache-Control ~ "no-cache" || beresp.http.Cache-Control == ""){
-                set beresp.http.Cache-Control = "max-age=300, public, must-revalidate";
+            set beresp.http.Cache-Control = "max-age=300, public, must-revalidate";
+        }
+
+        # Check for the custom "x-Logged-In" header to identify if the visitor is a guest,
+        # then unset any cookie (including session cookies) provided it's not a POST request.
+        if(bereq.method != "POST" && beresp.http.X-Logged-In == "false") {
+            unset beresp.http.Set-Cookie;
         }
 
         # This is how long Varnish will cache content
         set beresp.ttl = 1w;
 
         return (deliver);
+}
+
+sub vcl_deliver {
+        if (resp.http.x-varnish ~ " ") {
+            set resp.http.X-Varnish-Status = "HIT";
+        } else {
+            set resp.http.X-Varnish-Status = "MISS";
+        }
+
+        # Please note that obj.hits behaviour changed in 4.0, now it counts per objecthead, not per object
+        # and obj.hits may not be reset in some cases where bans are in use. See bug 1492 for details.
+        # So take hits with a grain of salt
+        set resp.http.X-Varnish-Hits = obj.hits;
 }
