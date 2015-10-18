@@ -16,6 +16,7 @@ class Stop extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        `sudo service varnish stop 2>&1 1> /dev/null`;
         `sudo service apache2 stop 2>&1 1> /dev/null`;
         `sudo service mysql stop 2>&1 1> /dev/null`;
 
