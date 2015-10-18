@@ -37,4 +37,11 @@ class varnish {
     require => Package['varnish'],
     notify  => Service['varnish']
   }
+
+  file_line { 'apache-listen-port-80':
+    path    => '/etc/apache2/ports.conf',
+    line    => 'Listen 8080',
+    match   => '^Listen (80){1,2}$',
+    require => Class['apache']
+  }
 }
