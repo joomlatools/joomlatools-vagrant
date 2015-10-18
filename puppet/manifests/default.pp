@@ -366,3 +366,5 @@ class { '::hhvm':
   manage_repos => true,
   pgsql        => false
 }
+
+class {'triggers': }

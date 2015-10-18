@@ -73,4 +73,8 @@ Vagrant.configure("2") do |config|
         "pma_controluser_password" => "awesome"
     }
   end
+
+  config.trigger.before :destroy do
+    run_remote "/home/vagrant/triggers/backup.sh"
+  end
 end
