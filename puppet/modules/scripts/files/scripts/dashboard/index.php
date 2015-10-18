@@ -119,6 +119,7 @@ foreach ($dir as $fileinfo)
             <li role="presentation" class="dropdown-header">System</li>
               <li><a href="/phpinfo">phpinfo</a></li>
               <li><a href="/pimpmylog">Log Files</a></li>
+              <li><a href="/filebrowser">File Browser</a></li>
               <li><a href="/terminal">Terminal</a></li>
           </ul>
         </div>
