@@ -1,14 +1,11 @@
 #!/bin/bash
 
-ARCHIVE="/vagrant/joomla-box-backup.tar"
+ARCHIVE="${1:-/vagrant/joomla-box-backup.tar}"
 TEMP_DIR="/tmp/restore"
 
-if [ -f "/home/vagrant/.restored-archive" ]; then
-    exit 0
-fi
-
 if [ ! -f $ARCHIVE ]; then
-    exit 0
+    echo "Backup archive $ARCHIVE not found, aborting." 1>&2
+    exit 1
 fi
 
 if [ -d $TEMP_DIR ]; then
@@ -23,9 +20,17 @@ tar -xf $ARCHIVE -C $TEMP_DIR
 
 echo "Restoring virtual hosts:"
 for VHOST in $TEMP_DIR/vhost-1-*.conf.gz; do
+  if [ ! -e "$VHOST" ]
+  then
+    echo "No virtual hosts found. Nothing to do."
+    break
+  fi
+
   FILENAME=$(basename "$VHOST")
   SITENAME="${FILENAME/vhost-1-/}"
   SITENAME="${SITENAME/.conf.gz/}"
+
+  echo " * $SITENAME"
 
   gunzip $VHOST
   VHOST="${VHOST/.gz/}"
@@ -41,12 +46,19 @@ for VHOST in $TEMP_DIR/vhost-1-*.conf.gz; do
   sudo a2ensite "1-$SITENAME" || { echo "Failed to enable $SITENAME! Aborting." 1>&2; exit 1; }
 done
 
+echo ""
 sudo service apache2 restart
 echo ""
 
 echo "Restoring databases:"
 
 for DB in $TEMP_DIR/mysql-*.sql.gz; do
+  if [ ! -e "$DB" ]
+  then
+    echo "No database dumps found. Nothing to do."
+    break
+  fi
+
   FILENAME=$(basename $DB)
   DBNAME=${FILENAME%.*}
   DBNAME="${DBNAME/.sql.gz/}"
@@ -59,9 +71,6 @@ for DB in $TEMP_DIR/mysql-*.sql.gz; do
   mysql -uroot -proot < $DB || { echo "Failed to import database $DBNAME! Aborting." 1>&2; exit 1; }
 done
 
-echo "Cleaning up"
 rm -rf $TEMP_DIR
-echo $(date +%Y-%m-%d:%H:%M:%S) > "/home/vagrant/.restored-archive"
 
-echo "Removing backup archive"
-rm -f $ARCHIVE
+echo "Succesfully restored your hosts and databases. You can safely delete the joomla-box-backup.tar file after validating your setup."
