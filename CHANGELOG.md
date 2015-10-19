@@ -17,7 +17,6 @@ To view the diff between two versions, go to https://github.com/joomlatools/joom
  * Improved - Automatically change directory to /var/www when logging in via `vagrant ssh` or web terminal
  * Improved - Added /terminal, /mailcatcher and /filebrowser aliases
 
-
 * 1.3.1 (2015-09-03)
  * Added - Support for PHP7
  * Added - Support for [joomla-platform](https://github.com/joomlatools/joomla-platform) installations
