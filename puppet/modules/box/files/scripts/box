@@ -47,4 +47,7 @@ $application->add(new Command\Varnish\Enable());
 $application->add(new Command\Varnish\Disable());
 $application->add(new Command\Varnish\Clear());
 
+$application->add(new Command\Backup());
+$application->add(new Command\Restore());
+
 $application->run();
