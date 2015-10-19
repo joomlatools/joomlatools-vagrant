@@ -46,7 +46,11 @@ class Engine extends Command
         {
             case 'hhvm':
                 `sudo a2enconf hhvm`;
-                `sudo a2dismod php5 php7`;
+                `sudo a2dismod php5`;
+
+                if (file_exists('/etc/apache2/mods-available/php7.conf')) {
+                    `sudo a2dismod php7`;
+                }
                 break;
             case 'zend':
                 `sudo a2disconf hhvm`;
