@@ -33,7 +33,7 @@ CONF = _config
 
 Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/trusty64"
-  config.vm.hostname = "joomlatools.dev"
+  config.vm.hostname = "joomlatools" # Important: we use this in joomla-console to determine if we are being run in the Vagrant box or not!
 
   config.vm.network :private_network, ip: "33.33.33.58"
   config.ssh.forward_agent = true
