@@ -16,9 +16,9 @@ class Disable extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (file_exists('/var/www/varnish-enabled'))
+        if (file_exists('/home/vagrant/scripts/varnish-enabled'))
         {
-            `sudo rm -f /var/www/varnish-enabled`;
+            `rm -f /home/vagrant/scripts/varnish-enabled`;
 
             $this->getApplication()->find('varnish:clear')->run(new ArrayInput(array('command' => 'varnish:clear')), $output);
 

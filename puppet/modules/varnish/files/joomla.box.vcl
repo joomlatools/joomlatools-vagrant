@@ -44,7 +44,7 @@ sub vcl_recv {
         # Do not cache system tools on joomla.box:
         if (req.http.host == "joomla.box")
         {
-            if (req.url == "/apc" || req.url == "/phpinfo" || req.url == "/pimpmylog") {
+            if (req.url ~ "^/apc" || req.url ~ "^/phpinfo" || req.url ~ "^/pimpmylog" || req.url ~ "^/dashboard") {
                 return (pass);
             }
         }
