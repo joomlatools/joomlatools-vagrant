@@ -32,6 +32,8 @@ gnupg_key { 'gpg-rvm-signature':
 
 file { '/home/vagrant/.bash_aliases':
   ensure => 'present',
+  owner  => vagrant,
+  group  => vagrant,
   source => 'puppet:///modules/puphpet/dot/.bash_aliases',
 }
 

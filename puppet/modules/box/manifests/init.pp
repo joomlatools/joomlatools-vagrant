@@ -22,8 +22,8 @@ class box {
   }
 
   exec { 'add-box-to-path':
-    command => 'echo "export PATH=\$PATH:/home/vagrant/box" >> /home/vagrant/.profile',
-    unless  => 'grep ":/home/vagrant/box" /home/vagrant/.profile',
+    command => 'echo "export PATH=\$PATH:/home/vagrant/box" >> /home/vagrant/.bash_profile',
+    unless  => 'grep ":/home/vagrant/box" /home/vagrant/.bash_profile',
     require => Exec['make-box-executable']
   }
 }

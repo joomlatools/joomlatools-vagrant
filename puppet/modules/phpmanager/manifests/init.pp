@@ -53,8 +53,8 @@ class phpmanager::install {
   }
 
   exec { 'add-phpmanager-to-path':
-    command => 'echo "export PATH=\$PATH:/home/vagrant/phpmanager" >> /home/vagrant/.profile',
-    unless  => 'grep ":/home/vagrant/phpmanager" /home/vagrant/.profile',
+    command => 'echo "export PATH=\$PATH:/home/vagrant/phpmanager" >> /home/vagrant/.bash_profile',
+    unless  => 'grep ":/home/vagrant/phpmanager" /home/vagrant/.bash_profile',
     require => Exec['make-phpmanager-executable']
   }
 

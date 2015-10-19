@@ -13,8 +13,8 @@ class scripts {
   }
 
   exec { 'add-scripts-to-path':
-    command => 'echo "export PATH=\$PATH:/home/vagrant/.composer/vendor/bin" >> /home/vagrant/.profile',
-    unless  => 'grep ":/home/vagrant/.composer/vendor/bin" /home/vagrant/.profile',
+    command => 'echo "export PATH=\$PATH:/home/vagrant/.composer/vendor/bin" >> /home/vagrant/.bash_profile',
+    unless  => 'grep ":/home/vagrant/.composer/vendor/bin" /home/vagrant/.bash_profile',
     require => Exec['make-scripts-executable']
   }
 
@@ -39,8 +39,15 @@ class scripts {
     require => Exec['make-scripts-executable']
   }
 
+  file_line { 'load-bashrc':
+    path    => '/home/vagrant/.bash_profile',
+    line    => '[ -f ~/.bashrc ] && . ~/.bashrc',
+    require => File['/home/vagrant/.bash_profile']
+  }
+
   file_line { 'cd-to-www-dir':
     path    => '/home/vagrant/.bash_profile',
-    line    => 'cd /var/www'
+    line    => 'cd /var/www',
+    require => File_Line['load-bashrc']
   }
 }
