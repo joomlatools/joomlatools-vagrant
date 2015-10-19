@@ -43,12 +43,10 @@ for VHOST in $TEMP_DIR/vhost-1-*.conf.gz; do
   fi
 
   sudo mv $VHOST "/etc/apache2/sites-available/1-${SITENAME}.conf" || { echo "Failed to install $SITENAME! Aborting." 1>&2; exit 1; }
-  sudo a2ensite "1-$SITENAME" || { echo "Failed to enable $SITENAME! Aborting." 1>&2; exit 1; }
+  sudo a2ensite "1-$SITENAME" &> /dev/null || { echo "Failed to enable $SITENAME! Aborting." 1>&2; exit 1; }
 done
 
-echo ""
 sudo service apache2 restart
-echo ""
 
 echo "Restoring databases:"
 

@@ -66,6 +66,7 @@ Vagrant.configure("2") do |config|
         case STDIN.gets.strip
             when 'Y', 'y', 'yes'
                 run_remote "/bin/bash /home/vagrant/triggers/backup.sh"
+                break
             when /\A[nN]o?\Z/ #n or no
                 break
         end
@@ -79,6 +80,7 @@ Vagrant.configure("2") do |config|
             case STDIN.gets.strip
                 when 'Y', 'y', 'yes'
                     run_remote "/bin/bash /home/vagrant/triggers/restore.sh"
+                    break
                 when /\A[nN]o?\Z/ #n or no
                     break
             end
