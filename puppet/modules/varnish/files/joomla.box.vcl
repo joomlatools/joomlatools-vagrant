@@ -12,8 +12,8 @@ vcl 4.0;
 #
 # JFactory::getApplication()->setHeader('X-Logged-In', $user->guest ? 'false' : 'true', true);
 #
-# Now enable the Cache plugin and Varnish cache. Your front-end pages will be cached
-# as long as you browse the site as a guest.
+# Now enable the Cache plugin and Varnish cache. Clear your existing cookies.
+# Your front-end pages will be cached as long as you browse the site as a guest.
 #
 # This VCL is based on https://snipt.net/fevangelou/the-perfect-varnish-configuration-for-joomla-websites/
 
