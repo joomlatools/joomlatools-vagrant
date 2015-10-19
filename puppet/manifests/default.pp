@@ -70,6 +70,13 @@ class { 'apache':
     require => Class['apache::certificate'],
 }
 
+exec { 'apache-set-servername':
+  command => "echo \"ServerName joomlatools\" > /etc/apache2/conf-available/fqdn.conf; a2enconf fqdn",
+  path    => ['/usr/bin' , '/bin', '/usr/sbin/'],
+  creates => '/etc/apache2/conf-available/fqdn',
+  require => Class['apache']
+}
+
 apache::dotconf { 'custom':
   content => template("apache/custom.conf.erb"),
 }
