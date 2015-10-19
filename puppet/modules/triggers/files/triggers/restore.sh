@@ -34,15 +34,13 @@ for VHOST in $TEMP_DIR/vhost-1-*.conf.gz; do
   # (we changed the port since adding Varnish support)
   if grep -Fxq "<VirtualHost *:80>" $VHOST
   then
-      sed -i 's/<VirtualHost \*:80>/<VirtualHost \*:8080>/g' $VHOST
+      sed -i'.bak' 's/<VirtualHost \*:80>/<VirtualHost \*:8080>/g' $VHOST
   fi
 
-  sudo mv $VHOST "/etc/apache2/sites-available/" || { echo "Failed to install $SITENAME! Aborting." 1>&2; exit 1; }
+  sudo mv $VHOST "/etc/apache2/sites-available/1-${SITENAME}.conf" || { echo "Failed to install $SITENAME! Aborting." 1>&2; exit 1; }
   sudo a2ensite "1-$SITENAME" || { echo "Failed to enable $SITENAME! Aborting." 1>&2; exit 1; }
 done
 
-echo "Restarting Apache .."
-echo ""
 sudo service apache2 restart
 echo ""
 
