@@ -153,6 +153,15 @@ class { 'composer':
   require => Package['php5', 'curl'],
 }
 
+exec { "composer-plugin-changelogs":
+  command => "composer global require pyrech/composer-changelogs",
+  path    => ['/usr/bin' , '/bin'],
+  creates => '/home/vagrant/.composer/vendor/pyrech/composer-changelogs',
+  user    => vagrant,
+  environment => 'COMPOSER_HOME=/home/vagrant/.composer',
+  require => Class['Composer']
+}
+
 puphpet::ini { 'xdebug':
   value   => [
     'xdebug.remote_autostart = 0',
@@ -366,3 +375,5 @@ class { '::hhvm':
   manage_repos => true,
   pgsql        => false
 }
+
+class {'triggers': }

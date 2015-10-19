@@ -1,6 +1,12 @@
 require "yaml"
 require "json"
 
+# Check for required plugins and install if missing
+required_plugins = %w( vagrant-triggers )
+required_plugins.each do |plugin|
+    exec "vagrant plugin install #{plugin};vagrant #{ARGV.join(" ")}" unless Vagrant.has_plugin? plugin || ARGV[0] == 'plugin'
+end
+
 # Initialize config
 def deep_merge!(target, data)
   merger = proc{|key, v1, v2|
@@ -66,5 +72,13 @@ Vagrant.configure("2") do |config|
         "pma_mysql_root_password"  => "root",
         "pma_controluser_password" => "awesome"
     }
+  end
+
+  config.trigger.before :destroy do
+    run_remote "/bin/bash /home/vagrant/triggers/backup.sh"
+  end
+
+  config.trigger.after :up do
+    run_remote "/bin/bash /home/vagrant/triggers/restore.sh"
   end
 end
