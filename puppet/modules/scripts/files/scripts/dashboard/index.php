@@ -166,8 +166,6 @@ foreach ($dir as $fileinfo)
       </div>
     </div>
 
-    <iframe src="/terminal" height="400" width="100%"></iframe>
-
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
