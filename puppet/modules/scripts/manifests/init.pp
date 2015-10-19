@@ -26,6 +26,13 @@ class scripts {
     environment => 'COMPOSER_HOME=/home/vagrant/.composer'
   }
 
+  file {'/home/vagrant/.bash_profile':
+    ensure => file,
+    owner  => vagrant,
+    group  => vagrant,
+    notify => [File_line['joomla-console-updater'], File_line['cd-to-www-dir']]
+  }
+
   file_line { 'joomla-console-updater':
     path    => '/home/vagrant/.bash_profile',
     line    => '/home/vagrant/scripts/updater/login.sh',
