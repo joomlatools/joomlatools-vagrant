@@ -7,7 +7,7 @@ class triggers {
     group    => vagrant,
   }
 
-  exec { 'make-scripts-executable': 
+  exec { 'make-triggers-executable':
     command   => 'chmod +x /home/vagrant/triggers/*',
     subscribe => File['/home/vagrant/triggers']
   }
