@@ -62,9 +62,13 @@ sub vcl_recv {
             }
         }
 
-        # Proxy (pass) any request that goes to the backend admin,
-        # the banner component links or any post requests
-        if(req.url ~ "/administrator" || req.url ~ "/component/banners" || req.url ~ "/component/users" || req.method == "POST") {
+        # Do not cache POST requests
+        if (req.method == "POST") {
+            return (pass);
+        }
+
+        # Proxy (pass) any request that goes to the backend admin, the banner component links, ..
+        if(req.url ~ "/administrator" || req.url ~ "/component/banners" || req.url ~ "/component/users" || req.url ~ "/installation") {
             return (pass);
         }
 
