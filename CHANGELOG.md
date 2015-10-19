@@ -9,8 +9,11 @@ To view the diff between two versions, go to https://github.com/joomlatools/joom
 
 * 1.3.2 (2015-10-19)
  * Added - Support for HHVM engine
+ * Added - [httpie](https://github.com/jkbrzt/httpie) CLI HTTP Client
  * Added - [Cloudcommander](http://cloudcmd.io/) web-based file browser
  * Added - System will automatically look for  [joomlatools/joomla-console](http://developer.joomlatools.com/tools/console.html) updates
+ * Added - Installed Varnish cache in front of Apache
+ * Added - Automatically backup and restore virtual hosts and databases when upgrading the box
  * Improved - Automatically change directory to /var/www when logging in via `vagrant ssh` or web terminal
  * Improved - Added /terminal, /mailcatcher and /filebrowser aliases
 

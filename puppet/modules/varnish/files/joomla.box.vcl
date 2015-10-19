@@ -2,20 +2,7 @@ vcl 4.0;
 
 # This Varnish configuration is a very basic template to get started with caching Joomla sites.
 # In no way is this configuration complete: every site is unique and needs customisation!
-#
-# Joomla creates a session cookie by default, even if you not logged in. To deal with this,
-# we need to let Varnish know when a user is logged in or not. If the user is not logged in,
-# we will prevent the Joomla response from setting any cookies so Varnish can cache the page.
-#
-# To set the X-Logged-In header, append the following line in to the onAfterInitialise() method
-# in /plugins/system/cache/cache.php, right after "$user = JFactory::getUser();" (line #60):
-#
-# JFactory::getApplication()->setHeader('X-Logged-In', $user->guest ? 'false' : 'true', true);
-#
-# Now enable the Cache plugin and Varnish cache. Clear your existing cookies.
-# Your front-end pages will be cached as long as you browse the site as a guest.
-#
-# This VCL is based on https://snipt.net/fevangelou/the-perfect-varnish-configuration-for-joomla-websites/
+# For demonstration purposes this VCL will cache all front-end pages (including pages with cookies).
 
 import std;
 
@@ -73,7 +60,7 @@ sub vcl_recv {
         }
 
         # Do not cache if user is logged in
-        if (req.http.Authorization || req.http.Authenticate || req.http.Cookie) {
+        if (req.http.Authorization || req.http.Authenticate) {
             return (pass);
         }
 
@@ -121,6 +108,22 @@ sub vcl_backend_response {
         set beresp.ttl = 1w;
 
         return (deliver);
+}
+
+sub vcl_hash
+{
+    hash_data(req.url);
+
+    if (req.http.host) {
+        hash_data(req.http.host);
+    } else {
+        hash_data(server.ip);
+    }
+
+    # Hash cookies for requests that have them
+    if (req.http.Cookie) {
+        hash_data(req.http.Cookie);
+    }
 }
 
 sub vcl_deliver {
