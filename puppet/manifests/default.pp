@@ -230,7 +230,7 @@ apache::vhost { 'phpmyadmin':
   server_name   => 'phpmyadmin',
   serveraliases => 'phpmyadmin.joomla.box',
   docroot       => '/usr/share/phpmyadmin',
-  port          => 80,
+  port          => 8080,
   priority      => '10',
   require       => Class['phpmyadmin'],
 }
@@ -266,7 +266,7 @@ apache::vhost { 'webgrind':
   server_name   => 'webgrind',
   serveraliases => 'webgrind.joomla.box',
   docroot       => '/usr/share/webgrind',
-  port          => 80,
+  port          => 8080,
   priority      => '10',
   require       => Class['webgrind'],
 }
@@ -274,7 +274,7 @@ apache::vhost { 'webgrind':
 apache::vhost { 'joomla.box':
   server_admin  => 'webmaster@localhost',
   serveraliases => 'localhost',
-  port          => 80,
+  port          => 8080,
   priority      => '00',
   docroot       => '/var/www',
   directory     => '/var/www',
@@ -377,3 +377,5 @@ class { '::hhvm':
 }
 
 class {'triggers': }
+
+class { 'varnish': }

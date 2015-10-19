@@ -16,6 +16,7 @@ class Restart extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        `sudo service varnish restart 2>&1 1> /dev/null`;
         `sudo service apache2 restart 2>&1 1> /dev/null`;
         `sudo service mysql restart 2>&1 1> /dev/null`;
 

@@ -15,6 +15,7 @@ class Start extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        `sudo service varnish start 2>&1 1> /dev/null`;
         `sudo service apache2 start 2>&1 1> /dev/null`;
         `sudo service mysql start 2>&1 1> /dev/null`;
 

@@ -43,4 +43,8 @@ $application->add(new Command\Php\Versions());
 $application->add(new Command\Php\Remove());
 $application->add(new Command\Php\Reset());
 
+$application->add(new Command\Varnish\Enable());
+$application->add(new Command\Varnish\Disable());
+$application->add(new Command\Varnish\Clear());
+
 $application->run();
