@@ -380,7 +380,7 @@ swap_file::files { 'default':
   swapfilesize => '512 MB'
 }
 
-class { '::hhvm':
+class { 'hhvm':
   manage_repos => true,
   pgsql        => false
 }

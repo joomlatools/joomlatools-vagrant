@@ -1,0 +1,25 @@
+{
+  "name": "mayflower-hhvm",
+  "version": "0.1.2",
+  "author": "mayflower",
+  "summary": "Installs and configures Facebook's HHVM",
+  "license": "Apache 2.0",
+  "source": "https://github.com/Mayflower/puppet-hhvm",
+  "project_page": "https://github.com/Mayflower/puppet-hhvm",
+  "issues_url": "https://github.com/Mayflower/puppet-hhvm/issues",
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 4.0.0"
+    },
+    {
+      "name": "puppetlabs/apt",
+      "version_requirement": ">= 1.0.0"
+    },
+    {
+      "name": "maestrodev/wget",
+      "version_requirement": ">= 1.0.0"
+    }
+  ]
+}
+
