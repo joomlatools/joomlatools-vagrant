@@ -55,7 +55,7 @@ class Engine extends Command
             case 'zend':
                 `sudo a2disconf hhvm`;
 
-                if (version_compare(\Helper\System::getZendPHPVersion(), '7.0.0RC1', '<')) {
+                if (version_compare(\Helper\System::getZendPHPVersion(), '7.0.0alpha1', '<')) {
                     $php = 'php5';
                 }
                 else $php = 'php7';
