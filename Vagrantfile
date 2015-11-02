@@ -44,6 +44,9 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--name", "joomlatools-box-build"]
   end
 
+  # Install librarian-puppet and run it to install puppet modules prior to Puppet provisioning.
+  config.vm.provision :shell, :path => "shell/librarian-puppet.sh"
+
   if CONF.has_key?('synced_folders')
     CONF['synced_folders'].each { |target, source|
       if source
@@ -66,12 +69,15 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "puppet/manifests"
-    puppet.module_path = "puppet/modules"
+    puppet.manifest_file = ""
+    puppet.module_path = ['puppet/modules/common', 'puppet/modules/custom']
     puppet.options = ['--verbose']
     puppet.facter = {
-        "pma_mysql_root_password"  => "root",
-        "pma_controluser_password" => "awesome"
+        'fqdn'                     => "#{config.vm.hostname}.box",
+        'pma_mysql_root_password'  => 'root',
+        'pma_controluser_password' => 'awesome'
     }
+    puppet.hiera_config_path = "puppet/hiera-vagrant.yaml"
   end
 
   config.trigger.before :destroy do

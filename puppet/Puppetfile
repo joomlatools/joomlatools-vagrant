@@ -1,0 +1,10 @@
+forge "https://forgeapi.puppetlabs.com"
+
+mod "puppetlabs/apt", "1.8.0"
+mod "puppetlabs/concat"
+mod "puppetlabs/mysql"
+mod "puppetlabs/stdlib"
+
+mod "jippi/nodes-php",
+  :git => "https://github.com/jippi/puppet-php.git"
+mod "petems-swap_file"
