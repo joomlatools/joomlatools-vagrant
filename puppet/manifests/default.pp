@@ -15,7 +15,7 @@ and title != 'software-properties-common'
 
 apt::key { '4F4EA0AAE5267A6C': }
 
-apt::ppa { 'ppa:ondrej/php5':
+apt::ppa { 'ppa:ondrej/php5-5.6':
   require => Apt::Key['4F4EA0AAE5267A6C']
 }
 
