@@ -388,3 +388,8 @@ class { 'hhvm':
 class {'triggers': }
 
 class { 'varnish': }
+
+class { 'zray':
+  notify  => Service['apache'],
+  require => Class['php']
+}
