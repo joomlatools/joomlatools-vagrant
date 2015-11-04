@@ -18,7 +18,7 @@ class Disable extends Xdebug
     {
         parent::execute($input, $output);
 
-        $files = $this->_getConfigFiles($this->_ini_files);
+        $files = \Helper\Ini::findIniFiles($this->_ini_files);
 
         foreach($files as $file) {
             `sudo sed -i 's#^zend_extension=#; zend_extension=#' $file`;
