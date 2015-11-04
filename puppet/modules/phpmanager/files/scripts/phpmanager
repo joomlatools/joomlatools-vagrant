@@ -2,7 +2,7 @@
 ##
 # Joomlatools PHP Manager script - https://github.com/joomlatools/joomla-vagrant
 #
-# @copyright	Copyright (C) 2011 - 2014 Johan Janssens and Timble CVBA. (http://www.timble.net)
+# @copyright	Copyright (C) 2011 - 2015 Johan Janssens and Timble CVBA. (http://www.timble.net)
 # @license		MPL 2.0 <http://www.mozilla.org/MPL/2.0/>
 # @link		    http://github.com/joomlatools/joomla-vagrant for the canonical source repository
 ##
@@ -281,6 +281,9 @@ command_install() {
         sub_xdebug "$VERSION" "$LOGFILE"
     fi
 
+    # Install z-ray if applicable
+    sub_zray "$VERSION"
+
     # Build APC or APCu+Opcache
     if [[ "$SHORT" -lt 7000 ]] ; then
         if [[ "$SHORT" -lt 5500 ]] ; then
@@ -425,6 +428,17 @@ sub_pear() {
     for PACKAGE in "Console_CommandLine" "phing/phing"; do
         sudo "$PEAR" install $PACKAGE >> "$LOGFILE" 2>&1
     done
+}
+
+# Symlink z-ray ini files
+sub_zray() {
+    VERSION="$1"
+
+    if [[ "$SHORT" -ge 5500 ]] && [[ "$SHORT" -lt 5600 ]]; then
+        cp /etc/php5/mods-available/zray-php5.5.ini "/opt/php/${VERSION}/etc/conf.d/zray-php5.5.ini"
+    elif [[ "$SHORT" -ge 5600 ]] && [[ "$SHORT" -lt 7000 ]]; then
+        cp /etc/php5/mods-available/zray-php5.6.ini "/opt/php/${VERSION}/etc/conf.d/zray-php5.6.ini"
+    fi
 }
 
 # Build Xdebug for the given version
@@ -573,10 +587,10 @@ sub_getoptions() {
         OPENSSL="--with-openssl=/opt/openssl-0.9.7g"
         patch -p1 < /home/vagrant/phpmanager/patches/openssl.ssl2.patch &> /dev/null
     elif [[ "$SHORT" -le 5306 ]] ; then
-        OPENSSL="--with-openssl"
+        OPENSSL="--with-openssl=/opt/openssl-1.0.1f"
         patch -p1 < /home/vagrant/phpmanager/patches/openssl.ssl2.patch &> /dev/null
     else
-        OPENSSL="--with-openssl"
+        OPENSSL="--with-openssl=/opt/openssl-1.0.1f"
     fi
     OPTIONS="$OPTIONS $OPENSSL"
 

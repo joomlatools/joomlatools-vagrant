@@ -1,5 +1,5 @@
 group { 'puppet': ensure => present }
-Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/' ] }
+Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/' ], timeout => 900 }
 File { owner => 0, group => 0, mode => 0644 }
 
 user { 'vagrant': }
@@ -15,7 +15,7 @@ and title != 'software-properties-common'
 
 apt::key { '4F4EA0AAE5267A6C': }
 
-apt::ppa { 'ppa:ondrej/php5':
+apt::ppa { 'ppa:ondrej/php5-5.6':
   require => Apt::Key['4F4EA0AAE5267A6C']
 }
 
@@ -68,6 +68,13 @@ class { 'apache::certificate':}
 
 class { 'apache':
     require => Class['apache::certificate'],
+}
+
+exec { 'apache-set-servername':
+  command => "echo \"ServerName joomlatools\" > /etc/apache2/conf-available/fqdn.conf; a2enconf fqdn",
+  path    => ['/usr/bin' , '/bin', '/usr/sbin/'],
+  creates => '/etc/apache2/conf-available/fqdn',
+  require => Class['apache']
 }
 
 apache::dotconf { 'custom':
@@ -373,7 +380,7 @@ swap_file::files { 'default':
   swapfilesize => '512 MB'
 }
 
-class { '::hhvm':
+class { 'hhvm':
   manage_repos => true,
   pgsql        => false
 }
@@ -381,3 +388,8 @@ class { '::hhvm':
 class {'triggers': }
 
 class { 'varnish': }
+
+class { 'zray':
+  notify  => Service['apache'],
+  require => Class['php']
+}
