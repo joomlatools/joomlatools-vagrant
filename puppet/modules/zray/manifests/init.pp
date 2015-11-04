@@ -4,6 +4,7 @@ class zray {
     ensure           => present,
     url              => 'http://repos.zend.com/zend-server/early-access/zray-tech-preview/zray-php-101832-php5.6.11-linux-debian7-amd64.tar.gz',
     target           => '/opt',
+    root_dir         => '.',
     checksum         => false
   }
   ->
@@ -27,6 +28,7 @@ class zray {
     ensure           => present,
     url              => 'http://repos.zend.com/zend-server/early-access/zray-tech-preview/zray-php-101832-php5.5.27-linux-debian7-amd64.tar.gz',
     target           => '/opt',
+    root_dir         => '.',
     checksum         => false
   }
   ->
