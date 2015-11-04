@@ -10,13 +10,13 @@ define zray::php::ini (
   }
 
   if ($enable) {
-    file { ["/etc/php5/apache2/conf.d/20-${title}.ini", "/etc/php5/cli/conf.d/20-${title}.ini"]:
+    file { "/etc/php5/apache2/conf.d/20-${title}.ini":
       ensure => link,
       target => "/etc/php5/mods-available/${title}.ini"
     }
   }
   else {
-    file { ["/etc/php5/apache2/conf.d/20-${title}.ini", "/etc/php5/cli/conf.d/20-${title}.ini"]:
+    file { ["/etc/php5/apache2/conf.d/20-${title}.ini"]:
       ensure => absent
     }
   }
