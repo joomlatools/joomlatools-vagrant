@@ -24,6 +24,12 @@ class Profiler extends Xdebug
     {
         parent::execute($input, $output);
 
+        if (!extension_loaded('xdebug'))
+        {
+            $output->writeln('[error] XDebug is not loaded. You can enable it using the <comment>box xdebug:enable</comment> command.');
+            exit();
+        }
+
         $action = strtolower($input->getArgument('action'));
 
         if (!in_array($action, array('start', 'stop'))) {
