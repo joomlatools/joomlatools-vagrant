@@ -287,7 +287,7 @@ class { 'webgrind':
 apache::vhost { 'webgrind':
   server_name   => 'webgrind',
   serveraliases => 'webgrind.joomla.box',
-  docroot       => '/usr/share/webgrind',
+  docroot       => '/usr/share/webgrind-1.2',
   port          => 8080,
   priority      => '10',
   require       => Class['webgrind'],
