@@ -164,6 +164,18 @@ command_use() {
     [[ -f "/usr/lib/apache2/modules/${DELNAME}" ]] && sudo rm "/usr/lib/apache2/modules/${DELNAME}"
     sudo cp "/opt/php/${VERSION}/lib/apache/${LIBNAME}" "/usr/lib/apache2/modules/${LIBNAME}"
 
+    # Update the Z-Ray vhost
+    if [[ "$SHORT" -ge 5500 ]] && [[ "$SHORT" -lt 5600 ]]; then
+        sudo a2ensite  00-zray-php5.5 &> /dev/null
+        sudo a2dissite 00-zray-php5.6 &> /dev/null
+    elif [[ "$SHORT" -ge 5600 ]] && [[ "$SHORT" -lt 7000 ]]; then
+        sudo a2ensite  00-zray-php5.6 &> /dev/null
+        sudo a2dissite 00-zray-php5.5 &> /dev/null
+    else
+        sudo a2dissite 00-zray-php5.6 &> /dev/null
+        sudo a2dissite 00-zray-php5.5 &> /dev/null
+    fi
+
     echo -n "Restarting Apache .. "
     sudo service apache2 restart &> /dev/null
 
@@ -350,6 +362,9 @@ command_restore() {
     fi
 
     sudo cp "/usr/lib/apache2/modules/libphp5.so.original" "/usr/lib/apache2/modules/libphp5.so"
+
+    sudo a2ensite 00-zray-php5.6 &> /dev/null
+    sudo a2dissite 00-zray-php5.5 &> /dev/null
 
     echo -n "Restarting Apache .. "
     sudo a2enmod php5 &> /dev/null
