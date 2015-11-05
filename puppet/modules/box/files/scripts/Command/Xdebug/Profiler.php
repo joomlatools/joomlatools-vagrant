@@ -36,6 +36,18 @@ class Profiler extends Xdebug
             throw new \RuntimeException('Action must be one of start|stop');
         }
 
+        $inis = \Helper\Ini::findIniFiles(array('zray-php5.5.ini', 'zray-php5.6.ini'), false);
+        $ini  = array_pop($inis);
+        if ($action == 'start' && file_exists($ini))
+        {
+            $contents = file_get_contents($ini);
+            if (preg_match('/^zend_extension\\s*=\\s*.+zray\\.so/', $contents))
+            {
+                $output->writeln('[warning] <info>Zend Z-Ray</info> is enabled. This will generate a lot of profiler output!');
+                $output->writeln('[warning] You can disable <info>Zend Z-Ray</info> with this command: <comment>box zray:disable</comment>');
+            }
+        }
+
         $current = \Helper\Ini::getPHPConfig('xdebug.profiler_enable');
         $value   = $action == 'start' ? 1 : 0;
         $word    = $action == 'start' ? 'started' : 'stopped';
