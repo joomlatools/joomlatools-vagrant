@@ -37,26 +37,39 @@ class Profiler extends Xdebug
         }
 
         $enabled = \Helper\Ini::getPHPConfig('xdebug.profiler_enable_trigger');
-        $value   = $action == 'start' ? 1 : 0;
-        $word    = $action == 'start' ? 'started' : 'stopped';
+        $current = \Helper\Ini::getPHPConfig('xdebug.profiler_enable_trigger_value');
+        $trigger = $action == 'start' ? 1 : 0;
+        $value   = $action == 'start' ? 'joomlatools' : '';
 
-        if ($enabled == $value)
+        if ($action == 'start')
         {
-            $output->writeln("Profiler has already been $word");
-            exit();
+            if ($current == 'joomlatools' && $enabled == 1)
+            {
+                $output->writeln("Profiler is already enabled.");
+                exit();
+            }
+        }
+        else
+        {
+            if (empty($current) && $enabled == 0)
+            {
+                $output->writeln("Profiler is not running.");
+                exit();
+            }
         }
 
         $files = \Helper\Ini::findIniFiles(array('custom.ini', '99-custom.ini'), false);
 
         foreach($files as $file)
         {
-            \Helper\Ini::update($file, 'xdebug.profiler_enable_trigger', $value);
-            \Helper\Ini::update($file, 'xdebug.profiler_enable_trigger_value', 'joomlatools');
+            \Helper\Ini::update($file, 'xdebug.profiler_enable_trigger', $trigger);
+            \Helper\Ini::update($file, 'xdebug.profiler_enable_trigger_value', $value);
         }
 
         $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart')), $output);
 
-        $output->writeln("XDebug profiler has been $word");
+        $verb = $action == 'start' ? 'started' : 'stopped';
+        $output->writeln("XDebug profiler has been $verb");
 
         if ($action == 'start')
         {
