@@ -42,7 +42,7 @@ class Ini extends Command
             return;
         }
 
-        $current = $this->_getConfigValue($key);
+        $current = \Helper\Ini::getPHPConfig($key);
 
         if ($current === false)
         {
@@ -70,18 +70,6 @@ class Ini extends Command
             else $output->write('Error: failed to find PHP\'s additional config directory (config-file-scan-dir)!');
         }
         else $output->writeln("$key value is <info>$current</info>");
-    }
-
-    protected function _getConfigValue($key)
-    {
-        $bin     = \Helper\System::getPHPCommand();
-        $current = `$bin -r "\\\$value = ini_get('$key'); echo \\\$value === false ? 'unknown-directive' : \\\$value;"`;
-
-        if ($current == 'unknown-directive') {
-            return false;
-        }
-
-        return $current;
     }
 
     protected function _getIniOverride()
