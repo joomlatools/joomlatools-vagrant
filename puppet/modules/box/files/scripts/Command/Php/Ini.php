@@ -78,7 +78,8 @@ class Ini extends Command
             return '/etc/hhvm/php.ini';
         }
 
-        $filelist = `/usr/bin/php -r 'echo php_ini_scanned_files();'`;
+        $bin = \Helper\System::getPHPCommand();
+        $filelist = `$bin -r 'echo php_ini_scanned_files();'`;
 
         if (strpos($filelist, ','))
         {

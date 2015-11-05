@@ -36,44 +36,41 @@ class Profiler extends Xdebug
             throw new \RuntimeException('Action must be one of start|stop');
         }
 
-        $enabled = \Helper\Ini::getPHPConfig('xdebug.profiler_enable_trigger');
-        $current = \Helper\Ini::getPHPConfig('xdebug.profiler_enable_trigger_value');
-        $trigger = $action == 'start' ? 1 : 0;
-        $value   = $action == 'start' ? 'joomlatools' : '';
-
-        if ($action == 'start')
+        $inis = \Helper\Ini::findIniFiles(array('zray-php5.5.ini', 'zray-php5.6.ini'), false);
+        $ini  = array_pop($inis);
+        if ($action == 'start' && file_exists($ini))
         {
-            if ($current == 'joomlatools' && $enabled == 1)
+            $contents = file_get_contents($ini);
+            if (preg_match('/^zend_extension\\s*=\\s*.+zray\\.so/', $contents))
             {
-                $output->writeln("Profiler is already enabled.");
-                exit();
+                $output->writeln('[warning] <info>Zend Z-Ray</info> is enabled. This will generate a lot of profiler output!');
+                $output->writeln('[warning] You can disable <info>Zend Z-Ray</info> with this command: <comment>box zray:disable</comment>');
             }
         }
-        else
+
+        $current = \Helper\Ini::getPHPConfig('xdebug.profiler_enable');
+        $value   = $action == 'start' ? 1 : 0;
+        $word    = $action == 'start' ? 'started' : 'stopped';
+
+        if ($current == $value)
         {
-            if (empty($current) && $enabled == 0)
-            {
-                $output->writeln("Profiler is not running.");
-                exit();
-            }
+            $output->writeln("Profiler has already been $word");
+            exit();
         }
 
         $files = \Helper\Ini::findIniFiles(array('custom.ini', '99-custom.ini'), false);
 
-        foreach($files as $file)
-        {
-            \Helper\Ini::update($file, 'xdebug.profiler_enable_trigger', $trigger);
-            \Helper\Ini::update($file, 'xdebug.profiler_enable_trigger_value', $value);
+        foreach($files as $file) {
+            \Helper\Ini::update($file, 'xdebug.profiler_enable', $value);
         }
 
-        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart', 'service' => array('apache'))), $output);
+        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart')), $output);
 
-        $verb = $action == 'start' ? 'started' : 'stopped';
-        $output->writeln("XDebug profiler has been $verb");
+        $output_dir  = \Helper\Ini::getPHPConfig('xdebug.profiler_output_dir');
 
-        if ($action == 'start')
-        {
-            $output_dir = \Helper\Ini::getPHPConfig('xdebug.profiler_output_dir');
+        $output->writeln("XDebug profiler has been $word");
+
+        if ($action == 'start') {
             $output->writeln("Profiling information will be written to <info>$output_dir</info>");
         }
     }

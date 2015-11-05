@@ -24,6 +24,15 @@ class Disable extends Xdebug
             `sudo sed -i 's#^zend_extension=#; zend_extension=#' $file`;
         }
 
+        // Also disable the profiler so we don't spend
+        // an afternoon looking for the lack of performance
+        // after enabling xdebug again after three weeks. :)
+        $files = \Helper\Ini::findIniFiles(array('custom.ini', '99-custom.ini'), false);
+
+        foreach($files as $file) {
+            \Helper\Ini::update($file, 'xdebug.profiler_enable', 0);
+        }
+
         $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart', 'service' => array('apache'))), $output);
 
         $output->writeln('Xdebug has been disabled');

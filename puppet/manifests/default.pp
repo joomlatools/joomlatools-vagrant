@@ -217,7 +217,7 @@ puphpet::ini { 'custom':
     'xdebug.remote_host = "33.33.33.1"',
     'xdebug.show_local_vars = 1',
     'xdebug.profiler_enable = 0',
-    'xdebug.profiler_enable_trigger = 1',
+    'xdebug.profiler_enable_trigger = 0',
     'xdebug.max_nesting_level = 1000',
     'xdebug.profiler_output_dir = /var/www/'
   ],
