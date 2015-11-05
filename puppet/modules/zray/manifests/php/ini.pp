@@ -21,5 +21,4 @@ define zray::php::ini (
     }
   }
 
-
 }

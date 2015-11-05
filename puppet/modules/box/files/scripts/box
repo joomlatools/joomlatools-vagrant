@@ -30,6 +30,7 @@ $application->add(new Command\Apc\Clear());
 
 $application->add(new Command\Xdebug\Enable());
 $application->add(new Command\Xdebug\Disable());
+$application->add(new Command\Xdebug\Profiler());
 
 $application->add(new Command\Server\Restart());
 $application->add(new Command\Server\Start());

@@ -7,7 +7,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class Xdebug extends Command
 {
-    protected $_ini_files = array('xdebug.ini', 'zzz_xdebug.ini');
+    protected $_ini_files = array('xdebug.ini');
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {

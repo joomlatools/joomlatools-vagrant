@@ -1,6 +1,6 @@
 class zray {
 
-  archive { 'zray-php-101832-php5.6.11':
+  archive { 'zray-php-101832-php5.6.11-linux-debian7-amd64':
     ensure           => present,
     url              => 'http://repos.zend.com/zend-server/early-access/zray-tech-preview/zray-php-101832-php5.6.11-linux-debian7-amd64.tar.gz',
     target           => '/opt',
@@ -23,7 +23,7 @@ class zray {
     enable  => true
   }
 
-  archive { 'zray-php-101832-php5.5.27':
+  archive { 'zray-php-101832-php5.5.27-linux-debian7-amd64':
     ensure           => present,
     url              => 'http://repos.zend.com/zend-server/early-access/zray-tech-preview/zray-php-101832-php5.5.27-linux-debian7-amd64.tar.gz',
     target           => '/opt',

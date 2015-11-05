@@ -42,7 +42,7 @@ class Ini extends Command
             return;
         }
 
-        $current = $this->_getConfigValue($key);
+        $current = \Helper\Ini::getPHPConfig($key);
 
         if ($current === false)
         {
@@ -65,23 +65,11 @@ class Ini extends Command
 
                 $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart')), $output);
 
-                $output->writeln("$key value is now '$value', was '$current'");
+                $output->writeln("$key value is now <info>$value</info>, was <info>$current</info>");
             }
             else $output->write('Error: failed to find PHP\'s additional config directory (config-file-scan-dir)!');
         }
-        else $output->writeln("$key value is $current");
-    }
-
-    protected function _getConfigValue($key)
-    {
-        $bin     = \Helper\System::getPHPCommand();
-        $current = `$bin -r "\\\$value = ini_get('$key'); echo \\\$value === false ? 'unknown-directive' : \\\$value;"`;
-
-        if ($current == 'unknown-directive') {
-            return false;
-        }
-
-        return $current;
+        else $output->writeln("$key value is <info>$current</info>");
     }
 
     protected function _getIniOverride()
@@ -96,7 +84,7 @@ class Ini extends Command
         {
             $files = explode(',', $filelist);
             $file  = array_shift($files);
-            $path  = dirname($file) . DIRECTORY_SEPARATOR . 'zzz_custom.ini';
+            $path  = dirname($file) . DIRECTORY_SEPARATOR . '99-custom.ini';
 
             if (!file_exists($path)) {
                 touch($path);

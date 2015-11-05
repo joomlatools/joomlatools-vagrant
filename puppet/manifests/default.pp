@@ -84,6 +84,7 @@ apache::dotconf { 'custom':
 apache::module { 'rewrite': }
 apache::module { 'ssl': }
 apache::module { 'proxy_fcgi': }
+apache::module { 'headers': }
 
 class { 'php':
   service       => 'apache',
@@ -149,9 +150,36 @@ puphpet::ini { 'yaml':
   value   => [
     'extension=yaml.so'
   ],
-  ini     => '/etc/php5/mods-available/zzz_yaml.ini',
+  ini     => '/etc/php5/mods-available/yaml.ini',
   notify  => Service['apache'],
   require => [Class['php'], Php::Pecl::Module['yaml']]
+}
+
+file { ['/etc/php5/apache2/conf.d/20-yaml.ini', '/etc/php5/cli/conf.d/20-yaml.ini']:
+  ensure => link,
+  target => '/etc/php5/mods-available/yaml.ini',
+  require => Puphpet::Ini['yaml']
+}
+
+php::pecl::module { 'oauth':
+  use_package => no,
+  ensure      => present,
+  require     => Php::Pear::Config['download_dir']
+}
+
+puphpet::ini { 'oauth':
+  value   => [
+    'extension=oauth.so'
+  ],
+  ini     => '/etc/php5/mods-available/oauth.ini',
+  notify  => Service['apache'],
+  require => [Class['php'], Php::Pecl::Module['oauth']]
+}
+
+file { ['/etc/php5/apache2/conf.d/20-oauth.ini', '/etc/php5/cli/conf.d/20-oauth.ini']:
+  ensure => link,
+  target => '/etc/php5/mods-available/oauth.ini',
+  require => Puphpet::Ini['oauth']
 }
 
 class { 'xdebug':
@@ -171,26 +199,6 @@ exec { "composer-plugin-changelogs":
   require => Class['Composer']
 }
 
-puphpet::ini { 'xdebug':
-  value   => [
-    'xdebug.remote_autostart = 0',
-    ';Use remote_connect_back = 0 if accessing a shared box',
-    'xdebug.remote_connect_back = 1',
-    'xdebug.remote_enable = 1',
-    'xdebug.remote_handler = "dbgp"',
-    'xdebug.remote_port = 9000',
-    'xdebug.remote_host = "33.33.33.1"',
-    'xdebug.show_local_vars = 1',
-    'xdebug.profiler_enable = 0',
-    'xdebug.profiler_enable_trigger = 1',
-    'xdebug.max_nesting_level = 1000',
-    'xdebug.profiler_output_dir = /var/www/logs/xdebug/'
-  ],
-  ini     => '/etc/php5/mods-available/zzz_xdebug.ini',
-  notify  => Service['apache'],
-  require => Class['php'],
-}
-
 puphpet::ini { 'custom':
   value   => [
     'sendmail_path = /home/vagrant/.rvm/gems/ruby-2.2.1/bin/catchmail -fnoreply@example.com',
@@ -200,23 +208,28 @@ puphpet::ini { 'custom':
     'upload_max_filesize = "256M"',
     'post_max_size = "256M"',
     'memory_limit = "256M"',
-    'date.timezone = "UTC"'
+    'date.timezone = "UTC"',
+    'xdebug.remote_autostart = 0',
+    'xdebug.remote_connect_back = 1',
+    'xdebug.remote_enable = 1',
+    'xdebug.remote_handler = "dbgp"',
+    'xdebug.remote_port = 9000',
+    'xdebug.remote_host = "33.33.33.1"',
+    'xdebug.show_local_vars = 1',
+    'xdebug.profiler_enable = 0',
+    'xdebug.profiler_enable_trigger = 1',
+    'xdebug.max_nesting_level = 1000',
+    'xdebug.profiler_output_dir = /var/www/'
   ],
-  ini     => '/etc/php5/mods-available/zzz_custom.ini',
+  ini     => '/etc/php5/mods-available/custom.ini',
   notify  => Service['apache'],
   require => Class['php'],
 }
 
-exec {'symlink-custom-ini-files-apache':
-    command => 'find /etc/php5/mods-available/ -name "zzz_*" -exec /bin/bash -c \'ln -s {} /etc/php5/apache2/conf.d/`basename $0`\' {} \;',
-    unless  => 'bash -c "test -f /etc/php5/apache2/conf.d/zzz_custom.ini"',
-    require => [Puphpet::Ini['custom'], Puphpet::Ini['yaml'], Puphpet::Ini['xdebug']]
-}
-
-exec {'symlink-custom-ini-files-cli':
-    command => 'find /etc/php5/mods-available/ -name "zzz_*" -exec /bin/bash -c \'ln -s {} /etc/php5/cli/conf.d/`basename $0`\' {} \;',
-    unless  => 'bash -c "test -f etc/php5/cli/conf.d/zzz_custom.ini"',
-    require => [Puphpet::Ini['custom'], Puphpet::Ini['yaml'], Puphpet::Ini['xdebug']]
+file { ['/etc/php5/apache2/conf.d/99-custom.ini', '/etc/php5/cli/conf.d/99-custom.ini']:
+  ensure => link,
+  target => '/etc/php5/mods-available/custom.ini',
+  require => Puphpet::Ini['custom']
 }
 
 class { 'mysql::server':
@@ -274,7 +287,7 @@ class { 'webgrind':
 apache::vhost { 'webgrind':
   server_name   => 'webgrind',
   serveraliases => 'webgrind.joomla.box',
-  docroot       => '/usr/share/webgrind',
+  docroot       => '/usr/share/webgrind-1.2',
   port          => 8080,
   priority      => '10',
   require       => Class['webgrind'],
