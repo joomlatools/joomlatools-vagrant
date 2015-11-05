@@ -1,5 +1,5 @@
 group { 'puppet': ensure => present }
-Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/' ] }
+Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/' ], timeout => 900 }
 File { owner => 0, group => 0, mode => 0644 }
 
 user { 'vagrant': }
@@ -15,7 +15,7 @@ and title != 'software-properties-common'
 
 apt::key { '4F4EA0AAE5267A6C': }
 
-apt::ppa { 'ppa:ondrej/php5':
+apt::ppa { 'ppa:ondrej/php5-5.6':
   require => Apt::Key['4F4EA0AAE5267A6C']
 }
 
@@ -32,6 +32,8 @@ gnupg_key { 'gpg-rvm-signature':
 
 file { '/home/vagrant/.bash_aliases':
   ensure => 'present',
+  owner  => vagrant,
+  group  => vagrant,
   source => 'puppet:///modules/puphpet/dot/.bash_aliases',
 }
 
@@ -68,18 +70,38 @@ class { 'apache':
     require => Class['apache::certificate'],
 }
 
+exec { 'apache-set-servername':
+  command => "echo \"ServerName joomlatools\" > /etc/apache2/conf-available/fqdn.conf; a2enconf fqdn",
+  path    => ['/usr/bin' , '/bin', '/usr/sbin/'],
+  creates => '/etc/apache2/conf-available/fqdn',
+  require => Class['apache']
+}
+
 apache::dotconf { 'custom':
   content => template("apache/custom.conf.erb"),
 }
 
 apache::module { 'rewrite': }
 apache::module { 'ssl': }
+apache::module { 'proxy_fcgi': }
+apache::module { 'headers': }
 
 class { 'php':
   service       => 'apache',
   version       => 'latest',
   module_prefix => '',
   require       => Package['apache'],
+}
+
+$apache_hhvm_proxy = "
+<FilesMatch \\.php$>
+  SetHandler \"proxy:fcgi://127.0.0.1:9000\"
+</FilesMatch>"
+
+file { '/etc/apache2/conf-available/hhvm.conf':
+  ensure  => file,
+  content => $apache_hhvm_proxy,
+  require => Class['apache']
 }
 
 php::module { 'php5-mysql': }
@@ -128,9 +150,36 @@ puphpet::ini { 'yaml':
   value   => [
     'extension=yaml.so'
   ],
-  ini     => '/etc/php5/mods-available/zzz_yaml.ini',
+  ini     => '/etc/php5/mods-available/yaml.ini',
   notify  => Service['apache'],
   require => [Class['php'], Php::Pecl::Module['yaml']]
+}
+
+file { ['/etc/php5/apache2/conf.d/20-yaml.ini', '/etc/php5/cli/conf.d/20-yaml.ini']:
+  ensure => link,
+  target => '/etc/php5/mods-available/yaml.ini',
+  require => Puphpet::Ini['yaml']
+}
+
+php::pecl::module { 'oauth':
+  use_package => no,
+  ensure      => present,
+  require     => Php::Pear::Config['download_dir']
+}
+
+puphpet::ini { 'oauth':
+  value   => [
+    'extension=oauth.so'
+  ],
+  ini     => '/etc/php5/mods-available/oauth.ini',
+  notify  => Service['apache'],
+  require => [Class['php'], Php::Pecl::Module['oauth']]
+}
+
+file { ['/etc/php5/apache2/conf.d/20-oauth.ini', '/etc/php5/cli/conf.d/20-oauth.ini']:
+  ensure => link,
+  target => '/etc/php5/mods-available/oauth.ini',
+  require => Puphpet::Ini['oauth']
 }
 
 class { 'xdebug':
@@ -141,24 +190,13 @@ class { 'composer':
   require => Package['php5', 'curl'],
 }
 
-puphpet::ini { 'xdebug':
-  value   => [
-    'xdebug.remote_autostart = 0',
-    ';Use remote_connect_back = 0 if accessing a shared box',
-    'xdebug.remote_connect_back = 1',
-    'xdebug.remote_enable = 1',
-    'xdebug.remote_handler = "dbgp"',
-    'xdebug.remote_port = 9000',
-    'xdebug.remote_host = "33.33.33.1"',
-    'xdebug.show_local_vars = 1',
-    'xdebug.profiler_enable = 0',
-    'xdebug.profiler_enable_trigger = 1',
-    'xdebug.max_nesting_level = 1000',
-    'xdebug.profiler_output_dir = /var/www/logs/xdebug/'
-  ],
-  ini     => '/etc/php5/mods-available/zzz_xdebug.ini',
-  notify  => Service['apache'],
-  require => Class['php'],
+exec { "composer-plugin-changelogs":
+  command => "composer global require pyrech/composer-changelogs",
+  path    => ['/usr/bin' , '/bin'],
+  creates => '/home/vagrant/.composer/vendor/pyrech/composer-changelogs',
+  user    => vagrant,
+  environment => 'COMPOSER_HOME=/home/vagrant/.composer',
+  require => Class['Composer']
 }
 
 puphpet::ini { 'custom':
@@ -170,23 +208,28 @@ puphpet::ini { 'custom':
     'upload_max_filesize = "256M"',
     'post_max_size = "256M"',
     'memory_limit = "256M"',
-    'date.timezone = "UTC"'
+    'date.timezone = "UTC"',
+    'xdebug.remote_autostart = 0',
+    'xdebug.remote_connect_back = 1',
+    'xdebug.remote_enable = 1',
+    'xdebug.remote_handler = "dbgp"',
+    'xdebug.remote_port = 9000',
+    'xdebug.remote_host = "33.33.33.1"',
+    'xdebug.show_local_vars = 1',
+    'xdebug.profiler_enable = 0',
+    'xdebug.profiler_enable_trigger = 0',
+    'xdebug.max_nesting_level = 1000',
+    'xdebug.profiler_output_dir = /var/www/'
   ],
-  ini     => '/etc/php5/mods-available/zzz_custom.ini',
+  ini     => '/etc/php5/mods-available/custom.ini',
   notify  => Service['apache'],
   require => Class['php'],
 }
 
-exec {'symlink-custom-ini-files-apache':
-    command => 'find /etc/php5/mods-available/ -name "zzz_*" -exec /bin/bash -c \'ln -s {} /etc/php5/apache2/conf.d/`basename $0`\' {} \;',
-    unless  => 'bash -c "test -f /etc/php5/apache2/conf.d/zzz_custom.ini"',
-    require => [Puphpet::Ini['custom'], Puphpet::Ini['yaml'], Puphpet::Ini['xdebug']]
-}
-
-exec {'symlink-custom-ini-files-cli':
-    command => 'find /etc/php5/mods-available/ -name "zzz_*" -exec /bin/bash -c \'ln -s {} /etc/php5/cli/conf.d/`basename $0`\' {} \;',
-    unless  => 'bash -c "test -f etc/php5/cli/conf.d/zzz_custom.ini"',
-    require => [Puphpet::Ini['custom'], Puphpet::Ini['yaml'], Puphpet::Ini['xdebug']]
+file { ['/etc/php5/apache2/conf.d/99-custom.ini', '/etc/php5/cli/conf.d/99-custom.ini']:
+  ensure => link,
+  target => '/etc/php5/mods-available/custom.ini',
+  require => Puphpet::Ini['custom']
 }
 
 class { 'mysql::server':
@@ -209,7 +252,7 @@ apache::vhost { 'phpmyadmin':
   server_name   => 'phpmyadmin',
   serveraliases => 'phpmyadmin.joomla.box',
   docroot       => '/usr/share/phpmyadmin',
-  port          => 80,
+  port          => 8080,
   priority      => '10',
   require       => Class['phpmyadmin'],
 }
@@ -244,8 +287,8 @@ class { 'webgrind':
 apache::vhost { 'webgrind':
   server_name   => 'webgrind',
   serveraliases => 'webgrind.joomla.box',
-  docroot       => '/usr/share/webgrind',
-  port          => 80,
+  docroot       => '/usr/share/webgrind-1.2',
+  port          => 8080,
   priority      => '10',
   require       => Class['webgrind'],
 }
@@ -253,7 +296,7 @@ apache::vhost { 'webgrind':
 apache::vhost { 'joomla.box':
   server_admin  => 'webmaster@localhost',
   serveraliases => 'localhost',
-  port          => 80,
+  port          => 8080,
   priority      => '00',
   docroot       => '/var/www',
   directory     => '/var/www',
@@ -317,6 +360,7 @@ class { 'box':
 }
 
 class {'wetty': }
+class {'cloudcommander': }
 
 file { '/etc/update-motd.d/999-joomlatools':
   ensure => 'present',
@@ -340,7 +384,25 @@ package { 'git-ftp':
     require => Apt::Ppa['ppa:resmo/git-ftp']
 }
 
+package { 'httpie':
+  ensure => latest
+}
+
 swap_file::files { 'default':
   ensure   => present,
   swapfilesize => '512 MB'
+}
+
+class { 'hhvm':
+  manage_repos => true,
+  pgsql        => false
+}
+
+class {'triggers': }
+
+class { 'varnish': }
+
+class { 'zray':
+  notify  => Service['apache'],
+  require => Class['php']
 }

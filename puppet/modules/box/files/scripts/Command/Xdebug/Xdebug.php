@@ -7,29 +7,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class Xdebug extends Command
 {
-    protected $_ini_files = array('xdebug.ini', 'zzz_xdebug.ini');
+    protected $_ini_files = array('xdebug.ini');
 
-    protected function _getConfigFiles($basenames = array())
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $inis  = array();
-        $paths = array('/etc/php5/mods-available/');
-
-        $installs = glob('/opt/php/php-*/etc/conf.d', GLOB_ONLYDIR);
-        $installs = array_unique(array_filter($installs));
-
-        $paths = array_merge($paths, $installs);
-
-        foreach($paths as $path)
+        if (\Helper\System::getEngine() === 'hhvm')
         {
-            foreach($basenames as $basename)
-            {
-                $fullpath = $path . '/' . $basename;
-                if(file_exists($fullpath)) {
-                    $inis[] = $fullpath;
-                }
-            }
-        }
+            $output->writeln("<comment>[warning]</comment> Engine is set to <info>hhvm</info>. No changes will be made.");
+            $output->writeln("<comment>[warning]</comment> Switch back to the Zend engine if you want to use Xdebug");
 
-        return $inis;
+            exit();
+        }
     }
 }

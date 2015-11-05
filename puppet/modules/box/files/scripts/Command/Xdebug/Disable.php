@@ -3,6 +3,7 @@ namespace Command\Xdebug;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Disable extends Xdebug
@@ -15,13 +16,24 @@ class Disable extends Xdebug
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $files = $this->_getConfigFiles($this->_ini_files);
+        parent::execute($input, $output);
+
+        $files = \Helper\Ini::findIniFiles($this->_ini_files);
 
         foreach($files as $file) {
             `sudo sed -i 's#^zend_extension=#; zend_extension=#' $file`;
         }
 
-        `sudo service apache2 restart 2>&1 1> /dev/null`;
+        // Also disable the profiler so we don't spend
+        // an afternoon looking for the lack of performance
+        // after enabling xdebug again after three weeks. :)
+        $files = \Helper\Ini::findIniFiles(array('custom.ini', '99-custom.ini'), false);
+
+        foreach($files as $file) {
+            \Helper\Ini::update($file, 'xdebug.profiler_enable', 0);
+        }
+
+        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart', 'service' => array('apache'))), $output);
 
         $output->writeln('Xdebug has been disabled');
     }

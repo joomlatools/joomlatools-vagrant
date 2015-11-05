@@ -1,6 +1,12 @@
 require "yaml"
 require "json"
 
+# Check for required plugins and install if missing
+required_plugins = %w( vagrant-triggers )
+required_plugins.each do |plugin|
+    exec "vagrant plugin install #{plugin};vagrant #{ARGV.join(" ")}" unless Vagrant.has_plugin? plugin || ARGV[0] == 'plugin'
+end
+
 # Initialize config
 def deep_merge!(target, data)
   merger = proc{|key, v1, v2|
@@ -27,7 +33,7 @@ CONF = _config
 
 Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/trusty64"
-  config.vm.hostname = "joomlatools.dev"
+  config.vm.hostname = "joomlatools" # Important: we use this in joomla-console to determine if we are being run in the Vagrant box or not!
 
   config.vm.network :private_network, ip: "33.33.33.58"
   config.ssh.forward_agent = true
@@ -66,5 +72,33 @@ Vagrant.configure("2") do |config|
         "pma_mysql_root_password"  => "root",
         "pma_controluser_password" => "awesome"
     }
+  end
+
+  config.trigger.before :destroy do
+    while true
+        print "Do you want to backup your virtual hosts and databases first? [y/N] "
+        case STDIN.gets.strip
+            when 'Y', 'y', 'yes'
+                run_remote "/bin/bash /home/vagrant/triggers/backup.sh"
+                break
+            when /\A[nN]o?\Z/ #n or no
+                break
+        end
+    end
+  end
+
+  config.trigger.after :up do
+    if File.exist?('./joomla-box-backup.tar')
+        while true
+            print "Backup archive found. Do you want to restore the backup file? [y/N] "
+            case STDIN.gets.strip
+                when 'Y', 'y', 'yes'
+                    run_remote "/bin/bash /home/vagrant/triggers/restore.sh"
+                    break
+                when /\A[nN]o?\Z/ #n or no
+                    break
+            end
+        end
+    end
   end
 end

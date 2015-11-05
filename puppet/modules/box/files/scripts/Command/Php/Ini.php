@@ -3,6 +3,7 @@ namespace Command\Php;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -33,7 +34,7 @@ class Ini extends Command
         $key   = $input->getArgument('key');
         $value = $input->getArgument('value');
 
-        if ($input->getOPtion('list-files') || empty($key)) {
+        if ($input->getOption('list-files') || empty($key)) {
             $this->_listIniFiles();
         }
 
@@ -41,7 +42,7 @@ class Ini extends Command
             return;
         }
 
-        $current = $this->_getConfigValue($key);
+        $current = \Helper\Ini::getPHPConfig($key);
 
         if ($current === false)
         {
@@ -60,37 +61,31 @@ class Ini extends Command
 
             if ($ini !== false)
             {
-                $this->_updateIni($ini, $key, $value);
+                \Helper\Ini::update($ini, $key, $value);
 
-                `sudo service apache2 restart 2>&1 1> /dev/null`;
+                $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart')), $output);
 
-                $output->writeln("$key value is now '$value', was '$current'");
+                $output->writeln("$key value is now <info>$value</info>, was <info>$current</info>");
             }
             else $output->write('Error: failed to find PHP\'s additional config directory (config-file-scan-dir)!');
         }
-        else $output->writeln("$key value is $current");
-    }
-
-    protected function _getConfigValue($key)
-    {
-        $current = `php -r "\\\$value = ini_get('$key'); echo \\\$value === false ? 'unknown-directive' : \\\$value;"`;
-
-        if ($current == 'unknown-directive') {
-            return false;
-        }
-
-        return $current;
+        else $output->writeln("$key value is <info>$current</info>");
     }
 
     protected function _getIniOverride()
     {
-        $filelist = `php -r 'echo php_ini_scanned_files();'`;
+        if (\Helper\System::getEngine() === 'hhvm') {
+            return '/etc/hhvm/php.ini';
+        }
+
+        $bin = \Helper\System::getPHPCommand();
+        $filelist = `$bin -r 'echo php_ini_scanned_files();'`;
 
         if (strpos($filelist, ','))
         {
             $files = explode(',', $filelist);
             $file  = array_shift($files);
-            $path  = dirname($file) . DIRECTORY_SEPARATOR . 'zzz_custom.ini';
+            $path  = dirname($file) . DIRECTORY_SEPARATOR . '99-custom.ini';
 
             if (!file_exists($path)) {
                 touch($path);
@@ -104,7 +99,8 @@ class Ini extends Command
 
     protected function _listIniFiles()
     {
-        $filelist = `php -r 'echo php_ini_scanned_files();'`;
+        $bin      = \Helper\System::getPHPCommand();
+        $filelist = `$bin -r 'echo php_ini_scanned_files();'`;
 
         if (strpos($filelist, ','))
         {
@@ -116,22 +112,5 @@ class Ini extends Command
         }
 
         return false;
-    }
-
-    protected function _updateIni($ini, $key, $value)
-    {
-        $values = parse_ini_file($ini);
-        $values[$key] = $value;
-
-        $string = '';
-        foreach($values as $k => $v)
-        {
-            if (!empty($v) || $v === '0') {
-                $string .= "$k = $v" . PHP_EOL;
-            }
-        }
-
-        `sudo chmod o+rw $ini`;
-        file_put_contents($ini, $string);
     }
 }
