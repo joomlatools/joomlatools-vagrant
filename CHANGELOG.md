@@ -20,6 +20,7 @@ To view the diff between two versions, go to https://github.com/joomlatools/joom
  * Fixed - Consolidate the PHP ini files into a single custom.ini file
  * Improved - Automatically change directory to /var/www when logging in via `vagrant ssh` or web terminal
  * Improved - Added /terminal, /mailcatcher and /filebrowser aliases
+ * Improved - Added bash autocompletion to the `box` command
 
 * 1.3.1 (2015-09-03)
  * Added - Support for PHP7
