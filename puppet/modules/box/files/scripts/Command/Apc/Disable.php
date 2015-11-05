@@ -22,7 +22,7 @@ class Disable extends Apc
             \Helper\Ini::update($file, 'apc.enabled', '0');
         }
 
-        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart')), $output);
+        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart', 'service' => array('apache'))), $output);
 
         $output->writeln('APC has been disabled');
     }

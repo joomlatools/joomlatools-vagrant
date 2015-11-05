@@ -66,7 +66,7 @@ class Profiler extends Xdebug
             \Helper\Ini::update($file, 'xdebug.profiler_enable_trigger_value', $value);
         }
 
-        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart')), $output);
+        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart', 'service' => array('apache'))), $output);
 
         $verb = $action == 'start' ? 'started' : 'stopped';
         $output->writeln("XDebug profiler has been $verb");

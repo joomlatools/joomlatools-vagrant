@@ -24,7 +24,7 @@ class Enable extends Zray
             `sudo sed -i 's#^; zend_extension=#zend_extension=#' $file`;
         }
 
-        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart')), $output);
+        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart', 'service' => array('apache'))), $output);
 
         $output->writeln('Zend Server Z-Ray has been enabled');
     }
