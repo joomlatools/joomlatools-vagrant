@@ -1,7 +1,6 @@
 <?php
 namespace Command\Xdebug;
 
-use Imagine\Exception\RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -31,11 +30,11 @@ class Profiler extends Xdebug
             throw new \RuntimeException('Action must be one of start|stop');
         }
 
-        $current = \Helper\Ini::getPHPConfig('xdebug.profiler_enable');
+        $enabled = \Helper\Ini::getPHPConfig('xdebug.profiler_enable_trigger');
         $value   = $action == 'start' ? 1 : 0;
         $word    = $action == 'start' ? 'started' : 'stopped';
 
-        if ($current == $value)
+        if ($enabled == $value)
         {
             $output->writeln("Profiler has already been $word");
             exit();
@@ -43,17 +42,19 @@ class Profiler extends Xdebug
 
         $files = \Helper\Ini::findIniFiles(array('custom.ini', '99-custom.ini'), false);
 
-        foreach($files as $file) {
-            \Helper\Ini::update($file, 'xdebug.profiler_enable', $value);
+        foreach($files as $file)
+        {
+            \Helper\Ini::update($file, 'xdebug.profiler_enable_trigger', $value);
+            \Helper\Ini::update($file, 'xdebug.profiler_enable_trigger_value', 'joomlatools');
         }
 
         $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart')), $output);
 
-        $output_dir  = \Helper\Ini::getPHPConfig('xdebug.profiler_output_dir');
-
         $output->writeln("XDebug profiler has been $word");
 
-        if ($action == 'start') {
+        if ($action == 'start')
+        {
+            $output_dir = \Helper\Ini::getPHPConfig('xdebug.profiler_output_dir');
             $output->writeln("Profiling information will be written to <info>$output_dir</info>");
         }
     }

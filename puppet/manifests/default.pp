@@ -84,6 +84,7 @@ apache::dotconf { 'custom':
 apache::module { 'rewrite': }
 apache::module { 'ssl': }
 apache::module { 'proxy_fcgi': }
+apache::module { 'headers': }
 
 class { 'php':
   service       => 'apache',
