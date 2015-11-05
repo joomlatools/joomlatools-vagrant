@@ -89,6 +89,14 @@ class Ini
     public static function getPHPConfig($key)
     {
         $bin     = \Helper\System::getPHPCommand();
+
+        // Special case: since we explicitly disable xdebug.profiler_enable on CLI commands
+        // we need to omit this when looking up this specific key.
+        // Otherwise the result will always be 0
+        if ($key == 'xdebug.profiler_enable') {
+            $bin = str_replace('-d xdebug.profiler_enable=Off', '', $bin);
+        }
+
         $current = `$bin -r "\\\$value = ini_get('$key'); echo \\\$value === false ? 'unknown-directive' : \\\$value;"`;
 
         if ($current == 'unknown-directive') {

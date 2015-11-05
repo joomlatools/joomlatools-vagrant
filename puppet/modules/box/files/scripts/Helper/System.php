@@ -5,7 +5,8 @@ class System
 {
     public static function getZendPHPVersion()
     {
-        $version = `/usr/bin/php -r 'echo phpversion();'`;
+        $bin     = self::getPHPCommand();
+        $version = `$bin -r 'echo phpversion();'`;
         $version = trim($version);
 
         return $version;
@@ -13,7 +14,7 @@ class System
 
     public static function getPHPCommand()
     {
-        $bin = self::getEngine() == 'hhvm' ? '/usr/bin/hhvm --php' : '/usr/bin/php';
+        $bin = self::getEngine() == 'hhvm' ? '/usr/bin/hhvm --php' : '/usr/bin/php -d xdebug.profiler_enable=Off ';
 
         return $bin;
     }

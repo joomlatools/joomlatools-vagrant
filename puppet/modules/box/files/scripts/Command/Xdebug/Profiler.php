@@ -36,44 +36,29 @@ class Profiler extends Xdebug
             throw new \RuntimeException('Action must be one of start|stop');
         }
 
-        $enabled = \Helper\Ini::getPHPConfig('xdebug.profiler_enable_trigger');
-        $current = \Helper\Ini::getPHPConfig('xdebug.profiler_enable_trigger_value');
-        $trigger = $action == 'start' ? 1 : 0;
-        $value   = $action == 'start' ? 'joomlatools' : '';
+        $current = \Helper\Ini::getPHPConfig('xdebug.profiler_enable');
+        $value   = $action == 'start' ? 1 : 0;
+        $word    = $action == 'start' ? 'started' : 'stopped';
 
-        if ($action == 'start')
+        if ($current == $value)
         {
-            if ($current == 'joomlatools' && $enabled == 1)
-            {
-                $output->writeln("Profiler is already enabled.");
-                exit();
-            }
-        }
-        else
-        {
-            if (empty($current) && $enabled == 0)
-            {
-                $output->writeln("Profiler is not running.");
-                exit();
-            }
+            $output->writeln("Profiler has already been $word");
+            exit();
         }
 
         $files = \Helper\Ini::findIniFiles(array('custom.ini', '99-custom.ini'), false);
 
-        foreach($files as $file)
-        {
-            \Helper\Ini::update($file, 'xdebug.profiler_enable_trigger', $trigger);
-            \Helper\Ini::update($file, 'xdebug.profiler_enable_trigger_value', $value);
+        foreach($files as $file) {
+            \Helper\Ini::update($file, 'xdebug.profiler_enable', $value);
         }
 
-        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart', 'service' => array('apache'))), $output);
+        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart')), $output);
 
-        $verb = $action == 'start' ? 'started' : 'stopped';
-        $output->writeln("XDebug profiler has been $verb");
+        $output_dir  = \Helper\Ini::getPHPConfig('xdebug.profiler_output_dir');
 
-        if ($action == 'start')
-        {
-            $output_dir = \Helper\Ini::getPHPConfig('xdebug.profiler_output_dir');
+        $output->writeln("XDebug profiler has been $word");
+
+        if ($action == 'start') {
             $output->writeln("Profiling information will be written to <info>$output_dir</info>");
         }
     }
