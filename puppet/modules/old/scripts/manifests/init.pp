@@ -47,7 +47,7 @@ class scripts {
 
   file_line { 'cd-to-www-dir':
     path    => '/home/vagrant/.bash_profile',
-    line    => 'cd /var/www',
+    line    => '[ -d /var/www ] && cd /var/www',
     require => File_Line['load-bashrc']
   }
 }

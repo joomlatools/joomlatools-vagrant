@@ -16,9 +16,9 @@ class Enable extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (!file_exists('/var/www/varnish-enabled'))
+        if (!file_exists('/home/vagrant/scripts/varnish-enabled'))
         {
-            `sudo touch /var/www/varnish-enabled`;
+            `touch /home/vagrant/scripts/varnish-enabled`;
 
             $this->getApplication()->find('varnish:clear')->run(new ArrayInput(array('command' => 'varnish:clear')), $output);
 

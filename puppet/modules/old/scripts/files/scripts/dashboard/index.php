@@ -114,6 +114,12 @@ foreach ($dir as $fileinfo)
             <?php if (function_exists('apc_cache_info') && @apc_cache_info('opcode')): ?>
                 <li><a href="/apc">APC dashboard</a></li>
             <?php endif; ?>
+            <?php if (function_exists('zray_disable')): ?>
+                <li><a href="/ZendServer">Z-Ray</a></li>
+            <?php endif; ?>
+            <?php if (extension_loaded('xdebug')): ?>
+                <li><a href="http://webgrind.joomla.box">Webgrind</a></li>
+            <?php endif; ?>
           </ul>
           <ul class="nav nav-sidebar">
             <li role="presentation" class="dropdown-header">System</li>

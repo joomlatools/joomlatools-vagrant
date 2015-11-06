@@ -2,7 +2,7 @@
 ##
 # Joomlatools PHP Manager script - https://github.com/joomlatools/joomla-vagrant
 #
-# @copyright	Copyright (C) 2011 - 2014 Johan Janssens and Timble CVBA. (http://www.timble.net)
+# @copyright	Copyright (C) 2011 - 2015 Johan Janssens and Timble CVBA. (http://www.timble.net)
 # @license		MPL 2.0 <http://www.mozilla.org/MPL/2.0/>
 # @link		    http://github.com/joomlatools/joomla-vagrant for the canonical source repository
 ##
@@ -164,6 +164,18 @@ command_use() {
     [[ -f "/usr/lib/apache2/modules/${DELNAME}" ]] && sudo rm "/usr/lib/apache2/modules/${DELNAME}"
     sudo cp "/opt/php/${VERSION}/lib/apache/${LIBNAME}" "/usr/lib/apache2/modules/${LIBNAME}"
 
+    # Update the Z-Ray vhost
+    if [[ "$SHORT" -ge 5500 ]] && [[ "$SHORT" -lt 5600 ]]; then
+        sudo a2ensite  00-zray-php5.5 &> /dev/null
+        sudo a2dissite 00-zray-php5.6 &> /dev/null
+    elif [[ "$SHORT" -ge 5600 ]] && [[ "$SHORT" -lt 7000 ]]; then
+        sudo a2ensite  00-zray-php5.6 &> /dev/null
+        sudo a2dissite 00-zray-php5.5 &> /dev/null
+    else
+        sudo a2dissite 00-zray-php5.6 &> /dev/null
+        sudo a2dissite 00-zray-php5.5 &> /dev/null
+    fi
+
     echo -n "Restarting Apache .. "
     sudo service apache2 restart &> /dev/null
 
@@ -281,6 +293,9 @@ command_install() {
         sub_xdebug "$VERSION" "$LOGFILE"
     fi
 
+    # Install z-ray if applicable
+    sub_zray "$VERSION"
+
     # Build APC or APCu+Opcache
     if [[ "$SHORT" -lt 7000 ]] ; then
         if [[ "$SHORT" -lt 5500 ]] ; then
@@ -347,6 +362,9 @@ command_restore() {
     fi
 
     sudo cp "/usr/lib/apache2/modules/libphp5.so.original" "/usr/lib/apache2/modules/libphp5.so"
+
+    sudo a2ensite 00-zray-php5.6 &> /dev/null
+    sudo a2dissite 00-zray-php5.5 &> /dev/null
 
     echo -n "Restarting Apache .. "
     sudo a2enmod php5 &> /dev/null
@@ -427,6 +445,17 @@ sub_pear() {
     done
 }
 
+# Symlink z-ray ini files
+sub_zray() {
+    VERSION="$1"
+
+    if [[ "$SHORT" -ge 5500 ]] && [[ "$SHORT" -lt 5600 ]]; then
+        cp /etc/php5/mods-available/zray-php5.5.ini "/opt/php/${VERSION}/etc/conf.d/zray-php5.5.ini"
+    elif [[ "$SHORT" -ge 5600 ]] && [[ "$SHORT" -lt 7000 ]]; then
+        cp /etc/php5/mods-available/zray-php5.6.ini "/opt/php/${VERSION}/etc/conf.d/zray-php5.6.ini"
+    fi
+}
+
 # Build Xdebug for the given version
 sub_xdebug() {
     VERSION="$1"
@@ -456,13 +485,12 @@ sub_xdebug() {
     if [[ -f "${SOURCE_XDEBUG}/modules/xdebug.so" ]] ; then
         EXTENSION=$(sub_getextensionnumber $VERSION)
         LIB="/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/xdebug.so"
-        INI="/opt/php/${VERSION}/etc/conf.d/zzz_xdebug.ini"
+        INI="/opt/php/${VERSION}/etc/conf.d/xdebug.ini"
 
         sudo cp "${SOURCE_XDEBUG}/modules/xdebug.so" "$LIB"
 
         # Note: the zend_extension directive requires the FULL path!
         sudo echo "zend_extension=\"${LIB}\"" > "${INI}"
-        sudo cat /etc/php5/apache2/conf.d/zzz_xdebug.ini >> "${INI}"
     else
         echo -e "\033[31mERROR: Failed to build Xdebug!\e[0m"
     fi
@@ -487,7 +515,7 @@ sub_apc() {
 
     if [[ -f "$LIB" ]] ; then
         echo -e "\033[92mfinished\033[0m"
-        sudo echo "extension=\"apc.so\"" > "/opt/php/${VERSION}/etc/conf.d/zzz_apc.ini"
+        sudo echo "extension=\"apc.so\"" > "/opt/php/${VERSION}/etc/conf.d/apc.ini"
     else
         echo "\033[31mFailed\e[0m"
     fi
@@ -509,9 +537,9 @@ sub_apcu() {
 
     if [[ -f "$LIB" ]] ; then
         echo -e "\033[92mfinished\033[0m"
-        sudo echo "extension=\"apcu.so\"" > "/opt/php/${VERSION}/etc/conf.d/zzz_apcu.ini"
+        sudo echo "extension=\"apcu.so\"" > "/opt/php/${VERSION}/etc/conf.d/apcu.ini"
 
-        sudo echo "zend_extension=\"opcache.so\"" > "/opt/php/${VERSION}/etc/conf.d/zzz_opcache.ini"
+        sudo echo "zend_extension=\"opcache.so\"" > "/opt/php/${VERSION}/etc/conf.d/opcache.ini"
     else
         echo "\033[31mFailed\e[0m"
     fi
@@ -573,10 +601,10 @@ sub_getoptions() {
         OPENSSL="--with-openssl=/opt/openssl-0.9.7g"
         patch -p1 < /home/vagrant/phpmanager/patches/openssl.ssl2.patch &> /dev/null
     elif [[ "$SHORT" -le 5306 ]] ; then
-        OPENSSL="--with-openssl"
+        OPENSSL="--with-openssl=/opt/openssl-1.0.1f"
         patch -p1 < /home/vagrant/phpmanager/patches/openssl.ssl2.patch &> /dev/null
     else
-        OPENSSL="--with-openssl"
+        OPENSSL="--with-openssl=/opt/openssl-1.0.1f"
     fi
     OPTIONS="$OPTIONS $OPENSSL"
 
@@ -618,7 +646,7 @@ sub_setupini() {
         sudo cp "${SOURCE}/php.ini-development" "/opt/php/${VERSION}/lib/php.ini"
     fi
 
-    sudo cp /etc/php5/apache2/conf.d/zzz_custom.ini "/opt/php/${VERSION}/etc/conf.d/zzz_custom.ini"
+    sudo cp /etc/php5/mods-available/custom.ini "/opt/php/${VERSION}/etc/conf.d/99-custom.ini"
 
     sudo chown vagrant:vagrant "/opt/php/${VERSION}/lib/php.ini"
     sudo chown -R vagrant:vagrant "/opt/php/${VERSION}/etc/conf.d"
@@ -627,12 +655,12 @@ sub_setupini() {
     # according to the docs at http://be2.php.net/dl but for most builds this isn't the case.
     # So let's make sure we properly set the extension_dir directive :
     EXTENSION=$(sub_getextensionnumber $VERSION)
-    echo "extension_dir=/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/" >> "/opt/php/${VERSION}/etc/conf.d/zzz_custom.ini"
+    echo "extension_dir=/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/" >> "/opt/php/${VERSION}/etc/conf.d/99-custom.ini"
 
     # Configure the MySQL socket
-    echo "mysql.default_socket=/var/run/mysqld/mysqld.sock" > "/opt/php/${VERSION}/etc/conf.d/zzz_mysql.ini"
-    echo "mysqli.default_socket=/var/run/mysqld/mysqld.sock" >> "/opt/php/${VERSION}/etc/conf.d/zzz_mysql.ini"
-    echo "pdo_mysql.default_socket=/var/run/mysqld/mysqld.sock" >> "/opt/php/${VERSION}/etc/conf.d/zzz_mysql.ini"
+    echo "mysql.default_socket=/var/run/mysqld/mysqld.sock" > "/opt/php/${VERSION}/etc/conf.d/mysql.ini"
+    echo "mysqli.default_socket=/var/run/mysqld/mysqld.sock" >> "/opt/php/${VERSION}/etc/conf.d/mysql.ini"
+    echo "pdo_mysql.default_socket=/var/run/mysqld/mysqld.sock" >> "/opt/php/${VERSION}/etc/conf.d/mysql.ini"
 }
 
 # Get the available PHP tags

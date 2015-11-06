@@ -16,13 +16,13 @@ class Disable extends Apc
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $files = $this->_getConfigFiles($this->_ini_files);
+        $files = \Helper\Ini::findIniFiles($this->_ini_files);
 
         foreach($files as $file) {
             \Helper\Ini::update($file, 'apc.enabled', '0');
         }
 
-        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart')), $output);
+        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart', 'service' => array('apache'))), $output);
 
         $output->writeln('APC has been disabled');
     }

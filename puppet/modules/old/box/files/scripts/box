@@ -5,6 +5,7 @@ $autoload = __DIR__.'/vendor/autoload.php';
 require_once $autoload;
 
 use Symfony\Component\Console\Application;
+use \Stecman\Component\Symfony\Console\BashCompletion\CompletionCommand;
 
 spl_autoload_register(function($className) {
     $className = ltrim($className, '\\');
@@ -24,12 +25,15 @@ spl_autoload_register(function($className) {
 
 $application = new Application('Joomlatools Box', '0.1');
 
+$application->add(new CompletionCommand());
+
 $application->add(new Command\Apc\Enable());
 $application->add(new Command\Apc\Disable());
 $application->add(new Command\Apc\Clear());
 
 $application->add(new Command\Xdebug\Enable());
 $application->add(new Command\Xdebug\Disable());
+$application->add(new Command\Xdebug\Profiler());
 
 $application->add(new Command\Server\Restart());
 $application->add(new Command\Server\Start());
@@ -46,6 +50,9 @@ $application->add(new Command\Php\Reset());
 $application->add(new Command\Varnish\Enable());
 $application->add(new Command\Varnish\Disable());
 $application->add(new Command\Varnish\Clear());
+
+$application->add(new Command\Zray\Disable());
+$application->add(new Command\Zray\Enable());
 
 $application->add(new Command\Backup());
 $application->add(new Command\Restore());
