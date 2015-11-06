@@ -19,6 +19,7 @@ To view the diff between two versions, go to https://github.com/joomlatools/joom
  * Fixed - Upgraded Webgrind to automatically find cachegrind files
  * Fixed - Consolidate the PHP ini files into a single custom.ini file
  * Improved - Automatically change directory to /var/www when logging in via `vagrant ssh` or web terminal
+ * Improved - Xdebug is now disabled by default
  * Improved - Added /terminal, /mailcatcher and /filebrowser aliases
  * Improved - Added bash autocompletion to the `box` command
 
