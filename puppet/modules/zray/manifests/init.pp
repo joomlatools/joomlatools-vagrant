@@ -44,4 +44,37 @@ class zray {
     path    => '/opt/zray-php-101832-php5.5.27-linux-debian7-amd64/zray'
   }
 
+  $joomla = {
+    'joomla-zray-php5.5' => {
+      install_directory => '/opt/zray-php-101832-php5.5.27-linux-debian7-amd64/zray/runtime/var/plugins'
+    },
+    'joomla-zray-php5.6' => {
+      install_directory => '/opt/zray-php-101832-php5.6.11-linux-debian7-amd64/zray/runtime/var/plugins'
+    }
+  }
+
+  $joomla_default = {
+    archive_root_dir  => 'Z-Ray-Joomla-master',
+    archive           => 'https://github.com/yireo/Z-Ray-Joomla/archive/master.zip'
+  }
+
+  create_resources('zray::plugin', $joomla, $joomla_default)
+
+  $composer = {
+    'composer-zray-php5.5' => {
+      install_directory => '/opt/zray-php-101832-php5.5.27-linux-debian7-amd64/zray/runtime/var/plugins'
+    },
+    'composer-zray-php5.6' => {
+      install_directory => '/opt/zray-php-101832-php5.6.11-linux-debian7-amd64/zray/runtime/var/plugins'
+    }
+  }
+
+  $composer_default = {
+    archive_root_dir  => 'Composer-master',
+    archive           => 'https://github.com/zend-server-plugins/Composer/archive/master.zip'
+  }
+
+  create_resources('zray::plugin', $composer, $composer_default)
+
+
 }
