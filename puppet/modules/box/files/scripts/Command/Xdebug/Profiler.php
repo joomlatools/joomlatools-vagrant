@@ -12,8 +12,30 @@ class Profiler extends Xdebug
 {
     protected function configure()
     {
+        $output_dir  = \Helper\Ini::getPHPConfig('xdebug.profiler_output_dir');
+
         $this->setName('xdebug:profiler')
              ->setDescription('Toggle profiling')
+            ->setHelp(<<<EOF
+To profile your PHP code, you have to start the Xdebug profiler first:
+
+    <info>box xdebug:profiler start</info>
+
+Every PHP file that gets executed will now generate profiling information in the form of a cachegrind file.
+You can analyze these files using an application like KCacheGrind, MCG or PHPStorm.
+
+The box has Webgrind pre-installed and configured at http://webgrind.joomla.box. However, please note that it
+might fail on complex and large cachegrind files. A desktop app is recommended.
+
+By default, cachegrind files will be stored in $output_dir.
+
+Remember to disable profiling once you are done:
+
+    <info>box xdebug:profiler stop</info>
+
+For more information about Xdebug profiling, refer to the official documentation at <info>http://www.xdebug.org/docs/profiler</info>.
+EOF
+            )
             ->addArgument(
                 'action',
                 InputArgument::REQUIRED,
