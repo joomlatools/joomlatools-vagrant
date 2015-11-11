@@ -7,7 +7,13 @@ in 1.x versions.
 To get the diff for a specific change, go to https://github.com/joomlatools/joomla-vagrant/commit/xxx where xxx is the change hash.
 To view the diff between two versions, go to https://github.com/joomlatools/joomla-vagrant/compare/v1.0.0...v1.0.1
 
-* 1.4.0 (2015-10-19)
+* 1.4.1 (2015-11-11)
+ * Added - Install Z-Ray [Joomla](https://www.yireo.com/software/joomla-extensions/zray) and [Composer](https://github.com/zend-server-extensions/Z-Ray-Composer) plugins
+ * Improved - Automatically enable Xdebug if it's disabled when starting the profiler
+ * Fixed - Make sure dashboard can retrieve Joomla 3.5.0 version out of `JVersion` class
+ * Fixed - Automated installation of `vagrant-triggers` plugin failed on Windows hosts
+
+* 1.4.0 (2015-11-05)
  * Added - `box php:engine hhvm` command to switch to HHVM
  * Added - `box xdebug:profiler start|stop` command to turn on Xdebug profiling
  * Added - [Zend Z-Ray](http://www.zend.com/en/products/z-ray/z-ray-preview) preview
