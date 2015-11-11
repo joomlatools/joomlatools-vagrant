@@ -46,10 +46,12 @@ class zray {
 
   $joomla = {
     'joomla-zray-php5.5' => {
-      install_directory => '/opt/zray-php-101832-php5.5.27-linux-debian7-amd64/zray/runtime/var/plugins'
+      install_directory => '/opt/zray-php-101832-php5.5.27-linux-debian7-amd64/zray/runtime/var/plugins',
+      require           => Zray::Php::Ini['zray-php5.5']
     },
     'joomla-zray-php5.6' => {
-      install_directory => '/opt/zray-php-101832-php5.6.11-linux-debian7-amd64/zray/runtime/var/plugins'
+      install_directory => '/opt/zray-php-101832-php5.6.11-linux-debian7-amd64/zray/runtime/var/plugins',
+      require           => Zray::Php::Ini['zray-php5.6']
     }
   }
 
@@ -62,10 +64,12 @@ class zray {
 
   $composer = {
     'composer-zray-php5.5' => {
-      install_directory => '/opt/zray-php-101832-php5.5.27-linux-debian7-amd64/zray/runtime/var/plugins'
+      install_directory => '/opt/zray-php-101832-php5.5.27-linux-debian7-amd64/zray/runtime/var/plugins',
+      require           => Zray::Php::Ini['zray-php5.5']
     },
     'composer-zray-php5.6' => {
-      install_directory => '/opt/zray-php-101832-php5.6.11-linux-debian7-amd64/zray/runtime/var/plugins'
+      install_directory => '/opt/zray-php-101832-php5.6.11-linux-debian7-amd64/zray/runtime/var/plugins',
+      require           => Zray::Php::Ini['zray-php5.6']
     }
   }
 
@@ -75,6 +79,5 @@ class zray {
   }
 
   create_resources('zray::plugin', $composer, $composer_default)
-
 
 }
