@@ -47,6 +47,7 @@ for VHOST in $TEMP_DIR/vhost-1-*.conf.gz; do
 done
 
 sudo service apache2 restart
+sudo service varnish restart
 
 echo "Restoring databases:"
 
