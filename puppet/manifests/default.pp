@@ -9,8 +9,8 @@ class {'apt':
 }
 
 Class['::apt::update'] -> Package <|
-    title != 'python-software-properties'
-and title != 'software-properties-common'
+  title != 'python-software-properties'
+  and title != 'software-properties-common'
 |>
 
 apt::key { '4F4EA0AAE5267A6C': }
@@ -38,12 +38,12 @@ file { '/home/vagrant/.bash_aliases':
 }
 
 package { [
-    'build-essential',
-    'vim',
-    'curl',
-    'git-core',
-    'unzip'
-  ]:
+  'build-essential',
+  'vim',
+  'curl',
+  'git-core',
+  'unzip'
+]:
   ensure  => 'installed'
 }
 
@@ -67,7 +67,7 @@ class apache::certificate {
 class { 'apache::certificate':}
 
 class { 'apache':
-    require => Class['apache::certificate'],
+  require => Class['apache::certificate'],
 }
 
 exec { 'apache-set-servername':
@@ -124,7 +124,7 @@ class { 'php::pear':
 
 php::pear::config {
   download_dir: value => "/tmp/pear/download",
-  require => Class['php::pear']
+    require => Class['php::pear']
 }
 
 php::pear::module { 'Console_CommandLine':
@@ -258,29 +258,29 @@ apache::vhost { 'phpmyadmin':
 }
 
 single_user_rvm::install { 'vagrant':
-    require => Gnupg_key['gpg-rvm-signature']
+  require => Gnupg_key['gpg-rvm-signature']
 }
 single_user_rvm::install_ruby { '2.2':
-    user => vagrant
+  user => vagrant
 }
 
 exec {'set-default-ruby-for-vagrant':
-    user        => vagrant,
-    command     => 'bash -c "source ~/.rvm/scripts/rvm; rvm --default use 2.2"',
-    environment => ['HOME=/home/vagrant'],
-    path        => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
-    require     => Single_user_rvm::Install_ruby['2.2']
+  user        => vagrant,
+  command     => 'bash -c "source ~/.rvm/scripts/rvm; rvm --default use 2.2"',
+  environment => ['HOME=/home/vagrant'],
+  path        => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
+  require     => Single_user_rvm::Install_ruby['2.2']
 }
 
 class {'mailcatcher':
-    require => Exec['set-default-ruby-for-vagrant']
+  require => Exec['set-default-ruby-for-vagrant']
 }
 
 class { 'less': }
 
 class { 'uglifyjs': }
 
-class { 'webgrind': 
+class { 'webgrind':
   require => Package['unzip'],
 }
 
@@ -306,18 +306,18 @@ apache::vhost { 'joomla.box':
 }
 
 exec { 'disable-default-vhost':
-    command => 'a2dissite 000-default',
-    require => Apache::Vhost['joomla.box']
+  command => 'a2dissite 000-default',
+  require => Apache::Vhost['joomla.box']
 }
 
 file { '/etc/apache2/conf-available/shared_paths.conf':
-    ensure => file,
-    require => Apache::Vhost['joomla.box']
+  ensure => file,
+  require => Apache::Vhost['joomla.box']
 }
 
 exec { 'enable-shared-paths-config':
-    command => 'a2enconf shared_paths',
-    require => File['/etc/apache2/conf-available/shared_paths.conf']
+  command => 'a2enconf shared_paths',
+  require => File['/etc/apache2/conf-available/shared_paths.conf']
 }
 
 exec { 'set-env-for-debugging':
@@ -332,31 +332,31 @@ class { 'scripts': }
 class { 'phpmanager': }
 
 exec {'install-capistrano-gem':
-    user    => vagrant,
-    command => 'bash -c "source ~/.rvm/scripts/rvm; gem install capistrano"',
-    environment => ['HOME=/home/vagrant'],
-    timeout => 900,
-    require => Exec['set-default-ruby-for-vagrant']
+  user    => vagrant,
+  command => 'bash -c "source ~/.rvm/scripts/rvm; gem install capistrano"',
+  environment => ['HOME=/home/vagrant'],
+  timeout => 900,
+  require => Exec['set-default-ruby-for-vagrant']
 }
 
 exec {'install-bundler-gem':
-    user    => vagrant,
-    command => 'bash -c "source ~/.rvm/scripts/rvm; gem install bundler"',
-    environment => ['HOME=/home/vagrant'],
-    timeout => 900,
-    require => Exec['set-default-ruby-for-vagrant']
+  user    => vagrant,
+  command => 'bash -c "source ~/.rvm/scripts/rvm; gem install bundler"',
+  environment => ['HOME=/home/vagrant'],
+  timeout => 900,
+  require => Exec['set-default-ruby-for-vagrant']
 }
 
 exec {'install-sass-gem':
-    user    => vagrant,
-    command => 'bash -c "source ~/.rvm/scripts/rvm; gem install sass compass"',
-    environment => ['HOME=/home/vagrant'],
-    timeout => 900,
-    require => Exec['set-default-ruby-for-vagrant']
+  user    => vagrant,
+  command => 'bash -c "source ~/.rvm/scripts/rvm; gem install sass compass"',
+  environment => ['HOME=/home/vagrant'],
+  timeout => 900,
+  require => Exec['set-default-ruby-for-vagrant']
 }
 
 class { 'box':
-    require => [Class['composer'], Class['phpmanager']]
+  require => [Class['composer'], Class['phpmanager']]
 }
 
 class {'wetty': }
@@ -369,19 +369,19 @@ file { '/etc/update-motd.d/999-joomlatools':
 }
 
 file { ['/etc/update-motd.d/10-help-text', '/etc/update-motd.d/91-release-upgrade', '/etc/update-motd.d/50-landscape-sysinfo', '/etc/update-motd.d/51-cloudguest', '/etc/update-motd.d/90-updates-available', '/etc/update-motd.d/98-cloudguest']:
-    ensure => absent
+  ensure => absent
 }
 
 class { 'pimpmylog':
-    require => [Package['apache'], Package['mysql-server']]
+  require => [Package['apache'], Package['mysql-server']]
 }
 
 class { 'phpmetrics':
-    require => [Class['composer'], Class['scripts']]
+  require => [Class['composer'], Class['scripts']]
 }
 
 package { 'git-ftp':
-    require => Apt::Ppa['ppa:resmo/git-ftp']
+  require => Apt::Ppa['ppa:resmo/git-ftp']
 }
 
 package { 'httpie':

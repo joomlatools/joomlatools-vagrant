@@ -11,11 +11,25 @@ class Engine extends Command
     protected function configure()
     {
         $this->setName('php:engine')
-             ->setDescription('Show current PHP engine or switch to another engine.')
+            ->setDescription('Show current PHP engine or switch to another engine.')
+            ->setHelp(<<<EOF
+You can execute PHP code using either the Zend or HHVM engine. To show the current engine, run:
+
+    <info>box php:engine</info>
+
+To switch to HHVM, run
+
+    <info>box php:engine hhvm</info>
+
+To switch back to the default Zend engine:
+
+    <info>box php:engine zend</info>
+EOF
+            )
             ->addArgument(
-                'engine',
-                InputArgument::OPTIONAL,
-                'Desired PHP engine to use for virtual hosts. Omit to get current engine. Supported values: zend|hhvm'
+               'engine',
+               InputArgument::OPTIONAL,
+               'Desired PHP engine to use for virtual hosts. Omit to get current engine. Supported values: zend|hhvm'
             );
     }
 

@@ -5,6 +5,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Output\NullOutput;
 
 class Disable extends Xdebug
 {
@@ -17,6 +18,12 @@ class Disable extends Xdebug
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         parent::execute($input, $output);
+
+        if (!extension_loaded('xdebug'))
+        {
+            $output->writeln('[<comment>notice</comment>] XDebug is already disabled');
+            exit();
+        }
 
         $files = \Helper\Ini::findIniFiles($this->_ini_files);
 
@@ -33,7 +40,7 @@ class Disable extends Xdebug
             \Helper\Ini::update($file, 'xdebug.profiler_enable', 0);
         }
 
-        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart', 'service' => array('apache'))), $output);
+        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart', 'service' => array('apache'))), new NullOutput());
 
         $output->writeln('Xdebug has been disabled');
     }

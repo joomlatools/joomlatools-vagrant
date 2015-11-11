@@ -6,6 +6,21 @@ define('JPATH_PLATFORM', true);
 $dir = new DirectoryIterator('/var/www');
 $i   = 1;
 $sites = array();
+
+$canonical = function($version) {
+    if (isset($version->RELEASE)) {
+        return 'v' . $version->RELEASE . '.' . $version->DEV_LEVEL;
+    }
+
+    // Joomla 3.5 and up uses constants instead of properties in JVersion
+    $className = get_class($version);
+    if (defined("$className::RELEASE")) {
+        return 'v'. $version::RELEASE . '.' . $version::DEV_LEVEL;
+    }
+
+    return 'unknown';
+};
+
 foreach ($dir as $fileinfo)
 {
     $code = $application = null;
@@ -41,11 +56,12 @@ foreach ($dir as $fileinfo)
 
             $class   = 'JVersion'.$identifier;
             $version = new $class();
+
             $sites[] = (object) array(
                 'name'    => $fileinfo->getFilename(),
                 'docroot' => $fileinfo->getFilename() . '/' . ($application == 'joomla-platform' ? 'web' : ''),
                 'type'    => $application,
-                'version' => $version->RELEASE.'.'.$version->DEV_LEVEL
+                'version' => $canonical($version)
             );
         }
     }
@@ -148,7 +164,7 @@ foreach ($dir as $fileinfo)
                   <td>
                     <a target="_blank" href="/<?php echo $site->docroot . '/administrator/'; ?>">
                       <?php echo $site->name ?></a>
-                    <small>(<?php echo $site->type ?> v<?php echo $site->version; ?>)</small>
+                    <small>(<?php echo $site->type ?> <?php echo $site->version; ?>)</small>
                   </td> 
                   <td>
 
