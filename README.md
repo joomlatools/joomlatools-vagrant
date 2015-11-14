@@ -154,7 +154,7 @@ If you do have a problem running the box please use either our [forum](https://g
 
 ## Contributing
 
-Joomlatools Platform is an open source, community-driven project. Contributions are welcome from everyone. 
+Joomlatools Box is an open source, community-driven project. Contributions are welcome from everyone. 
 We have [contributing guidelines](CONTRIBUTING.md) to help you get started.
 
 ## Contributors
@@ -163,7 +163,7 @@ See the list of [contributors](https://github.com/joomlatools/joomla-console/con
 
 ## License 
 
-Joomlatools Console is free and open-source software licensed under the [MPLv2 license](LICENSE.txt).
+Joomlatools Box is free and open-source software licensed under the [MPLv2 license](LICENSE.txt).
 
 ## Community
 
