@@ -150,7 +150,7 @@ The box is a very complex piece of technology, based on many different open sour
 
 We therefor deliberately keep the Issues section on this specific Github repo closed as we want to encourage people to submit code to add features or fix bugs by opening up Pull Requests instead of report bug or problems through Issues.
 
-If you do have a problem running the box please use either our [forum](https://groups.google.com/forum/#!forum/joomlatools-dev) or [chat room](http://gitter.im/joomlatools/dev) to get in touch with us. 
+If you do have a problem running the box please use either our [forum](https://groups.google.com/forum/#!forum/joomlatools-dev) or [chat room](http://gitter.im/joomlatools/dev) to get in touch with us and we are most happy to try and help you.
 
 ## Contributing
 
