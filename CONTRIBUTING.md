@@ -1,1 +1,1 @@
-Please read [Contributing to Joomlatools Projects](https://github.com/joomlatools/joomla-platform/blob/master/CONTRIBUTING.md)
+Please read [Contributing to Joomlatools Projects](http://developer.joomlatools.com/contribute.html)
