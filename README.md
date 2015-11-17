@@ -1,4 +1,4 @@
-![Screenshot](http://www.joomlatools.com/images/blog/2015/joomla-vagrant-13-dashboard.png)
+![Screenshot](/screenshot.png?raw=true)
 
 [Joomlatools Box]
 =================
