@@ -60,7 +60,7 @@ EOF
             $this->getApplication()->find('xdebug:enable')->run(new ArrayInput(array('command' => 'xdebug:enable')), new NullOutput());
         }
 
-        $inis = \Helper\Ini::findIniFiles(array('zray-php5.5.ini', 'zray-php5.6.ini'), false);
+        $inis = \Helper\Ini::findIniFiles(array('zray.ini'), false);
         $ini  = array_pop($inis);
         if ($action == 'start' && file_exists($ini))
         {

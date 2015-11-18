@@ -7,8 +7,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class Zray extends Command
 {
-    protected $_ini_files = array('zray-php5.5.ini', 'zray-php5.6.ini');
-
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if (\Helper\System::getEngine() === 'hhvm')
