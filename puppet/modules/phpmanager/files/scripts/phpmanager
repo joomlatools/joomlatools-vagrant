@@ -164,16 +164,16 @@ command_use() {
     [[ -f "/usr/lib/apache2/modules/${DELNAME}" ]] && sudo rm "/usr/lib/apache2/modules/${DELNAME}"
     sudo cp "/opt/php/${VERSION}/lib/apache/${LIBNAME}" "/usr/lib/apache2/modules/${LIBNAME}"
 
-    # Update the Z-Ray vhost
+    # Update Z-Ray symlink
+    sudo rm /opt/zray
+    sudo a2dissite 00-zray &> /dev/null
+
     if [[ "$SHORT" -ge 5500 ]] && [[ "$SHORT" -lt 5600 ]]; then
-        sudo a2ensite  00-zray-php5.5 &> /dev/null
-        sudo a2dissite 00-zray-php5.6 &> /dev/null
+        sudo ln -s /opt/zray-php-101832-php5.5.27-linux-debian7-amd64/zray /opt/zray
+        sudo a2ensite 00-zray &> /dev/null
     elif [[ "$SHORT" -ge 5600 ]] && [[ "$SHORT" -lt 7000 ]]; then
-        sudo a2ensite  00-zray-php5.6 &> /dev/null
-        sudo a2dissite 00-zray-php5.5 &> /dev/null
-    else
-        sudo a2dissite 00-zray-php5.6 &> /dev/null
-        sudo a2dissite 00-zray-php5.5 &> /dev/null
+        sudo ln -s /opt/zray-php-101832-php5.6.11-linux-debian7-amd64/zray /opt/zray
+        sudo a2ensite 00-zray &> /dev/null
     fi
 
     echo -n "Restarting Apache .. "
@@ -363,8 +363,9 @@ command_restore() {
 
     sudo cp "/usr/lib/apache2/modules/libphp5.so.original" "/usr/lib/apache2/modules/libphp5.so"
 
-    sudo a2ensite 00-zray-php5.6 &> /dev/null
-    sudo a2dissite 00-zray-php5.5 &> /dev/null
+    sudo a2ensite 00-zray &> /dev/null
+    sudo rm /opt/zray
+    sudo ln -s /opt/zray-php-101832-php5.6.11-linux-debian7-amd64/zray /opt/zray
 
     echo -n "Restarting Apache .. "
     sudo a2enmod php5 &> /dev/null
@@ -449,10 +450,8 @@ sub_pear() {
 sub_zray() {
     VERSION="$1"
 
-    if [[ "$SHORT" -ge 5500 ]] && [[ "$SHORT" -lt 5600 ]]; then
-        cp /etc/php5/mods-available/zray-php5.5.ini "/opt/php/${VERSION}/etc/conf.d/zray-php5.5.ini"
-    elif [[ "$SHORT" -ge 5600 ]] && [[ "$SHORT" -lt 7000 ]]; then
-        cp /etc/php5/mods-available/zray-php5.6.ini "/opt/php/${VERSION}/etc/conf.d/zray-php5.6.ini"
+    if [[ "$SHORT" -ge 5500 ]] && [[ "$SHORT" -lt 7000 ]]; then
+        cp /etc/php5/mods-available/zray.ini "/opt/php/${VERSION}/etc/conf.d/zray.ini"
     fi
 }
 
