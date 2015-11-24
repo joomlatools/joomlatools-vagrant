@@ -171,7 +171,7 @@ Keep track of development and community news.
 
 * Follow [@joomlatoolsdev on Twitter](https://twitter.com/joomlatoolsdev)
 * Join [joomlatools/dev on Gitter](http://gitter.im/joomlatools/dev)
-* Read and subscribe to the [Joomlatools Developer Blog](https://develeoper.joomlatools.com/blog/)
-* Subscribe to the [Joomlatools Newsletter](http://www.joomlatools.com/newsletter)
+* Read the [Joomlatools Developer Blog](http://developer.joomlatools.com/blog/)
+* Subscribe to the [Joomlatools Developer Newsletter](http://developer.joomlatools.com/newsletter)
 
 [Joomlatools Box]: http://developer.joomlatools.com/vagrant
