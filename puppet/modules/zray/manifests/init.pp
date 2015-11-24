@@ -59,4 +59,27 @@ class zray {
 
   create_resources('zray::plugin', $joomla, $joomla_default)
 
+  $composer = {
+    'composer-zray-php5.5' => {
+      install_directory => '/opt/zray-php-101832-php5.5.27-linux-debian7-amd64/zray/runtime/var/plugins',
+    },
+    'composer-zray-php5.6' => {
+      install_directory => '/opt/zray-php-101832-php5.6.11-linux-debian7-amd64/zray/runtime/var/plugins',
+    }
+  }
+
+  $composer_default = {
+    archive_root_dir  => 'Composer-master',
+    archive           => 'https://github.com/zend-server-plugins/Composer/archive/master.zip',
+    require           => Zray::Php::Ini['zray']
+  }
+
+  create_resources('zray::plugin', $composer, $composer_default)
+
+  # Delete the Composer.zip files that come with the default installation as they will interfere with the newer version
+  file { ['/opt/zray-php-101832-php5.5.27-linux-debian7-amd64/zray/runtime/var/plugins/Composer.zip', '/opt/zray-php-101832-php5.6.11-linux-debian7-amd64/zray/runtime/var/plugins/Composer.zip']:
+    ensure  => absent,
+    require => Zray::Php::Ini['zray']
+  }
+
 }
