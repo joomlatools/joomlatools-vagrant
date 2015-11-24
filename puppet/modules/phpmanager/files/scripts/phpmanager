@@ -576,6 +576,15 @@ sub_getoptions() {
     # Build the mysql configuration string
     MYSQL=""
     if [[ "$SHORT" -lt 5213 ]] ; then
+        if [[ ! -d "/opt/mysql-5.1.73-linux-x86_64-glibc23/" ]] ; then
+            echo "Downloading MySQL 5.1.73 dependencies .."
+            wget -O /tmp/mysql-5.1.73.tar.gz --no-check-certificate https://downloads.skysql.com/archives/mysql-5.1/mysql-5.1.73-linux-x86_64-glibc23.tar.gz
+            sudo tar -xf /tmp/mysql-5.1.73.tar.gz -C /opt/
+            sudo chown -R root:root /opt/mysql-5.1.73-linux-x86_64-glibc23
+            sudo ln -s /opt/mysql-5.1.73-linux-x86_64-glibc23/lib /opt/mysql-5.1.73-linux-x86_64-glibc23/lib/x86_64-linux-gnu
+            rm /tmp/mysql-5.1.73.tar.gz
+        fi
+
         CFG="/opt/mysql-5.1.73-linux-x86_64-glibc23/bin/mysql_config"
 	    MYSQL="--with-mysql=/opt/mysql-5.1.73-linux-x86_64-glibc23 --with-mysqli=${CFG} --with-pdo-mysql=${CFG}"
 
