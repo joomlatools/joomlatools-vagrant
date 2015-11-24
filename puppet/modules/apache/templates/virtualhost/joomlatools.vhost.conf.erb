@@ -41,6 +41,12 @@
 
     <Directory /home/vagrant/scripts>
             Require all granted
+            RequestHeader append ZRAY-DISABLE 1
+    </Directory>
+
+    <Directory /usr/share/pimpmylog>
+            Require all granted
+            RequestHeader append ZRAY-DISABLE 1
     </Directory>
 
 <% if @bool_passenger -%>
@@ -110,6 +116,12 @@
 
         <Directory /home/vagrant/scripts>
                 Require all granted
+                RequestHeader append ZRAY-DISABLE 1
+        </Directory>
+
+        <Directory /usr/share/pimpmylog>
+                Require all granted
+                RequestHeader append ZRAY-DISABLE 1
         </Directory>
 
     <% if @bool_passenger -%>

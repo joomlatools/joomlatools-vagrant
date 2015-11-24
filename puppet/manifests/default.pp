@@ -258,7 +258,8 @@ apache::vhost { 'phpmyadmin':
   docroot       => '/usr/share/phpmyadmin',
   port          => 8080,
   priority      => '10',
-  require       => Class['phpmyadmin'],
+  template      => 'apache/virtualhost/vhost-no-zray.conf.erb',
+  require       => Class['phpmyadmin']
 }
 
 single_user_rvm::install { 'vagrant':
@@ -294,7 +295,8 @@ apache::vhost { 'webgrind':
   docroot       => '/usr/share/webgrind-1.2',
   port          => 8080,
   priority      => '10',
-  require       => Class['webgrind'],
+  template      => 'apache/virtualhost/vhost-no-zray.conf.erb',
+  require       => Class['webgrind']
 }
 
 apache::vhost { 'joomla.box':
