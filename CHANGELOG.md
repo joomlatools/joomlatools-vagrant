@@ -7,13 +7,14 @@ in 1.x versions.
 To get the diff for a specific change, go to https://github.com/joomlatools/joomla-vagrant/commit/xxx where xxx is the change hash.
 To view the diff between two versions, go to https://github.com/joomlatools/joomla-vagrant/compare/v1.0.0...v1.0.1
 
-* 1.4.2 (2015-11-24)
+* 1.4.2 (2015-11-25)
  * Fixed - Always pass requests to /ZendServer end-point
  * Fixed - Symlink `/opt/zray` to active Z-Ray installation to fix plugin gallery
  * Fixed - Ensure that hostname is always set to `joomlatools` using Puppet configuration
  * Improved - Use a single zray.ini file and zray.conf virtual host
  * Improved - Disable Z-Ray on tools (dashboard, phpmyadmin, webgrind, pimpmylog)
  * Improved - Decrease box size
+ * Added - `JOOMLATOOLS_BOX` version environment variable
 
 * 1.4.1 (2015-11-11)
  * Added - Install Z-Ray [Joomla](https://www.yireo.com/software/joomla-extensions/zray) and [Composer](https://github.com/zend-server-extensions/Z-Ray-Composer) plugins

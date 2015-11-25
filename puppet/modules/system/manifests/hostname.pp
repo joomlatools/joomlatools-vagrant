@@ -3,8 +3,6 @@ define system::hostname(
 ){
   $alias = regsubst($name, '^([^.]*).*$', '\1')
 
-  notice($name)
-
   if ($::hostname != $name)
   {
     host { "${::hostname}":
