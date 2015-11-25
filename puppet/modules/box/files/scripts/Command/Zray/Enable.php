@@ -19,7 +19,7 @@ class Enable extends Zray
     {
         parent::execute($input, $output);
 
-        $files = \Helper\Ini::findIniFiles($this->_ini_files);
+        $files = \Helper\Ini::findIniFiles(array('zray.ini'));
 
         foreach($files as $file) {
             `sudo sed -i 's#^; zend_extension=#zend_extension=#' $file`;

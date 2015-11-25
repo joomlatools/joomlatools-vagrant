@@ -49,6 +49,11 @@ sub vcl_recv {
             }
         }
 
+        # Do not cache ZendServer endpoint
+        if (req.url ~ "^/ZendServer") {
+            return (pass);
+        }
+
         # Do not cache POST requests
         if (req.method == "POST") {
             return (pass);

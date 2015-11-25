@@ -124,7 +124,7 @@ The version number is defined in the post-processor section and can be found at 
           ...
           "metadata": {
               "provider": "virtualbox",
-              "version": "1.3.0"
+              "version": "1.4.2"
           }
       }]
 ]
@@ -133,7 +133,7 @@ The version number is defined in the post-processor section and can be found at 
     If you are not updating the `joomlatools/box` but want to create your own version, be sure to replace all occurences of `joomlatools/box` with your account and box name in the `packer.json` file.
 
     *Note* A build cannot overwrite an existing version. If you want to replace an existing version, you will have to delete it on Atlas first!
-
+1. Also increase the `$box_version` variable in `puppet/manifests/default.pp` and update the changelog.
 1. Commit the change and push back to GitHub.
 1. Instruct packer to start the build:
 

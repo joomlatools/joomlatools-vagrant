@@ -94,14 +94,6 @@ class phpmanager::buildtools {
     require => Puppi::Netinstall['bison-2.2'],
   }
 
-  puppi::netinstall { 'mysql-5.1.73':
-    url => 'https://downloads.skysql.com/archives/mysql-5.1/mysql-5.1.73-linux-x86_64-glibc23.tar.gz',
-    retrieve_args => '--no-check-certificate',
-    extracted_dir => 'mysql-5.1.73-linux-x86_64-glibc23',
-    destination_dir => $phpmanager::installation_path,
-    postextract_command => "ln -s ${phpmanager::installation_path}/mysql-5.1.73-linux-x86_64-glibc23/lib ${phpmanager::installation_path}/mysql-5.1.73-linux-x86_64-glibc23/lib/x86_64-linux-gnu"
-  }
-
   puppi::netinstall { 'openssl-0.9.7g':
     url => 'https://www.openssl.org/source/old/0.9.x/openssl-0.9.7g.tar.gz',
     retrieve_args => '--no-check-certificate',
