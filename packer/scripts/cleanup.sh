@@ -17,7 +17,7 @@ rm -rf /dev/.udev/
 rm /lib/udev/rules.d/75-persistent-net-generator.rules
 
 echo "removing unneeded source files"
-rm -rf /usr/src/*
+rm -rf /usr/src/linux-headers*
 
 echo "remove documentation"
 rm -rf /usr/share/doc/* /usr/share/lintian/* /usr/share/linda/* /var/cache/man/*
