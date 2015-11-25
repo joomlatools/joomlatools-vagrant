@@ -13,6 +13,7 @@ To view the diff between two versions, go to https://github.com/joomlatools/joom
  * Fixed - Ensure that hostname is always set to `joomlatools` using Puppet configuration
  * Improved - Use a single zray.ini file and zray.conf virtual host
  * Improved - Disable Z-Ray on tools (dashboard, phpmyadmin, webgrind, pimpmylog)
+ * Improved - Decrease box size
 
 * 1.4.1 (2015-11-11)
  * Added - Install Z-Ray [Joomla](https://www.yireo.com/software/joomla-extensions/zray) and [Composer](https://github.com/zend-server-extensions/Z-Ray-Composer) plugins
