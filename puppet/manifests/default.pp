@@ -2,8 +2,18 @@ group { 'puppet': ensure => present }
 Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/' ], timeout => 900 }
 File { owner => 0, group => 0, mode => 0644 }
 
+$box_version = '1.4.2'
+
 system::hostname { 'joomlatools':
   ip => '127.0.1.1'
+}
+
+file { '/etc/profile.d/joomlatools-box.sh':
+  ensure  => present,
+  owner   => 'root',
+  group   => 'root',
+  mode    => 644,
+  content => "export JOOMLATOOLS_BOX=${::box_version}\n",
 }
 
 user { 'vagrant': }
@@ -327,7 +337,7 @@ exec { 'enable-shared-paths-config':
 }
 
 exec { 'set-env-for-debugging':
-  command => "echo \"\nSetEnv JOOMLATOOLS_BOX 1\" >> /etc/apache2/apache2.conf",
+  command => "echo \"\nSetEnv JOOMLATOOLS_BOX ${::box_version}\" >> /etc/apache2/apache2.conf",
   unless  => "grep JOOMLATOOLS_BOX /etc/apache2/apache2.conf",
   notify  => Service['apache'],
   require => Apache::Vhost['joomla.box']

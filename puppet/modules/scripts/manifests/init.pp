@@ -26,6 +26,14 @@ class scripts {
     environment => 'COMPOSER_HOME=/home/vagrant/.composer'
   }
 
+  exec { 'add-console-joomlatools-plugin':
+    command => 'composer --working-dir=/home/vagrant/.composer/vendor/joomlatools/joomla-console/plugins require joomlatools/joomla-console-joomlatools --no-interaction',
+    unless  => '[ -d /home/vagrant/.composer/vendor/joomlatools/joomla-console/plugins/vendor/joomlatools/joomla-console-joomlatools ]',
+    require => Exec['add-console'],
+    user    => vagrant,
+    environment => 'COMPOSER_HOME=/home/vagrant/.composer'
+  }
+
   file {'/home/vagrant/.bash_profile':
     ensure => file,
     owner  => vagrant,

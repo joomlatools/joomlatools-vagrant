@@ -12,7 +12,7 @@ class Enable extends Zray
     protected function configure()
     {
         $this->setName('zray:enable')
-             ->setDescription('Enable Xdebug');
+             ->setDescription('Enable Zend Server Z-Ray');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

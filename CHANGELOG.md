@@ -7,7 +7,9 @@ in 1.x versions.
 To get the diff for a specific change, go to https://github.com/joomlatools/joomla-vagrant/commit/xxx where xxx is the change hash.
 To view the diff between two versions, go to https://github.com/joomlatools/joomla-vagrant/compare/v1.0.0...v1.0.1
 
-* 1.4.2 (2015-11-24)
+* 1.4.2 (2015-11-25)
+ * Added - `JOOMLATOOLS_BOX` version environment variable
+ * Added - Install [joomlatools/joomla-console-joomlatools](https://github.com/joomlatools/joomla-console-joomlatools) plugin by default
  * Fixed - Always pass requests to /ZendServer end-point
  * Fixed - Symlink `/opt/zray` to active Z-Ray installation to fix plugin gallery
  * Fixed - Ensure that hostname is always set to `joomlatools` using Puppet configuration

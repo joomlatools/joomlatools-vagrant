@@ -1,11 +1,9 @@
-![Screenshot](http://www.joomlatools.com/images/blog/2015/joomla-vagrant-13-dashboard.png)
+![Screenshot](/screenshot.png?raw=true)
 
-Joomlatools Vagrant box
-=======================
+[Joomlatools Box]
+=================
 
-This project automates the setup of a Joomla development environment.
-
-It is capable of running a full featured LAMP stack with a single command so that you can start working on your Joomla projects quickly.
+This project automates the setup of a Joomla development environment. It is capable of running a full featured LAMP stack with a single command so that you can start working on your Joomla projects quickly.
 
 Installation
 ------------
@@ -126,7 +124,7 @@ The version number is defined in the post-processor section and can be found at 
           ...
           "metadata": {
               "provider": "virtualbox",
-              "version": "1.3.0"
+              "version": "1.4.2"
           }
       }]
 ]
@@ -135,7 +133,7 @@ The version number is defined in the post-processor section and can be found at 
     If you are not updating the `joomlatools/box` but want to create your own version, be sure to replace all occurences of `joomlatools/box` with your account and box name in the `packer.json` file.
 
     *Note* A build cannot overwrite an existing version. If you want to replace an existing version, you will have to delete it on Atlas first!
-
+1. Also increase the `$box_version` variable in `puppet/manifests/default.pp` and update the changelog.
 1. Commit the change and push back to GitHub.
 1. Instruct packer to start the build:
 
@@ -148,18 +146,32 @@ You can follow-up the build progress on the [Builds](https://atlas.hashicorp.com
 Reporting issues
 ----------------
 
-We deliberately keep the Issues section on Github closed for now as we want to encourage people to submit code to add features or fix bugs by opening up Pull Requests instead of Issues.
+The box is a very complex piece of technology, based on many different open source tools and libraries many of which are far beyond our capabilities and understanding.
 
-Of course, it's not always easy to fix an obscure bug in someone else's code, but we still want to encourage everyone to make an effort. We do not have the intention to maintain a support forum here just yet!
+We therefor deliberately keep the Issues section on this specific Github repo closed as we want to encourage people to submit code to add features or fix bugs by opening up Pull Requests instead of report bug or problems through Issues.
 
+If you do have a problem running the box please use either our [forum](https://groups.google.com/forum/#!forum/joomlatools-dev) or [chat room](http://gitter.im/joomlatools/dev) to get in touch with us and we are most happy to try and help you.
 
-Contributing
-------------
+## Contributing
 
-Fork the project, create a feature branch from the `develop` branch, and send us a pull request.
+Joomlatools Box is an open source, community-driven project. Contributions are welcome from everyone. 
+We have [contributing guidelines](CONTRIBUTING.md) to help you get started.
 
-
-Authors
--------
+## Contributors
 
 See the list of [contributors](https://github.com/joomlatools/joomla-vagrant/contributors).
+
+## License 
+
+Joomlatools Box is free and open-source software licensed under the [MPLv2 license](LICENSE.txt).
+
+## Community
+
+Keep track of development and community news.
+
+* Follow [@joomlatoolsdev on Twitter](https://twitter.com/joomlatoolsdev)
+* Join [joomlatools/dev on Gitter](http://gitter.im/joomlatools/dev)
+* Read the [Joomlatools Developer Blog](http://developer.joomlatools.com/blog/)
+* Subscribe to the [Joomlatools Developer Newsletter](http://developer.joomlatools.com/newsletter)
+
+[Joomlatools Box]: http://developer.joomlatools.com/vagrant
