@@ -11,7 +11,7 @@ if [ -f /home/vagrant/scripts/updater/UPDATE_AVAILABLE ]; then
     case $response in
         [yY][eE][sS]|[yY])
             sudo composer self-update
-            composer global require joomlatools/joomla-console:$VERSION
+            composer global require joomlatools/console:$VERSION
             rm -f /home/vagrant/scripts/updater/UPDATE_AVAILABLE
             ;;
         *)

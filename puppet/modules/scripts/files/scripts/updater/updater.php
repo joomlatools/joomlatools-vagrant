@@ -4,7 +4,7 @@ if (file_exists('/home/vagrant/scripts/updater/UPDATE_AVAILABLE')) {
     exit;
 }
 
-exec("composer show joomlatools/joomla-console 2>&1", $result, $code);
+exec("composer show joomlatools/console 2>&1", $result, $code);
 
 if ($code === 1) {
     exit(1); // Failed to fetch info from packagist
@@ -42,7 +42,7 @@ if (!$manifest) {
 $currentVersion = false;
 foreach ($manifest->packages as $package)
 {
-    if ($package->name == 'joomlatools/joomla-console')
+    if ($package->name == 'joomlatools/console')
     {
         if (substr($package->version, 0, 1) != 'v') {
             return; // Only update stable releases

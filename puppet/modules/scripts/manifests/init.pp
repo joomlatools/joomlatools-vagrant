@@ -19,16 +19,16 @@ class scripts {
   }
 
   exec { 'add-console':
-    command => 'composer global require joomlatools/joomla-console:* --no-interaction',
-    unless  => '[ -d /home/vagrant/.composer/vendor/joomlatools/joomla-console ]',
+    command => 'composer global require joomlatools/console:* --no-interaction',
+    unless  => '[ -d /home/vagrant/.composer/vendor/joomlatools/console ]',
     require => [File['/home/vagrant/scripts'], Class['Composer']],
     user    => vagrant,
     environment => 'COMPOSER_HOME=/home/vagrant/.composer'
   }
 
   exec { 'add-console-joomlatools-plugin':
-    command => 'composer --working-dir=/home/vagrant/.composer/vendor/joomlatools/joomla-console/plugins require joomlatools/joomla-console-joomlatools --no-interaction',
-    unless  => '[ -d /home/vagrant/.composer/vendor/joomlatools/joomla-console/plugins/vendor/joomlatools/joomla-console-joomlatools ]',
+    command => 'composer --working-dir=/home/vagrant/.composer/vendor/joomlatools/console/plugins require joomlatools/console-joomlatools --no-interaction',
+    unless  => '[ -d /home/vagrant/.composer/vendor/joomlatools/console/plugins/vendor/joomlatools/console-joomlatools ]',
     require => Exec['add-console'],
     user    => vagrant,
     environment => 'COMPOSER_HOME=/home/vagrant/.composer'
