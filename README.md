@@ -71,7 +71,7 @@ If you want to make changes to the box's infrastructure, you can do so by buildi
 1. Clone this repository:
 
     ```
-git clone https://github.com/joomlatools/joomla-vagrant.git
+git clone https://github.com/joomlatools/joomlatools-vagrant.git
     ```
 
 1. Install required Vagrant plugins
@@ -84,7 +84,7 @@ vagrant plugin install vagrant-vbguest
 1. Go to the repository folder and provision the box:
 
     ```
-cd joomla-vagrant
+cd joomlatools-vagrant
 vagrant up
     ```
 
@@ -102,7 +102,7 @@ We use [Packer](https://www.packer.io/) to automatically build and deploy the bo
 1. Clone this repository:
 
     ```
-git clone https://github.com/joomlatools/joomla-vagrant.git
+git clone https://github.com/joomlatools/joomlatools-vagrant.git
     ```
 
 1. Install [Packer](https://www.packer.io/)
@@ -124,7 +124,7 @@ The version number is defined in the post-processor section and can be found at 
           ...
           "metadata": {
               "provider": "virtualbox",
-              "version": "1.4.2"
+              "version": "1.4.3"
           }
       }]
 ]
@@ -159,7 +159,7 @@ We have [contributing guidelines](CONTRIBUTING.md) to help you get started.
 
 ## Contributors
 
-See the list of [contributors](https://github.com/joomlatools/joomla-vagrant/contributors).
+See the list of [contributors](https://github.com/joomlatools/joomlatools-vagrant/contributors).
 
 ## License 
 
