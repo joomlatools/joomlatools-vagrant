@@ -4,12 +4,12 @@ CHANGELOG
 This changelog references the relevant changes (bug and security fixes) done
 in 1.x versions.
 
-To get the diff for a specific change, go to https://github.com/joomlatools/joomla-vagrant/commit/xxx where xxx is the change hash.
-To view the diff between two versions, go to https://github.com/joomlatools/joomla-vagrant/compare/v1.0.0...v1.0.1
+To get the diff for a specific change, go to https://github.com/joomlatools/joomlatools-vagrant/commit/xxx where xxx is the change hash.
+To view the diff between two versions, go to https://github.com/joomlatools/joomlatools-vagrant/compare/v1.0.0...v1.0.1
 
 * 1.4.2 (2015-11-25)
  * Added - `JOOMLATOOLS_BOX` version environment variable
- * Added - Install [joomlatools/joomla-console-joomlatools](https://github.com/joomlatools/joomla-console-joomlatools) plugin by default
+ * Added - Install [joomlatools/joomla-console-joomlatools](https://github.com/joomlatools/joomlatools-console-joomlatools) plugin by default
  * Fixed - Always pass requests to /ZendServer end-point
  * Fixed - Symlink `/opt/zray` to active Z-Ray installation to fix plugin gallery
  * Fixed - Ensure that hostname is always set to `joomlatools` using Puppet configuration
@@ -41,7 +41,7 @@ To view the diff between two versions, go to https://github.com/joomlatools/joom
 
 * 1.3.1 (2015-09-03)
  * Added - Support for PHP7
- * Added - Support for [joomla-platform](https://github.com/joomlatools/joomla-platform) installations
+ * Added - Support for [joomla-platform](https://github.com/joomlatools/joomlatools-platform) installations
  * Added - Installed git-ftp
  * Added - `box server:restart` command
  * Improved - Use the async option when mounting NFS on Linux
@@ -87,7 +87,7 @@ To view the diff between two versions, go to https://github.com/joomlatools/joom
  * Fixed - Improved README, added login details + precompiled box instructions
 
 * 1.2.0 (2014-03-17)
- * Added - [Joomla console package](https://github.com/joomlatools-console) is now available in the box.
+ * Added - [Joomla console package](https://github.com/joomlatools/joomlatools-console) is now available in the box.
  * Added - phpmanager command to allow installation and management of multiple PHP versions.
  * Added - xdebug command to easily enable/disable PHP Xdebug extension.
  * Added - apc command to easily enable/disable PHP APC extension as well as clear the cache.

@@ -38,10 +38,10 @@ class scripts {
     ensure => file,
     owner  => vagrant,
     group  => vagrant,
-    notify => [File_line['joomla-console-updater'], File_line['cd-to-www-dir']]
+    notify => [File_line['joomlatools-console-updater'], File_line['cd-to-www-dir']]
   }
 
-  file_line { 'joomla-console-updater':
+  file_line { 'joomlatools-console-updater':
     path    => '/home/vagrant/.bash_profile',
     line    => '/home/vagrant/scripts/updater/login.sh',
     require => Exec['make-scripts-executable']

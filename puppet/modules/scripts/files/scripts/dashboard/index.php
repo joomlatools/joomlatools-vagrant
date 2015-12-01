@@ -28,9 +28,9 @@ foreach ($dir as $fileinfo)
     if ($fileinfo->isDir() && !$fileinfo->isDot())
     {
         $files = array(
-            'joomla-cms'      => $fileinfo->getPathname() . '/libraries/cms/version/version.php',
-            'joomla-platform' => $fileinfo->getPathname() . '/lib/libraries/cms/version/version.php',
-            'joomla-1.5'      => $fileinfo->getPathname() . '/libraries/joomla/version.php'
+            'joomla-cms'           => $fileinfo->getPathname() . '/libraries/cms/version/version.php',
+            'joomlatools-platform' => $fileinfo->getPathname() . '/lib/libraries/cms/version/version.php',
+            'joomla-1.5'           => $fileinfo->getPathname() . '/libraries/joomla/version.php'
         );
 
         foreach ($files as $type => $file)
@@ -59,7 +59,7 @@ foreach ($dir as $fileinfo)
 
             $sites[] = (object) array(
                 'name'    => $fileinfo->getFilename(),
-                'docroot' => $fileinfo->getFilename() . '/' . ($application == 'joomla-platform' ? 'web' : ''),
+                'docroot' => $fileinfo->getFilename() . '/' . ($application == 'joomlatools-platform' ? 'web' : ''),
                 'type'    => $application,
                 'version' => $canonical($version)
             );
@@ -110,7 +110,7 @@ foreach ($dir as $fileinfo)
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="https://github.com/joomlatools/joomla-vagrant">Contribute on GitHub</a></li>
+            <li><a href="https://github.com/joomlatools/joomlatools-vagrant">Contribute on GitHub</a></li>
             <li><a href="http://developer.joomlatools.com/tools/vagrant/introduction.html" target="_blank">Docs</a></li>
           </ul>
         </div>
