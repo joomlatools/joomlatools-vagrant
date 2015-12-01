@@ -124,7 +124,7 @@ The version number is defined in the post-processor section and can be found at 
           ...
           "metadata": {
               "provider": "virtualbox",
-              "version": "1.4.2"
+              "version": "1.4.3"
           }
       }]
 ]
