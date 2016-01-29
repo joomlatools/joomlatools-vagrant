@@ -162,7 +162,7 @@ foreach ($dir as $fileinfo)
                 <tr>
                   <td><?php echo $i; ?></td>
                   <td>
-                    <a target="_blank" href="/<?php echo $site->docroot . '/administrator/'; ?>">
+                    <a target="_blank" href="/<?php echo $site->docroot . 'administrator/'; ?>">
                       <?php echo $site->name ?></a>
                     <small>(<?php echo $site->type ?> <?php echo $site->version; ?>)</small>
                   </td> 
@@ -172,7 +172,7 @@ foreach ($dir as $fileinfo)
                       <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Options <span class="caret"></span></a>
                       <ul class="dropdown-menu" role="menu">
                           <li><a href="/<?php echo $site->docroot; ?>" target="_blank">Site</a></li>
-                          <li><a href="/<?php echo $site->docroot . '/administrator/'; ?>" target="_blank">Administrator</a></li>
+                          <li><a href="/<?php echo $site->docroot . 'administrator/'; ?>" target="_blank">Administrator</a></li>
                       </ul>
                     </div>
                   </td>
