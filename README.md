@@ -1,9 +1,9 @@
 ![Screenshot](/screenshot.png?raw=true)
 
-[Joomlatools Box]
+Joomlatools Vagrant
 =================
 
-This project automates the setup of a Joomla development environment. It is capable of running a full featured LAMP stack with a single command so that you can start working on your Joomla projects quickly.
+[Joomlatools Vagrant] automates the setup of a Joomla development environment. It is capable of running a full featured LAMP stack with a single command so that you can start working on your Joomla projects quickly.
 
 Installation
 ------------
@@ -48,7 +48,7 @@ joomla site:create mysite
 
 1. Your new site is available at [joomla.box/mysite](http://joomla.box/mysite). You can login using the credentials  `admin` / `admin`.
 
-1. You can now symlink and install your custom extensions into the site, manage PHP versions and much more. Head over to our [documentation pages](http://www.joomlatools.com/developer/tools/vagrant/) to learn more about the box and its possibilities.
+1. You can now symlink and install your custom extensions into the site, manage PHP versions and much more. Head over to our [documentation pages][Joomlatools Vagrant] to learn more about the box and its possibilities.
 
 Sharing access to the box
 -------------------------
@@ -171,7 +171,7 @@ Keep track of development and community news.
 
 * Follow [@joomlatoolsdev on Twitter](https://twitter.com/joomlatoolsdev)
 * Join [joomlatools/dev on Gitter](http://gitter.im/joomlatools/dev)
-* Read the [Joomlatools Developer Blog](http://www.joomlatools.com/developer/blog/)
-* Subscribe to the [Joomlatools Developer Newsletter](http://www.joomlatools.com/developer/newsletter/)
+* Read the [Joomlatools Developer Blog](https://www.joomlatools.com/developer/blog/)
+* Subscribe to the [Joomlatools Developer Newsletter](https://www.joomlatools.com/developer/newsletter/)
 
-[Joomlatools Box]: http://www.joomlatools.com/developer/vagrant/
+[Joomlatools Vagrant]: https://www.joomlatools.com/developer/tools/vagrant/
