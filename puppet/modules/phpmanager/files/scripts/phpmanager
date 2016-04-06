@@ -169,10 +169,10 @@ command_use() {
     sudo a2dissite 00-zray &> /dev/null
 
     if [[ "$SHORT" -ge 5500 ]] && [[ "$SHORT" -lt 5600 ]]; then
-        sudo ln -s /opt/zray-php-101832-php5.5.27-linux-debian7-amd64/zray /opt/zray
+        sudo ln -s /opt/zray-php-104202-php5.5.31-linux-debian7-amd64/zray /opt/zray
         sudo a2ensite 00-zray &> /dev/null
     elif [[ "$SHORT" -ge 5600 ]] && [[ "$SHORT" -lt 7000 ]]; then
-        sudo ln -s /opt/zray-php-101832-php5.6.11-linux-debian7-amd64/zray /opt/zray
+        sudo ln -s /opt/zray-php-104202-php5.6.17-linux-debian7-amd64/zray /opt/zray
         sudo a2ensite 00-zray &> /dev/null
     fi
 
@@ -364,8 +364,12 @@ command_restore() {
     sudo cp "/usr/lib/apache2/modules/libphp5.so.original" "/usr/lib/apache2/modules/libphp5.so"
 
     sudo a2ensite 00-zray &> /dev/null
-    sudo rm /opt/zray
-    sudo ln -s /opt/zray-php-101832-php5.6.11-linux-debian7-amd64/zray /opt/zray
+
+    if [ -f /opt/zray ]; then
+        sudo rm /opt/zray
+    fi
+
+    sudo ln -s /opt/zray-php-104202-php5.6.17-linux-debian7-amd64/zray /opt/zray
 
     echo -n "Restarting Apache .. "
     sudo a2enmod php5 &> /dev/null

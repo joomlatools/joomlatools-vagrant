@@ -1,31 +1,31 @@
 class zray {
 
-  archive { 'zray-php-101832-php5.6.11-linux-debian7-amd64':
+  archive { 'zray-php-104202-php5.6.17-linux-debian7-amd64':
     ensure           => present,
-    url              => 'http://repos.zend.com/zend-server/early-access/zray-tech-preview/zray-php-101832-php5.6.11-linux-debian7-amd64.tar.gz',
+    url              => 'http://repos.zend.com/zend-server/early-access/zray-tech-preview/zray-php-104202-php5.6.17-linux-debian7-amd64.tar.gz',
     target           => '/opt',
     checksum         => false
   }
   ->
   exec {'zray-chown-www-data':
-    command => '/usr/bin/find /opt/zray-php-101832-php5.6.11-linux-debian7-amd64 ! -user www-data -exec /bin/chown www-data:www-data {} \;'
+    command => '/usr/bin/find /opt/zray-php-104202-php5.6.17-linux-debian7-amd64 ! -user www-data -exec /bin/chown www-data:www-data {} \;'
   }
 
-  archive { 'zray-php-101832-php5.5.27-linux-debian7-amd64':
+  archive { 'zray-tech-preview/zray-php-104202-php5.5.31-linux-debian7-amd64':
     ensure           => present,
-    url              => 'http://repos.zend.com/zend-server/early-access/zray-tech-preview/zray-php-101832-php5.5.27-linux-debian7-amd64.tar.gz',
+    url              => 'http://repos.zend.com/zend-server/early-access/zray-tech-preview/zray-php-104202-php5.5.31-linux-debian7-amd64.tar.gz',
     target           => '/opt',
     checksum         => false
   }
   ->
   exec {'zray-php5.5-chown-www-data':
-    command => '/usr/bin/find /opt/zray-php-101832-php5.5.27-linux-debian7-amd64 ! -user www-data -exec /bin/chown www-data:www-data {} \;'
+    command => '/usr/bin/find /opt/zray-php-104202-php5.5.31-linux-debian7-amd64 ! -user www-data -exec /bin/chown www-data:www-data {} \;'
   }
 
   file { '/opt/zray':
     ensure  => link,
-    target  => "/opt/zray-php-101832-php5.6.11-linux-debian7-amd64/zray",
-    require => Archive['zray-php-101832-php5.6.11-linux-debian7-amd64']
+    target  => "/opt/zray-php-104202-php5.6.17-linux-debian7-amd64/zray",
+    require => Archive['zray-php-104202-php5.6.17-linux-debian7-amd64']
   }
 
   zray::apache::vhost { 'zray':
@@ -44,10 +44,10 @@ class zray {
 
   $joomla = {
     'joomla-zray-php5.5' => {
-      install_directory => '/opt/zray-php-101832-php5.5.27-linux-debian7-amd64/zray/runtime/var/plugins'
+      install_directory => '/opt/zray-php-104202-php5.5.31-linux-debian7-amd64/zray/runtime/var/plugins'
     },
     'joomla-zray-php5.6' => {
-      install_directory => '/opt/zray-php-101832-php5.6.11-linux-debian7-amd64/zray/runtime/var/plugins'
+      install_directory => '/opt/zray-php-104202-php5.6.17-linux-debian7-amd64/zray/runtime/var/plugins'
     }
   }
 
@@ -61,10 +61,10 @@ class zray {
 
   $composer = {
     'composer-zray-php5.5' => {
-      install_directory => '/opt/zray-php-101832-php5.5.27-linux-debian7-amd64/zray/runtime/var/plugins',
+      install_directory => '/opt/zray-php-104202-php5.5.31-linux-debian7-amd64/zray/runtime/var/plugins',
     },
     'composer-zray-php5.6' => {
-      install_directory => '/opt/zray-php-101832-php5.6.11-linux-debian7-amd64/zray/runtime/var/plugins',
+      install_directory => '/opt/zray-php-104202-php5.6.17-linux-debian7-amd64/zray/runtime/var/plugins',
     }
   }
 
@@ -77,7 +77,7 @@ class zray {
   create_resources('zray::plugin', $composer, $composer_default)
 
   # Delete the Composer.zip files that come with the default installation as they will interfere with the newer version
-  file { ['/opt/zray-php-101832-php5.5.27-linux-debian7-amd64/zray/runtime/var/plugins/Composer.zip', '/opt/zray-php-101832-php5.6.11-linux-debian7-amd64/zray/runtime/var/plugins/Composer.zip']:
+  file { ['/opt/zray-php-104202-php5.5.31-linux-debian7-amd64/zray/runtime/var/plugins/Composer.zip', '/opt/zray-php-104202-php5.6.17-linux-debian7-amd64/zray/runtime/var/plugins/Composer.zip']:
     ensure  => absent,
     require => Zray::Php::Ini['zray']
   }
