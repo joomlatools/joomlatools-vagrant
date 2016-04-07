@@ -1,6 +1,9 @@
 class zray {
 
-  archive { 'zray-php-104202-php5.6.17-linux-debian7-amd64':
+  Archive <| title == 'zray-php5.6' or title == 'zray-php5.5' |>
+    -> Zray::Plugin <| |>
+
+  archive { 'zray-php5.6':
     ensure           => present,
     url              => 'http://repos.zend.com/zend-server/early-access/zray-tech-preview/zray-php-104202-php5.6.17-linux-debian7-amd64.tar.gz',
     target           => '/opt',
@@ -12,7 +15,7 @@ class zray {
     command => '/usr/bin/find /opt/zray-php-104202-php5.6.17-linux-debian7-amd64 ! -user www-data -exec /bin/chown www-data:www-data {} \;'
   }
 
-  archive { 'zray-php-104202-php5.5.31-linux-debian7-amd64':
+  archive { 'zray-php5.5':
     ensure           => present,
     url              => 'http://repos.zend.com/zend-server/early-access/zray-tech-preview/zray-php-104202-php5.5.31-linux-debian7-amd64.tar.gz',
     target           => '/opt',
@@ -27,7 +30,7 @@ class zray {
   file { '/opt/zray':
     ensure  => link,
     target  => "/opt/zray-php-104202-php5.6.17-linux-debian7-amd64/zray",
-    require => Archive['zray-php-104202-php5.6.17-linux-debian7-amd64']
+    require => Archive['zray-php5.6']
   }
 
   zray::apache::vhost { 'zray':
