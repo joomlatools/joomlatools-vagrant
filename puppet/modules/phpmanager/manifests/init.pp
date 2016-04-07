@@ -87,7 +87,7 @@ class phpmanager::buildtools {
 
   puppi::netinstall { 'flex-2.5.4a':
     path => ["${phpmanager::installation_path}/bison-2.2/bin:/bin:/sbin:/usr/bin:/usr/sbin"],
-    url => 'http://fossies.org/unix/misc/old/flex-2.5.4a.tar.gz',
+    url => 'ftp://ftp.gnome.org/mirror/temp/sf2015/f/fl/flex/flex/2.5.4.a/flex-2.5.4a.tar.gz',
     extracted_dir => 'flex-2.5.4',
     destination_dir => $phpmanager::source_path,
     postextract_command => "${phpmanager::source_path}/flex-2.5.4/configure --prefix=${phpmanager::installation_path}/flex-2.5.4 && make && sudo make install",
@@ -129,7 +129,7 @@ class phpmanager::buildtools {
   }
 
   puppi::netinstall { 'curl-7.15.3':
-    url => 'http://ftp.sunet.se/pub/www/utilities/curl/curl-7.15.3.tar.gz',
+    url => 'ftp://ftp.belnet.be/mirror/pub/ftp.sunet.se/pub/www/utilities/curl/curl-7.15.3.tar.gz',
     extracted_dir => 'curl-7.15.3',
     destination_dir => $phpmanager::source_path,
     require => File["$phpmanager::source_path"]
