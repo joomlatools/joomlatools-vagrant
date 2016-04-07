@@ -1,4 +1,8 @@
 {
+  "variables": {
+    "guest_additions_url": "http://download.virtualbox.org/virtualbox/5.0.16/VBoxGuestAdditions_5.0.16.iso",
+    "guest_additions_sha256": "8190f1e4031f8195971c2a97d2d3b1cf2d86fc83219f750d05cee9255c7dad85"
+  },
   "push": {
     "name": "joomlatools/box",
     "vcs": true
@@ -33,6 +37,8 @@
       "boot_wait": "10s",
       "disk_size": 8000,
       "guest_os_type": "Ubuntu_64",
+      "guest_additions_url": "{{user `guest_additions_url`}}",
+      "guest_additions_sha256": "{{user `guest_additions_sha256`}}",
       "http_directory": "packer/http",
       "iso_checksum": "2ac1f3e0de626e54d05065d6f549fa3a",
       "iso_checksum_type": "md5",
