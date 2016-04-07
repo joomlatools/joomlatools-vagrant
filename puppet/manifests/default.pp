@@ -217,6 +217,15 @@ exec { "composer-plugin-changelogs":
   require => Class['Composer']
 }
 
+exec { "composer-plugin-prestissimo":
+  command => "composer global require hirak/prestissimo",
+  path    => ['/usr/bin' , '/bin'],
+  creates => '/home/vagrant/.composer/vendor/hirak/prestissimo',
+  user    => vagrant,
+  environment => 'COMPOSER_HOME=/home/vagrant/.composer',
+  require => Class['Composer']
+}
+
 puphpet::ini { 'custom':
   value   => [
     'sendmail_path = /home/vagrant/.rvm/gems/ruby-2.2.1/bin/catchmail -fnoreply@example.com',
