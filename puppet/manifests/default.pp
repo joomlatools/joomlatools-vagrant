@@ -176,7 +176,7 @@ file { ['/etc/php5/apache2/conf.d/20-yaml.ini', '/etc/php5/cli/conf.d/20-yaml.in
 }
 
 php::pecl::module { 'oauth':
-  use_package => no,
+  use_package => yes,
   ensure      => present,
   require     => Php::Pear::Config['download_dir']
 }

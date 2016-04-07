@@ -4,6 +4,7 @@ class zray {
     ensure           => present,
     url              => 'http://repos.zend.com/zend-server/early-access/zray-tech-preview/zray-php-104202-php5.6.17-linux-debian7-amd64.tar.gz',
     target           => '/opt',
+    timeout          => 600,
     checksum         => false
   }
   ->
@@ -11,10 +12,11 @@ class zray {
     command => '/usr/bin/find /opt/zray-php-104202-php5.6.17-linux-debian7-amd64 ! -user www-data -exec /bin/chown www-data:www-data {} \;'
   }
 
-  archive { 'zray-tech-preview/zray-php-104202-php5.5.31-linux-debian7-amd64':
+  archive { 'zray-php-104202-php5.5.31-linux-debian7-amd64':
     ensure           => present,
     url              => 'http://repos.zend.com/zend-server/early-access/zray-tech-preview/zray-php-104202-php5.5.31-linux-debian7-amd64.tar.gz',
     target           => '/opt',
+    timeout          => 600,
     checksum         => false
   }
   ->
