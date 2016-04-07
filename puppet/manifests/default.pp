@@ -8,6 +8,10 @@ system::hostname { 'joomlatools':
   ip => '127.0.1.1'
 }
 
+host { 'joomla.box':
+  ip => '127.0.1.1'
+}
+
 file { '/etc/profile.d/joomlatools-box.sh':
   ensure  => present,
   owner   => 'root',
