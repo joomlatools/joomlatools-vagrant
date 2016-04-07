@@ -233,7 +233,9 @@ puphpet::ini { 'custom':
     'xdebug.profiler_enable = 0',
     'xdebug.profiler_enable_trigger = 0',
     'xdebug.max_nesting_level = 1000',
-    'xdebug.profiler_output_dir = /var/www/'
+    'xdebug.profiler_output_dir = /var/www/',
+    'openssl.cafile = /etc/ssl/certs/ca-certificates.crt',
+    'openssl.capath = /usr/lib/ssl/'
   ],
   ini     => '/etc/php5/mods-available/custom.ini',
   notify  => Service['apache'],
