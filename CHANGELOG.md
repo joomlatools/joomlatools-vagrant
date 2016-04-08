@@ -7,6 +7,13 @@ in 1.x versions.
 To get the diff for a specific change, go to https://github.com/joomlatools/joomlatools-vagrant/commit/xxx where xxx is the change hash.
 To view the diff between two versions, go to https://github.com/joomlatools/joomlatools-vagrant/compare/v1.0.0...v1.0.1
 
+* 1.4.4 (2016-04-07)
+ * Added - Installed the Composer plugin [hirak/prestissimo](https://github.com/hirak/prestissimo) [#14](https://github.com/joomlatools/joomlatools-vagrant/issues/14)
+ * Fixed - Configure PHP's OpenSSL to find the CA bundles [#22](https://github.com/joomlatools/joomlatools-vagrant/issues/22) 
+ * Fixed - Add `joomla.box` to hosts file [#16](https://github.com/joomlatools/joomlatools-vagrant/issues/16)
+ * Fixed - Fix extra slash in administrator urls on dashboard [#19](https://github.com/joomlatools/joomlatools-vagrant/pull/19)
+ * Improved - Upgraded Z-Ray to latest versions [#21](https://github.com/joomlatools/joomlatools-vagrant/issues/21)
+
 * 1.4.3 (2015-12-01)
  * Changed - Renamed `joomlatools/joomla-console` to `joomlatools/console`
 

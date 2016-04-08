@@ -10,6 +10,7 @@ class composer (
 
   exec { "composer-${install_location}":
     command => "curl -sS https://getcomposer.org/installer | php -- --install-dir=/home/vagrant && mv /home/vagrant/composer.phar ${install_location}/${filename}",
+    environment => ['HOME=/root'],
     path    => ['/usr/bin' , '/bin'],
   }
 }
