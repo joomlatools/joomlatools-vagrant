@@ -2,9 +2,13 @@ group { 'puppet': ensure => present }
 Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/' ], timeout => 900 }
 File { owner => 0, group => 0, mode => 0644 }
 
-$box_version = '1.4.3'
+$box_version = '1.4.4'
 
 system::hostname { 'joomlatools':
+  ip => '127.0.1.1'
+}
+
+host { 'joomla.box':
   ip => '127.0.1.1'
 }
 
@@ -176,7 +180,7 @@ file { ['/etc/php5/apache2/conf.d/20-yaml.ini', '/etc/php5/cli/conf.d/20-yaml.in
 }
 
 php::pecl::module { 'oauth':
-  use_package => no,
+  use_package => yes,
   ensure      => present,
   require     => Php::Pear::Config['download_dir']
 }
@@ -213,6 +217,15 @@ exec { "composer-plugin-changelogs":
   require => Class['Composer']
 }
 
+exec { "composer-plugin-prestissimo":
+  command => "composer global require hirak/prestissimo",
+  path    => ['/usr/bin' , '/bin'],
+  creates => '/home/vagrant/.composer/vendor/hirak/prestissimo',
+  user    => vagrant,
+  environment => 'COMPOSER_HOME=/home/vagrant/.composer',
+  require => Class['Composer']
+}
+
 puphpet::ini { 'custom':
   value   => [
     'sendmail_path = /home/vagrant/.rvm/gems/ruby-2.2.1/bin/catchmail -fnoreply@example.com',
@@ -233,7 +246,9 @@ puphpet::ini { 'custom':
     'xdebug.profiler_enable = 0',
     'xdebug.profiler_enable_trigger = 0',
     'xdebug.max_nesting_level = 1000',
-    'xdebug.profiler_output_dir = /var/www/'
+    'xdebug.profiler_output_dir = /var/www/',
+    'openssl.cafile = /etc/ssl/certs/ca-certificates.crt',
+    'openssl.capath = /usr/lib/ssl/'
   ],
   ini     => '/etc/php5/mods-available/custom.ini',
   notify  => Service['apache'],
