@@ -616,7 +616,7 @@ sub_getoptions() {
         OPENSSL="--with-openssl=/opt/openssl-1.0.1f"
         patch -p1 < /home/vagrant/phpmanager/patches/openssl.ssl2.patch &> /dev/null
     else
-        OPENSSL="--with-openssl=/opt/openssl-1.0.1f"
+        OPENSSL="--with-openssl=/opt/openssl-1.0.2g"
     fi
     OPTIONS="$OPTIONS $OPENSSL"
 

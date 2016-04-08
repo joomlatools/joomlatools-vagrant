@@ -112,6 +112,15 @@ class phpmanager::buildtools {
     require => Package['build-essential']
   }
 
+  puppi::netinstall { 'openssl-1.0.2g':
+    url => 'https://www.openssl.org/source/openssl-1.0.2g.tar.gz',
+    retrieve_args => '--no-check-certificate',
+    extracted_dir => 'openssl-1.0.2g',
+    destination_dir => $phpmanager::source_path,
+    postextract_command => "${phpmanager::source_path}/openssl-1.0.2g/config --prefix=${phpmanager::installation_path}/openssl-1.0.2g -fPIC no-gost && make && make depend && make install_sw && ln -s /opt/openssl-1.0.2g/lib /opt/openssl-1.0.2g/lib/x86_64-linux-gnu",
+    require => Package['build-essential']
+  }
+
   puppi::netinstall { 'libxml2-2.7.8':
     url => 'ftp://xmlsoft.org/libxml2/libxml2-2.7.8.tar.gz',
     extracted_dir => 'libxml2-2.7.8',
