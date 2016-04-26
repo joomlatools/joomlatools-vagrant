@@ -143,6 +143,17 @@ packer push packer.json
 
 You can follow-up the build progress on the [Builds](https://atlas.hashicorp.com/builds) page. Once it's finished, the new version will be automatically available on the [your boxes](https://atlas.hashicorp.com/vagrant) section. Add a changelog and release it to the public.
 
+Updating
+------------
+When new versions of the box are released you can update your local machine by executing: 
+
+```
+vagrant box update
+```
+
+Note that updating the box will not update an already-running Vagrant machine. To reflect the changes in the box, you will have to destroy (`vagrant destroy`) and bring back up the Vagrant machine (`vagrant up`).
+
+
 Reporting issues
 ----------------
 
