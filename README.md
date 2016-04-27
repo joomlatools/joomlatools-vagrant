@@ -50,6 +50,19 @@ joomla site:create mysite
 
 1. You can now symlink and install your custom extensions into the site, manage PHP versions and much more. Head over to our [documentation pages][Joomlatools Vagrant] to learn more about the box and its possibilities.
 
+Updating to the latest version
+------------------------------
+
+When new versions of the box are released you can update your local machine by executing:
+
+```
+vagrant box update
+```
+
+Note that updating the box will not update an already-running Vagrant machine. To reflect the changes in the box, you will have to destroy (`vagrant destroy`) and bring back up the Vagrant machine (`vagrant up`).
+
+For more details refer to our [FAQ](https://www.joomlatools.com/developer/tools/vagrant/faq/#how-can-i-update-the-box-to-the-latest-version).
+
 Sharing access to the box
 -------------------------
 
@@ -154,14 +167,14 @@ If you do have a problem running the box please use either our [forum](https://g
 
 ## Contributing
 
-Joomlatools Box is an open source, community-driven project. Contributions are welcome from everyone. 
+Joomlatools Box is an open source, community-driven project. Contributions are welcome from everyone.
 We have [contributing guidelines](CONTRIBUTING.md) to help you get started.
 
 ## Contributors
 
 See the list of [contributors](https://github.com/joomlatools/joomlatools-vagrant/contributors).
 
-## License 
+## License
 
 Joomlatools Box is free and open-source software licensed under the [MPLv2 license](LICENSE.txt).
 
