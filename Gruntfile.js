@@ -9,6 +9,15 @@ module.exports = function(grunt) {
 
     grunt.initConfig({
 
+        // Checks if your NPM or Bower dependencies are out of date
+        versioncheck: {
+            target: {
+                options: {
+                    hideUpToDate : false
+                }
+            }
+        },
+
         // Sass
         sass: {
             dist: {
@@ -60,5 +69,5 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('default', ['browserSync', 'watch']);
+    grunt.registerTask('default', ['versioncheck', 'browserSync', 'watch']);
 };
