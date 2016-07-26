@@ -22,8 +22,7 @@ module.exports = function(grunt) {
         sass: {
             dist: {
                 files: {
-                    'puppet/modules/scripts/files/scripts/dashboard/assets/css/bootstrap.css': 'puppet/modules/scripts/files/scripts/dashboard/assets/css/bootstrap.scss',
-                    'puppet/modules/scripts/files/scripts/dashboard/assets/css/dashboard.css': 'puppet/modules/scripts/files/scripts/dashboard/assets/css/dashboard.scss',
+                    'puppet/modules/scripts/files/scripts/assets/css/dashboard.css': 'puppet/modules/scripts/files/scripts/assets/css/dashboard.scss',
                 }
             }
         },
@@ -36,15 +35,15 @@ module.exports = function(grunt) {
             files: {
                 expand: true,
                 flatten: true,
-                src: 'puppet/modules/scripts/files/scripts/dashboard/assets/css/*.css',
-                dest: 'puppet/modules/scripts/files/scripts/dashboard/assets/css/'
+                src: 'puppet/modules/scripts/files/scripts/assets/css/*.css',
+                dest: 'puppet/modules/scripts/files/scripts/assets/css/'
             }
         },
 
         browserSync: {
             dev: {
                 bsFiles: {
-                    src : 'puppet/modules/scripts/files/scripts/dashboard/assets/css/*.css'
+                    src : 'puppet/modules/scripts/files/scripts/assets/css/*.css'
                 },
                 options: {
                     proxy: "joomla.box/joomlatools-vagrant/puppet/modules/scripts/files/scripts/dashboard/",
@@ -59,7 +58,7 @@ module.exports = function(grunt) {
         // Watch
         watch: {
             css: {
-                files: 'puppet/modules/scripts/files/scripts/dashboard/assets/css/**/*.scss',
+                files: 'puppet/modules/scripts/files/scripts/assets/**/*.*',
                 tasks: ['sass', 'autoprefixer'],
                 options: {
                     interrupt: false,

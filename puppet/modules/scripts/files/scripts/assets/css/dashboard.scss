@@ -1,0 +1,102 @@
+// Core variables
+@import "bootstrap";
+@import "bootstrap-overrides";
+
+/*
+ * Base structure
+ */
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+iframe {
+  border: 0 none;
+}
+
+/*
+ * Global add-ons
+ */
+
+.sub-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.navbar {
+  margin-bottom: 0;
+}
+
+.navbar-brand img.logo {
+  height: 25px;
+  margin-right: 10px;
+  margin-top: -4px;
+}
+
+.container {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: row;
+}
+
+.main {
+  flex-grow: 1;
+  overflow-y: scroll;
+}
+
+.footer {
+  border-top: 1px solid #eee;
+
+  .nav {
+    float: right;
+
+    li {
+      float: left;
+    }
+  }
+}
+
+/*
+ * Sidebar
+ */
+.sidebar {
+  overflow-y: scroll;
+  width: 20%;
+  min-width: 150px;
+  max-width: 225px;
+
+  .dropdown-header {
+    margin-top: 20px;
+  }
+}
+
+/* Sidebar navigation */
+.nav-sidebar > li > a {
+  padding-right: 20px;
+  padding-left: 20px;
+}
+.nav-sidebar > .active > a,
+.nav-sidebar > .active > a:hover,
+.nav-sidebar > .active > a:focus {
+  color: #fff;
+  background-color: #428bca;
+}
+
+/*
+ * Main content
+ */
+.main .page-header {
+  margin-top: 0;
+}
+
+/*
+ * Dashboard main table
+ */
+.table-dashboard tbody td {
+    vertical-align: middle !important;
+}
