@@ -5,3 +5,4 @@ www/*
 !www/index.php
 config.custom.yaml
 /packer_cache
+/node_modules
