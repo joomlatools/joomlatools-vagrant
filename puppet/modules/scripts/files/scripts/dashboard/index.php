@@ -77,7 +77,7 @@ foreach ($dir as $fileinfo)
     <meta name="author" content="">
     <link rel="icon" href="assets/images/favicon.ico">
 
-    <title>Joomla in a Box | Dashboard</title>
+    <title>Joomlatools Vagrant | Dashboard</title>
 
     <!-- Bootstrap CSS -->
     <link href="assets/css/bootstrap.css" rel="stylesheet">
@@ -97,7 +97,7 @@ foreach ($dir as $fileinfo)
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#"><img class="logo" src="assets/images/joomla-in-a-box.svg" alt="Joomla in a Box">Joomla in a box</a>
+          <a class="navbar-brand" href="#"><img class="logo" src="assets/images/logo.svg" alt="">Joomlatools Vagrant</a>
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
