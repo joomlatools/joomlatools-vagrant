@@ -1,6 +1,24 @@
 group { 'puppet': ensure => present }
-Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/' ] }
+Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/' ], timeout => 900 }
 File { owner => 0, group => 0, mode => 0644 }
+
+$box_version = '1.4.4'
+
+system::hostname { 'joomlatools':
+  ip => '127.0.1.1'
+}
+
+host { 'joomla.box':
+  ip => '127.0.1.1'
+}
+
+file { '/etc/profile.d/joomlatools-box.sh':
+  ensure  => present,
+  owner   => 'root',
+  group   => 'root',
+  mode    => 644,
+  content => "export JOOMLATOOLS_BOX=${::box_version}\n",
+}
 
 user { 'vagrant': }
 
@@ -9,13 +27,13 @@ class {'apt':
 }
 
 Class['::apt::update'] -> Package <|
-    title != 'python-software-properties'
-and title != 'software-properties-common'
+  title != 'python-software-properties'
+  and title != 'software-properties-common'
 |>
 
 apt::key { '4F4EA0AAE5267A6C': }
 
-apt::ppa { 'ppa:ondrej/php5':
+apt::ppa { 'ppa:ondrej/php5-5.6':
   require => Apt::Key['4F4EA0AAE5267A6C']
 }
 
@@ -32,16 +50,18 @@ gnupg_key { 'gpg-rvm-signature':
 
 file { '/home/vagrant/.bash_aliases':
   ensure => 'present',
+  owner  => vagrant,
+  group  => vagrant,
   source => 'puppet:///modules/puphpet/dot/.bash_aliases',
 }
 
 package { [
-    'build-essential',
-    'vim',
-    'curl',
-    'git-core',
-    'unzip'
-  ]:
+  'build-essential',
+  'vim',
+  'curl',
+  'git-core',
+  'unzip'
+]:
   ensure  => 'installed'
 }
 
@@ -65,7 +85,14 @@ class apache::certificate {
 class { 'apache::certificate':}
 
 class { 'apache':
-    require => Class['apache::certificate'],
+  require => Class['apache::certificate'],
+}
+
+exec { 'apache-set-servername':
+  command => "echo \"ServerName joomlatools\" > /etc/apache2/conf-available/fqdn.conf; a2enconf fqdn",
+  path    => ['/usr/bin' , '/bin', '/usr/sbin/'],
+  creates => '/etc/apache2/conf-available/fqdn',
+  require => Class['apache']
 }
 
 apache::dotconf { 'custom':
@@ -74,12 +101,25 @@ apache::dotconf { 'custom':
 
 apache::module { 'rewrite': }
 apache::module { 'ssl': }
+apache::module { 'proxy_fcgi': }
+apache::module { 'headers': }
 
 class { 'php':
   service       => 'apache',
   version       => 'latest',
   module_prefix => '',
   require       => Package['apache'],
+}
+
+$apache_hhvm_proxy = "
+<FilesMatch \\.php$>
+  SetHandler \"proxy:fcgi://127.0.0.1:9000\"
+</FilesMatch>"
+
+file { '/etc/apache2/conf-available/hhvm.conf':
+  ensure  => file,
+  content => $apache_hhvm_proxy,
+  require => Class['apache']
 }
 
 php::module { 'php5-mysql': }
@@ -102,7 +142,7 @@ class { 'php::pear':
 
 php::pear::config {
   download_dir: value => "/tmp/pear/download",
-  require => Class['php::pear']
+    require => Class['php::pear']
 }
 
 php::pear::module { 'Console_CommandLine':
@@ -128,9 +168,36 @@ puphpet::ini { 'yaml':
   value   => [
     'extension=yaml.so'
   ],
-  ini     => '/etc/php5/mods-available/zzz_yaml.ini',
+  ini     => '/etc/php5/mods-available/yaml.ini',
   notify  => Service['apache'],
   require => [Class['php'], Php::Pecl::Module['yaml']]
+}
+
+file { ['/etc/php5/apache2/conf.d/20-yaml.ini', '/etc/php5/cli/conf.d/20-yaml.ini']:
+  ensure => link,
+  target => '/etc/php5/mods-available/yaml.ini',
+  require => Puphpet::Ini['yaml']
+}
+
+php::pecl::module { 'oauth':
+  use_package => yes,
+  ensure      => present,
+  require     => Php::Pear::Config['download_dir']
+}
+
+puphpet::ini { 'oauth':
+  value   => [
+    'extension=oauth.so'
+  ],
+  ini     => '/etc/php5/mods-available/oauth.ini',
+  notify  => Service['apache'],
+  require => [Class['php'], Php::Pecl::Module['oauth']]
+}
+
+file { ['/etc/php5/apache2/conf.d/20-oauth.ini', '/etc/php5/cli/conf.d/20-oauth.ini']:
+  ensure => link,
+  target => '/etc/php5/mods-available/oauth.ini',
+  require => Puphpet::Ini['oauth']
 }
 
 class { 'xdebug':
@@ -141,24 +208,22 @@ class { 'composer':
   require => Package['php5', 'curl'],
 }
 
-puphpet::ini { 'xdebug':
-  value   => [
-    'xdebug.remote_autostart = 0',
-    ';Use remote_connect_back = 0 if accessing a shared box',
-    'xdebug.remote_connect_back = 1',
-    'xdebug.remote_enable = 1',
-    'xdebug.remote_handler = "dbgp"',
-    'xdebug.remote_port = 9000',
-    'xdebug.remote_host = "33.33.33.1"',
-    'xdebug.show_local_vars = 1',
-    'xdebug.profiler_enable = 0',
-    'xdebug.profiler_enable_trigger = 1',
-    'xdebug.max_nesting_level = 1000',
-    'xdebug.profiler_output_dir = /var/www/logs/xdebug/'
-  ],
-  ini     => '/etc/php5/mods-available/zzz_xdebug.ini',
-  notify  => Service['apache'],
-  require => Class['php'],
+exec { "composer-plugin-changelogs":
+  command => "composer global require pyrech/composer-changelogs",
+  path    => ['/usr/bin' , '/bin'],
+  creates => '/home/vagrant/.composer/vendor/pyrech/composer-changelogs',
+  user    => vagrant,
+  environment => 'COMPOSER_HOME=/home/vagrant/.composer',
+  require => Class['Composer']
+}
+
+exec { "composer-plugin-prestissimo":
+  command => "composer global require hirak/prestissimo",
+  path    => ['/usr/bin' , '/bin'],
+  creates => '/home/vagrant/.composer/vendor/hirak/prestissimo',
+  user    => vagrant,
+  environment => 'COMPOSER_HOME=/home/vagrant/.composer',
+  require => Class['Composer']
 }
 
 puphpet::ini { 'custom':
@@ -170,23 +235,30 @@ puphpet::ini { 'custom':
     'upload_max_filesize = "256M"',
     'post_max_size = "256M"',
     'memory_limit = "256M"',
-    'date.timezone = "UTC"'
+    'date.timezone = "UTC"',
+    'xdebug.remote_autostart = 0',
+    'xdebug.remote_connect_back = 1',
+    'xdebug.remote_enable = 1',
+    'xdebug.remote_handler = "dbgp"',
+    'xdebug.remote_port = 9000',
+    'xdebug.remote_host = "33.33.33.1"',
+    'xdebug.show_local_vars = 1',
+    'xdebug.profiler_enable = 0',
+    'xdebug.profiler_enable_trigger = 0',
+    'xdebug.max_nesting_level = 1000',
+    'xdebug.profiler_output_dir = /var/www/',
+    'openssl.cafile = /etc/ssl/certs/ca-certificates.crt',
+    'openssl.capath = /usr/lib/ssl/'
   ],
-  ini     => '/etc/php5/mods-available/zzz_custom.ini',
+  ini     => '/etc/php5/mods-available/custom.ini',
   notify  => Service['apache'],
   require => Class['php'],
 }
 
-exec {'symlink-custom-ini-files-apache':
-    command => 'find /etc/php5/mods-available/ -name "zzz_*" -exec /bin/bash -c \'ln -s {} /etc/php5/apache2/conf.d/`basename $0`\' {} \;',
-    unless  => 'bash -c "test -f /etc/php5/apache2/conf.d/zzz_custom.ini"',
-    require => [Puphpet::Ini['custom'], Puphpet::Ini['yaml'], Puphpet::Ini['xdebug']]
-}
-
-exec {'symlink-custom-ini-files-cli':
-    command => 'find /etc/php5/mods-available/ -name "zzz_*" -exec /bin/bash -c \'ln -s {} /etc/php5/cli/conf.d/`basename $0`\' {} \;',
-    unless  => 'bash -c "test -f etc/php5/cli/conf.d/zzz_custom.ini"',
-    require => [Puphpet::Ini['custom'], Puphpet::Ini['yaml'], Puphpet::Ini['xdebug']]
+file { ['/etc/php5/apache2/conf.d/99-custom.ini', '/etc/php5/cli/conf.d/99-custom.ini']:
+  ensure => link,
+  target => '/etc/php5/mods-available/custom.ini',
+  require => Puphpet::Ini['custom']
 }
 
 class { 'mysql::server':
@@ -209,51 +281,53 @@ apache::vhost { 'phpmyadmin':
   server_name   => 'phpmyadmin',
   serveraliases => 'phpmyadmin.joomla.box',
   docroot       => '/usr/share/phpmyadmin',
-  port          => 80,
+  port          => 8080,
   priority      => '10',
-  require       => Class['phpmyadmin'],
+  template      => 'apache/virtualhost/vhost-no-zray.conf.erb',
+  require       => Class['phpmyadmin']
 }
 
 single_user_rvm::install { 'vagrant':
-    require => Gnupg_key['gpg-rvm-signature']
+  require => Gnupg_key['gpg-rvm-signature']
 }
 single_user_rvm::install_ruby { '2.2':
-    user => vagrant
+  user => vagrant
 }
 
 exec {'set-default-ruby-for-vagrant':
-    user        => vagrant,
-    command     => 'bash -c "source ~/.rvm/scripts/rvm; rvm --default use 2.2"',
-    environment => ['HOME=/home/vagrant'],
-    path        => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
-    require     => Single_user_rvm::Install_ruby['2.2']
+  user        => vagrant,
+  command     => 'bash -c "source ~/.rvm/scripts/rvm; rvm --default use 2.2"',
+  environment => ['HOME=/home/vagrant'],
+  path        => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
+  require     => Single_user_rvm::Install_ruby['2.2']
 }
 
 class {'mailcatcher':
-    require => Exec['set-default-ruby-for-vagrant']
+  require => Exec['set-default-ruby-for-vagrant']
 }
 
 class { 'less': }
 
 class { 'uglifyjs': }
 
-class { 'webgrind': 
+class { 'webgrind':
   require => Package['unzip'],
 }
 
 apache::vhost { 'webgrind':
   server_name   => 'webgrind',
   serveraliases => 'webgrind.joomla.box',
-  docroot       => '/usr/share/webgrind',
-  port          => 80,
+  docroot       => '/usr/share/webgrind-1.2',
+  port          => 8080,
   priority      => '10',
-  require       => Class['webgrind'],
+  template      => 'apache/virtualhost/vhost-no-zray.conf.erb',
+  require       => Class['webgrind']
 }
 
 apache::vhost { 'joomla.box':
   server_admin  => 'webmaster@localhost',
   serveraliases => 'localhost',
-  port          => 80,
+  port          => 8080,
   priority      => '00',
   docroot       => '/var/www',
   directory     => '/var/www',
@@ -263,22 +337,22 @@ apache::vhost { 'joomla.box':
 }
 
 exec { 'disable-default-vhost':
-    command => 'a2dissite 000-default',
-    require => Apache::Vhost['joomla.box']
+  command => 'a2dissite 000-default',
+  require => Apache::Vhost['joomla.box']
 }
 
 file { '/etc/apache2/conf-available/shared_paths.conf':
-    ensure => file,
-    require => Apache::Vhost['joomla.box']
+  ensure => file,
+  require => Apache::Vhost['joomla.box']
 }
 
 exec { 'enable-shared-paths-config':
-    command => 'a2enconf shared_paths',
-    require => File['/etc/apache2/conf-available/shared_paths.conf']
+  command => 'a2enconf shared_paths',
+  require => File['/etc/apache2/conf-available/shared_paths.conf']
 }
 
 exec { 'set-env-for-debugging':
-  command => "echo \"\nSetEnv JOOMLATOOLS_BOX 1\" >> /etc/apache2/apache2.conf",
+  command => "echo \"\nSetEnv JOOMLATOOLS_BOX ${::box_version}\" >> /etc/apache2/apache2.conf",
   unless  => "grep JOOMLATOOLS_BOX /etc/apache2/apache2.conf",
   notify  => Service['apache'],
   require => Apache::Vhost['joomla.box']
@@ -289,34 +363,35 @@ class { 'scripts': }
 class { 'phpmanager': }
 
 exec {'install-capistrano-gem':
-    user    => vagrant,
-    command => 'bash -c "source ~/.rvm/scripts/rvm; gem install capistrano"',
-    environment => ['HOME=/home/vagrant'],
-    timeout => 900,
-    require => Exec['set-default-ruby-for-vagrant']
+  user    => vagrant,
+  command => 'bash -c "source ~/.rvm/scripts/rvm; gem install capistrano"',
+  environment => ['HOME=/home/vagrant'],
+  timeout => 900,
+  require => Exec['set-default-ruby-for-vagrant']
 }
 
 exec {'install-bundler-gem':
-    user    => vagrant,
-    command => 'bash -c "source ~/.rvm/scripts/rvm; gem install bundler"',
-    environment => ['HOME=/home/vagrant'],
-    timeout => 900,
-    require => Exec['set-default-ruby-for-vagrant']
+  user    => vagrant,
+  command => 'bash -c "source ~/.rvm/scripts/rvm; gem install bundler"',
+  environment => ['HOME=/home/vagrant'],
+  timeout => 900,
+  require => Exec['set-default-ruby-for-vagrant']
 }
 
 exec {'install-sass-gem':
-    user    => vagrant,
-    command => 'bash -c "source ~/.rvm/scripts/rvm; gem install sass compass"',
-    environment => ['HOME=/home/vagrant'],
-    timeout => 900,
-    require => Exec['set-default-ruby-for-vagrant']
+  user    => vagrant,
+  command => 'bash -c "source ~/.rvm/scripts/rvm; gem install sass compass"',
+  environment => ['HOME=/home/vagrant'],
+  timeout => 900,
+  require => Exec['set-default-ruby-for-vagrant']
 }
 
 class { 'box':
-    require => [Class['composer'], Class['phpmanager']]
+  require => [Class['composer'], Class['phpmanager']]
 }
 
 class {'wetty': }
+class {'cloudcommander': }
 
 file { '/etc/update-motd.d/999-joomlatools':
   ensure => 'present',
@@ -325,22 +400,40 @@ file { '/etc/update-motd.d/999-joomlatools':
 }
 
 file { ['/etc/update-motd.d/10-help-text', '/etc/update-motd.d/91-release-upgrade', '/etc/update-motd.d/50-landscape-sysinfo', '/etc/update-motd.d/51-cloudguest', '/etc/update-motd.d/90-updates-available', '/etc/update-motd.d/98-cloudguest']:
-    ensure => absent
+  ensure => absent
 }
 
 class { 'pimpmylog':
-    require => [Package['apache'], Package['mysql-server']]
+  require => [Package['apache'], Package['mysql-server']]
 }
 
 class { 'phpmetrics':
-    require => [Class['composer'], Class['scripts']]
+  require => [Class['composer'], Class['scripts']]
 }
 
 package { 'git-ftp':
-    require => Apt::Ppa['ppa:resmo/git-ftp']
+  require => Apt::Ppa['ppa:resmo/git-ftp']
+}
+
+package { 'httpie':
+  ensure => latest
 }
 
 swap_file::files { 'default':
   ensure   => present,
   swapfilesize => '512 MB'
+}
+
+class { 'hhvm':
+  manage_repos => true,
+  pgsql        => false
+}
+
+class {'triggers': }
+
+class { 'varnish': }
+
+class { 'zray':
+  notify  => Service['apache'],
+  require => Class['php']
 }

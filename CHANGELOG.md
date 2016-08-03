@@ -4,12 +4,54 @@ CHANGELOG
 This changelog references the relevant changes (bug and security fixes) done
 in 1.x versions.
 
-To get the diff for a specific change, go to https://github.com/joomlatools/joomla-vagrant/commit/xxx where xxx is the change hash.
-To view the diff between two versions, go to https://github.com/joomlatools/joomla-vagrant/compare/v1.0.0...v1.0.1
+To get the diff for a specific change, go to https://github.com/joomlatools/joomlatools-vagrant/commit/xxx where xxx is the change hash.
+To view the diff between two versions, go to https://github.com/joomlatools/joomlatools-vagrant/compare/v1.0.0...v1.0.1
+
+* 1.4.4 (2016-04-07)
+ * Added - Installed the Composer plugin [hirak/prestissimo](https://github.com/hirak/prestissimo) [#14](https://github.com/joomlatools/joomlatools-vagrant/issues/14)
+ * Fixed - Configure PHP's OpenSSL to find the CA bundles [#22](https://github.com/joomlatools/joomlatools-vagrant/issues/22) 
+ * Fixed - Add `joomla.box` to hosts file [#16](https://github.com/joomlatools/joomlatools-vagrant/issues/16)
+ * Fixed - Fix extra slash in administrator urls on dashboard [#19](https://github.com/joomlatools/joomlatools-vagrant/pull/19)
+ * Improved - Upgraded Z-Ray to latest versions [#21](https://github.com/joomlatools/joomlatools-vagrant/issues/21)
+
+* 1.4.3 (2015-12-01)
+ * Changed - Renamed `joomlatools/joomla-console` to `joomlatools/console`
+
+* 1.4.2 (2015-11-25)
+ * Added - `JOOMLATOOLS_BOX` version environment variable
+ * Added - Install [joomlatools/joomla-console-joomlatools](https://github.com/joomlatools/joomlatools-console-joomlatools) plugin by default
+ * Fixed - Always pass requests to /ZendServer end-point
+ * Fixed - Symlink `/opt/zray` to active Z-Ray installation to fix plugin gallery
+ * Fixed - Ensure that hostname is always set to `joomlatools` using Puppet configuration
+ * Improved - Use a single zray.ini file and zray.conf virtual host
+ * Improved - Disable Z-Ray on tools (dashboard, phpmyadmin, webgrind, pimpmylog)
+ * Improved - Decrease box size
+
+* 1.4.1 (2015-11-11)
+ * Added - Install Z-Ray [Joomla](https://www.yireo.com/software/joomla-extensions/zray) and [Composer](https://github.com/zend-server-extensions/Z-Ray-Composer) plugins
+ * Improved - Automatically enable Xdebug if it's disabled when starting the profiler
+ * Fixed - Make sure dashboard can retrieve Joomla 3.5.0 version out of `JVersion` class
+ * Fixed - Automated installation of `vagrant-triggers` plugin failed on Windows hosts
+
+* 1.4.0 (2015-11-05)
+ * Added - `box php:engine hhvm` command to switch to HHVM
+ * Added - `box xdebug:profiler start|stop` command to turn on Xdebug profiling
+ * Added - [Zend Z-Ray](http://www.zend.com/en/products/z-ray/z-ray-preview) preview
+ * Added - [httpie](https://github.com/jkbrzt/httpie) CLI HTTP Client
+ * Added - [Cloudcommander](http://cloudcmd.io/) web-based file browser
+ * Added - System will automatically look for  [joomlatools/joomla-console](http://developer.joomlatools.com/tools/console.html) updates
+ * Added - Installed Varnish cache in front of Apache
+ * Added - Automatically backup and restore virtual hosts and databases when upgrading the box
+ * Fixed - Upgraded Webgrind to automatically find cachegrind files
+ * Fixed - Consolidate the PHP ini files into a single custom.ini file
+ * Improved - Automatically change directory to /var/www when logging in via `vagrant ssh` or web terminal
+ * Improved - Xdebug is now disabled by default
+ * Improved - Added /terminal, /mailcatcher and /filebrowser aliases
+ * Improved - Added bash autocompletion to the `box` command
 
 * 1.3.1 (2015-09-03)
  * Added - Support for PHP7
- * Added - Support for [joomla-platform](https://github.com/joomlatools/joomla-platform) installations
+ * Added - Support for [joomla-platform](https://github.com/joomlatools/joomlatools-platform) installations
  * Added - Installed git-ftp
  * Added - `box server:restart` command
  * Improved - Use the async option when mounting NFS on Linux
@@ -55,7 +97,7 @@ To view the diff between two versions, go to https://github.com/joomlatools/joom
  * Fixed - Improved README, added login details + precompiled box instructions
 
 * 1.2.0 (2014-03-17)
- * Added - [Joomla console package](https://github.com/joomlatools-console) is now available in the box.
+ * Added - [Joomla console package](https://github.com/joomlatools/joomlatools-console) is now available in the box.
  * Added - phpmanager command to allow installation and management of multiple PHP versions.
  * Added - xdebug command to easily enable/disable PHP Xdebug extension.
  * Added - apc command to easily enable/disable PHP APC extension as well as clear the cache.

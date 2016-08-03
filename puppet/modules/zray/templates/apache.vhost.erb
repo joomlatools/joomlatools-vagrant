@@ -1,0 +1,10 @@
+Alias /ZendServer <%= @path %>/gui/public
+
+RewriteEngine On
+RewriteRule ^/$ /ZendServer/ [R]
+RewriteRule ^/Login$ /ZendServer/Login [R]
+
+<Directory /<%= @path %>/gui/public>
+    Require all granted
+    AllowOverride All
+</Directory>

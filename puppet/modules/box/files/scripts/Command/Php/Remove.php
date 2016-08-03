@@ -11,7 +11,7 @@ class Remove extends Command
     protected function configure()
     {
         $this->setName('php:remove')
-             ->setDescription('Uninstall a PHP version')
+             ->setDescription('Uninstall a custom PHP version')
              ->addArgument(
                 'version',
                 InputArgument::REQUIRED,
@@ -21,6 +21,14 @@ class Remove extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if (\Helper\System::getEngine() === 'hhvm')
+        {
+            $output->writeln('<comment>[notice]</comment> You are currently running the HHVM engine');
+            $output->writeln('<comment>[notice]</comment> Switch back to the Zend engine to manage Zend PHP versions');
+
+            exit();
+        }
+
         $version = $input->getArgument('version');
 
         passthru("phpmanager remove $version");

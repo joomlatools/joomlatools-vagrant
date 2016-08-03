@@ -1,3 +1,4 @@
+echo "cleaning up apt"
 apt-get -y autoremove
 apt-get -y clean
 
@@ -12,3 +13,6 @@ rm /etc/udev/rules.d/70-persistent-net.rules
 mkdir /etc/udev/rules.d/70-persistent-net.rules
 rm -rf /dev/.udev/
 rm /lib/udev/rules.d/75-persistent-net-generator.rules
+
+echo "removing headers"
+rm -rf /usr/src/linux-headers*

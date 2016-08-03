@@ -53,8 +53,8 @@ class phpmanager::install {
   }
 
   exec { 'add-phpmanager-to-path':
-    command => 'echo "export PATH=\$PATH:/home/vagrant/phpmanager" >> /home/vagrant/.profile',
-    unless  => 'grep ":/home/vagrant/phpmanager" /home/vagrant/.profile',
+    command => 'echo "export PATH=\$PATH:/home/vagrant/phpmanager" >> /home/vagrant/.bash_profile',
+    unless  => 'grep ":/home/vagrant/phpmanager" /home/vagrant/.bash_profile',
     require => Exec['make-phpmanager-executable']
   }
 
@@ -87,19 +87,11 @@ class phpmanager::buildtools {
 
   puppi::netinstall { 'flex-2.5.4a':
     path => ["${phpmanager::installation_path}/bison-2.2/bin:/bin:/sbin:/usr/bin:/usr/sbin"],
-    url => 'http://fossies.org/unix/misc/old/flex-2.5.4a.tar.gz',
+    url => 'ftp://ftp.gnome.org/mirror/temp/sf2015/f/fl/flex/flex/2.5.4.a/flex-2.5.4a.tar.gz',
     extracted_dir => 'flex-2.5.4',
     destination_dir => $phpmanager::source_path,
     postextract_command => "${phpmanager::source_path}/flex-2.5.4/configure --prefix=${phpmanager::installation_path}/flex-2.5.4 && make && sudo make install",
     require => Puppi::Netinstall['bison-2.2'],
-  }
-
-  puppi::netinstall { 'mysql-5.1.73':
-    url => 'https://downloads.skysql.com/archives/mysql-5.1/mysql-5.1.73-linux-x86_64-glibc23.tar.gz',
-    retrieve_args => '--no-check-certificate',
-    extracted_dir => 'mysql-5.1.73-linux-x86_64-glibc23',
-    destination_dir => $phpmanager::installation_path,
-    postextract_command => "ln -s ${phpmanager::installation_path}/mysql-5.1.73-linux-x86_64-glibc23/lib ${phpmanager::installation_path}/mysql-5.1.73-linux-x86_64-glibc23/lib/x86_64-linux-gnu"
   }
 
   puppi::netinstall { 'openssl-0.9.7g':
@@ -107,7 +99,25 @@ class phpmanager::buildtools {
     retrieve_args => '--no-check-certificate',
     extracted_dir => 'openssl-0.9.7g',
     destination_dir => $phpmanager::source_path,
-    postextract_command => "${phpmanager::source_path}/openssl-0.9.7g/config --prefix=${phpmanager::installation_path}/openssl-0.9.7g -fPIC no-gost && make && sudo make install && ln -s /opt/openssl-0.9.7g/lib /opt/openssl-0.9.7g/lib/x86_64-linux-gnu",
+    postextract_command => "${phpmanager::source_path}/openssl-0.9.7g/config --prefix=${phpmanager::installation_path}/openssl-0.9.7g -fPIC no-gost && make && make install && ln -s /opt/openssl-0.9.7g/lib /opt/openssl-0.9.7g/lib/x86_64-linux-gnu",
+    require => Package['build-essential']
+  }
+
+  puppi::netinstall { 'openssl-1.0.1f':
+    url => 'ftp://ftp.openssl.org/source/old/1.0.1/openssl-1.0.1f.tar.gz',
+    retrieve_args => '--no-check-certificate',
+    extracted_dir => 'openssl-1.0.1f',
+    destination_dir => $phpmanager::source_path,
+    postextract_command => "${phpmanager::source_path}/openssl-1.0.1f/config --prefix=${phpmanager::installation_path}/openssl-1.0.1f -fPIC no-gost && make && make depend && make install_sw && ln -s /opt/openssl-1.0.1f/lib /opt/openssl-1.0.1f/lib/x86_64-linux-gnu",
+    require => Package['build-essential']
+  }
+
+  puppi::netinstall { 'openssl-1.0.2g':
+    url => 'https://www.openssl.org/source/openssl-1.0.2g.tar.gz',
+    retrieve_args => '--no-check-certificate',
+    extracted_dir => 'openssl-1.0.2g',
+    destination_dir => $phpmanager::source_path,
+    postextract_command => "${phpmanager::source_path}/openssl-1.0.2g/config --prefix=${phpmanager::installation_path}/openssl-1.0.2g -fPIC no-gost && make && make depend && make install_sw && ln -s /opt/openssl-1.0.2g/lib /opt/openssl-1.0.2g/lib/x86_64-linux-gnu",
     require => Package['build-essential']
   }
 
@@ -128,7 +138,7 @@ class phpmanager::buildtools {
   }
 
   puppi::netinstall { 'curl-7.15.3':
-    url => 'http://ftp.sunet.se/pub/www/utilities/curl/curl-7.15.3.tar.gz',
+    url => 'ftp://ftp.belnet.be/mirror/pub/ftp.sunet.se/pub/www/utilities/curl/curl-7.15.3.tar.gz',
     extracted_dir => 'curl-7.15.3',
     destination_dir => $phpmanager::source_path,
     require => File["$phpmanager::source_path"]

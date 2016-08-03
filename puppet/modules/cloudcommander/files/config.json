@@ -1,0 +1,19 @@
+{
+  "auth"              : false,
+  "editor"            : "edward",
+  "diff"              : true,
+  "zip"               : true,
+  "notifications"     : false,
+  "localStorage"      : true,
+  "buffer"            : true,
+  "dirStorage"        : false,
+  "online"            : false,
+  "cache"             : true,
+  "showKeysPanel"     : true,
+  "port"              : 8001,
+  "ip"                : null,
+  "root"              : "/",
+  "prefix"            : "",
+  "progress"          : true,
+  "htmlDialogs"       : true
+}

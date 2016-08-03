@@ -7,7 +7,7 @@ class box {
   }
 
   exec { 'fetch-box-dependencies':
-    command => 'composer require symfony/console:2.4.* --no-interaction',
+    command => 'composer require symfony/console:2.7.* stecman/symfony-console-completion --no-interaction',
     cwd     => '/home/vagrant/box',
     unless  => '[ -d /home/vagrant/box/vendor/symfony ]',
     path    => '/usr/bin',
@@ -22,8 +22,15 @@ class box {
   }
 
   exec { 'add-box-to-path':
-    command => 'echo "export PATH=\$PATH:/home/vagrant/box" >> /home/vagrant/.profile',
-    unless  => 'grep ":/home/vagrant/box" /home/vagrant/.profile',
+    command => 'echo "export PATH=\$PATH:/home/vagrant/box" >> /home/vagrant/.bash_profile',
+    unless  => 'grep ":/home/vagrant/box" /home/vagrant/.bash_profile',
     require => Exec['make-box-executable']
   }
+
+  file_line { 'register-box-autocompletion':
+    path    => '/home/vagrant/.bash_profile',
+    line    => 'source <(/home/vagrant/box/box _completion --generate-hook --program=box)',
+    require => File['/home/vagrant/.bash_profile']
+  }
+
 }
