@@ -24,7 +24,7 @@
 </div>
 <div class="container">
     <div class="sidebar">
-        <ul class="nav nav-pills nav-stacked">
+        <ul>
             <?php foreach ($navigation as $key => $item) : ?>
                 <?php if ($item['type'] == 'separator') : ?>
                     <li role="presentation" class="dropdown-header"><?php echo $item['title'] ?></li>

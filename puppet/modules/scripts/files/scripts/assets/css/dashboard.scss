@@ -24,18 +24,70 @@ iframe {
 .container {
   display: flex;
   flex: 1 1 auto;
-  flex-direction: row;
+  flex-direction: column;
+
+  @media (min-width: 600px) {
+    flex-direction: row;
+  }
+}
+
+/*
+ * Sidebar
+ */
+.sidebar {
+  display: flex;
+
+  ul {
+    @extend .nav;
+    @extend .nav-pills;
+
+    display: flex;
+    flex-grow: 1;
+
+    li + li {
+      margin-left: 0;
+    }
+
+    li a {
+      white-space: nowrap;
+    }
+
+    @media (max-width: 599px) {
+      overflow: scroll;
+      border-bottom: 1px solid #eee;
+    }
+
+    @media (min-width: 600px) {
+      flex-direction: column;
+    }
+  }
+
+  .dropdown-header {
+    display: none;
+  }
+
+  @media (min-width: 600px) {
+    width: 20%;
+    min-width: 150px;
+    max-width: 225px;
+
+    overflow-y: scroll;
+
+    .dropdown-header {
+      display: block;
+      margin-top: 20px;
+      padding-left: 15px;
+    }
+  }
 }
 
 .main {
   display: flex;
   flex-grow: 1;
-  overflow: scroll;
 
   .tab-content {
     display: flex;
     flex-grow: 1;
-    min-width: 600px;
   }
 
   .tab-pane {
@@ -59,34 +111,6 @@ iframe {
   height: 25px;
   margin-right: 10px;
   margin-top: -4px;
-}
-
-/*
- * Sidebar
- */
-.sidebar {
-  width: 20%;
-  min-width: 150px;
-  max-width: 225px;
-
-  overflow-y: scroll;
-
-  .dropdown-header {
-    margin-top: 20px;
-    padding-left: 15px;
-  }
-}
-
-/* Sidebar navigation */
-.nav-sidebar > li > a {
-  padding-right: 20px;
-  padding-left: 20px;
-}
-.nav-sidebar > .active > a,
-.nav-sidebar > .active > a:hover,
-.nav-sidebar > .active > a:focus {
-  color: #fff;
-  background-color: #428bca;
 }
 
 /*

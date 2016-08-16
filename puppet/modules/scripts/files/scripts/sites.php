@@ -84,10 +84,7 @@ foreach ($dir as $fileinfo)
         <small>(<?php echo $site->type ?> <?php echo $site->version; ?>)</small>
       </td>
       <td>
-        <div class="btn-group">
-          <a class="btn btn-primary" href="/<?php echo $site->docroot; ?>" target="_blank">Site</a>
-          <a class="btn btn-primary" href="/<?php echo rtrim($site->docroot, "/") . '/administrator/'; ?>" target="_blank">Administrator</a>
-        </div>
+        <a class="btn btn-primary" href="/<?php echo rtrim($site->docroot, "/") . '/administrator/'; ?>" target="_blank">Administrator</a>
       </td>
     </tr>
   <?php endforeach; ?>
