@@ -4538,7 +4538,7 @@ iframe {
       white-space: nowrap; }
     @media (max-width: 1023px) {
       .sidebar ul {
-        overflow: scroll;
+        overflow-x: scroll;
         border-bottom: 1px solid #eee; } }
     @media (min-width: 1024px) {
       .sidebar ul {

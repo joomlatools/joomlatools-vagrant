@@ -55,7 +55,7 @@ iframe {
     }
 
     @media (max-width: $breakpoint - 1px) {
-      overflow: scroll;
+      overflow-x: scroll;
       border-bottom: 1px solid #eee;
     }
 
