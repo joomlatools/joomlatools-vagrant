@@ -4532,6 +4532,9 @@ iframe {
     display: flex;
     -ms-flex-positive: 1;
         flex-grow: 1; }
+    .sidebar ul li {
+      -ms-flex-negative: 0;
+          flex-shrink: 0; }
     .sidebar ul li + li {
       margin-left: 0; }
     .sidebar ul li a {

@@ -46,6 +46,10 @@ iframe {
     display: flex;
     flex-grow: 1;
 
+    li {
+      flex-shrink: 0;
+    }
+
     li + li {
       margin-left: 0;
     }
