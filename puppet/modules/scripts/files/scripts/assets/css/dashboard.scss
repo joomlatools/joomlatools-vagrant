@@ -1,3 +1,5 @@
+$breakpoint: 1024px;
+
 // Core variables
 @import "bootstrap";
 
@@ -26,7 +28,7 @@ iframe {
   flex: 1 1 auto;
   flex-direction: column;
 
-  @media (min-width: 600px) {
+  @media (min-width: $breakpoint) {
     flex-direction: row;
   }
 }
@@ -52,12 +54,12 @@ iframe {
       white-space: nowrap;
     }
 
-    @media (max-width: 599px) {
+    @media (max-width: $breakpoint - 1px) {
       overflow: scroll;
       border-bottom: 1px solid #eee;
     }
 
-    @media (min-width: 600px) {
+    @media (min-width: $breakpoint) {
       flex-direction: column;
     }
   }
@@ -66,7 +68,7 @@ iframe {
     display: none;
   }
 
-  @media (min-width: 600px) {
+  @media (min-width: $breakpoint) {
     width: 20%;
     min-width: 150px;
     max-width: 225px;

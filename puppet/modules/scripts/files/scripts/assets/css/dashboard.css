@@ -4516,7 +4516,7 @@ iframe {
       flex: 1 1 auto;
   -ms-flex-direction: column;
       flex-direction: column; }
-  @media (min-width: 600px) {
+  @media (min-width: 1024px) {
     .container {
       -ms-flex-direction: row;
           flex-direction: row; } }
@@ -4536,17 +4536,17 @@ iframe {
       margin-left: 0; }
     .sidebar ul li a {
       white-space: nowrap; }
-    @media (max-width: 599px) {
+    @media (max-width: 1023px) {
       .sidebar ul {
         overflow: scroll;
         border-bottom: 1px solid #eee; } }
-    @media (min-width: 600px) {
+    @media (min-width: 1024px) {
       .sidebar ul {
         -ms-flex-direction: column;
             flex-direction: column; } }
   .sidebar .dropdown-header {
     display: none; }
-  @media (min-width: 600px) {
+  @media (min-width: 1024px) {
     .sidebar {
       width: 20%;
       min-width: 150px;
