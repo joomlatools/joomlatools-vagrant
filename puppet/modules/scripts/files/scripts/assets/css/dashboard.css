@@ -4495,7 +4495,8 @@ button.close {
  */
 html, body {
   height: 100%;
-  width: 100%; }
+  width: 100%;
+  overflow: hidden; }
 
 body {
   display: -ms-flexbox;
@@ -4520,12 +4521,14 @@ iframe {
   display: -ms-flexbox;
   display: flex;
   -ms-flex-positive: 1;
-      flex-grow: 1; }
+      flex-grow: 1;
+  overflow: scroll; }
   .main .tab-content {
     display: -ms-flexbox;
     display: flex;
     -ms-flex-positive: 1;
-        flex-grow: 1; }
+        flex-grow: 1;
+    min-width: 600px; }
   .main .tab-pane {
     -ms-flex-positive: 1;
         flex-grow: 1; }

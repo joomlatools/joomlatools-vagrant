@@ -62,7 +62,7 @@
 
 <div class="footer">
     <ul class="nav">
-        <li><a href="http://developer.joomlatools.com/tools/vagrant/introduction.html" target="_blank">Documentation</a></li>
+        <li><a href="https://www.joomlatools.com/developer/tools/vagrant/" target="_blank">Documentation</a></li>
         <li><a href="https://github.com/joomlatools/joomlatools-vagrant" target="_blank">Contribute on GitHub</a></li>
     </ul>
 </div>

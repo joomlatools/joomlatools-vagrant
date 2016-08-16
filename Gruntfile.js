@@ -46,7 +46,7 @@ module.exports = function(grunt) {
                     src : 'puppet/modules/scripts/files/scripts/assets/css/*.css'
                 },
                 options: {
-                    proxy: "joomla.box/joomlatools-vagrant/puppet/modules/scripts/files/scripts/dashboard/",
+                    proxy: "joomla.box/joomlatools-vagrant/puppet/modules/scripts/files/scripts/",
                     port: 5666, // JOOM on phone keypad
                     watchTask: true, // < VERY important
                     notify: false,

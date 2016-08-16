@@ -68,31 +68,28 @@ foreach ($dir as $fileinfo)
 }
 ?>
 
-<div class="table-responsive">
-  <table class="table table-striped table-dashboard">
-    <thead>
-      <tr>
-        <th>Site</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-    <?php foreach ($sites as $site) : ?>
-      <tr>
-        <td>
-          <a target="_blank" href="<?php echo '/'.rtrim($site->docroot, "/").'/'; ?>">
-            <?php echo $site->name ?></a>
-          <small>(<?php echo $site->type ?> <?php echo $site->version; ?>)</small>
-        </td>
-        <td>
-
-          <div class="btn-group">
-            <a class="btn btn-primary" href="/<?php echo $site->docroot; ?>" target="_blank">Site</a>
-            <a class="btn btn-primary" href="/<?php echo rtrim($site->docroot, "/") . '/administrator/'; ?>" target="_blank">Administrator</a>
-          </div>
-        </td>
-      </tr>
-    <?php endforeach; ?>
-    </tbody>
-  </table>
-</div>
+<table class="table table-striped table-dashboard">
+  <thead>
+    <tr>
+      <th>Site</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+  <?php foreach ($sites as $site) : ?>
+    <tr>
+      <td>
+        <a target="_blank" href="<?php echo '/'.rtrim($site->docroot, "/").'/'; ?>">
+          <?php echo $site->name ?></a>
+        <small>(<?php echo $site->type ?> <?php echo $site->version; ?>)</small>
+      </td>
+      <td>
+        <div class="btn-group">
+          <a class="btn btn-primary" href="/<?php echo $site->docroot; ?>" target="_blank">Site</a>
+          <a class="btn btn-primary" href="/<?php echo rtrim($site->docroot, "/") . '/administrator/'; ?>" target="_blank">Administrator</a>
+        </div>
+      </td>
+    </tr>
+  <?php endforeach; ?>
+  </tbody>
+</table>

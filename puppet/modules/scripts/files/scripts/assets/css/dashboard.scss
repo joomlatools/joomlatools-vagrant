@@ -7,6 +7,7 @@
 html, body {
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 
 body {
@@ -29,10 +30,12 @@ iframe {
 .main {
   display: flex;
   flex-grow: 1;
+  overflow: scroll;
 
   .tab-content {
     display: flex;
     flex-grow: 1;
+    min-width: 600px;
   }
 
   .tab-pane {

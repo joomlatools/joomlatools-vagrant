@@ -1,13 +1,13 @@
 <?php
 $navigation = array();
 
-$navigation['system']['title'] = 'System';
-$navigation['system']['type'] = 'separator';
-
 $navigation['dashboard']['title'] = 'Sites';
 $navigation['dashboard']['source'] = 'sites.php';
 $navigation['dashboard']['type'] = 'include';
 $navigation['dashboard']['status'] = 'active';
+
+$navigation['system']['title'] = 'System';
+$navigation['system']['type'] = 'separator';
 
 $navigation['phpinfo']['title'] = 'PHP Info';
 $navigation['phpinfo']['source'] = '/phpinfo';
