@@ -145,6 +145,12 @@ packer push packer.json
 
 You can follow-up the build progress on the [Builds](https://atlas.hashicorp.com/builds) page. Once it's finished, the new version will be automatically available on the [your boxes](https://atlas.hashicorp.com/vagrant) section. Add a changelog and release it to the public.
 
+Run ServerSpec tests
+--------------------
+
+1. Install `serverspec` with `bundle install`
+2. Run the tests: `rake spec`
+
 Reporting issues
 ----------------
 
