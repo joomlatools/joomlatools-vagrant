@@ -61,3 +61,14 @@ describe 'PHP config parameters' do
       its(:value) { should eq '33.33.33.1' }
     end
 end
+
+# Pecl extensions
+describe command('/usr/bin/pecl list') do
+  its(:stdout) { should match /oauth/ }
+  its(:stdout) { should match /yaml/ }
+end
+
+describe command('/usr/bin/php -i') do
+  its(:stdout) { should match /OAuth/ }
+  its(:stdout) { should match /LibYAML/ }
+end

@@ -173,6 +173,7 @@ puphpet::ini { 'oauth':
   ],
   ini     => '/etc/php5/mods-available/oauth.ini',
   notify  => Service['apache'],
+  version => '1.2.3',
   require => [Class['php'], Php::Pecl::Module['oauth']]
 }
 
