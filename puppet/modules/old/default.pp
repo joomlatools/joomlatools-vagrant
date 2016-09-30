@@ -334,7 +334,7 @@ class { 'phpmanager': }
 
 exec {'install-capistrano-gem':
   user    => vagrant,
-  command => 'bash -c "source ~/.rvm/scripts/rvm; gem install capistrano"',
+  command => 'bash -c "source ~/.rvm/scripts/rvm; gem install capistrano --version="',
   environment => ['HOME=/home/vagrant'],
   timeout => 900,
   require => Exec['set-default-ruby-for-vagrant']

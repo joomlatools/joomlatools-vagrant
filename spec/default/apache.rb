@@ -13,4 +13,18 @@ describe '## Apache' do
     describe port(8080) do
       it { should be_listening }
     end
+
+    describe file('/etc/apache2/conf-available/fqdn.conf') do
+      it { should exist }
+      its(:content) { should match /ServerName joomlatools/ }
+    end
+
+    describe file('/etc/apache2/apache2.conf') do
+      it { should exist }
+      its(:content) { should match /SetEnv JOOMLATOOLS_BOX \d\.\d\.\d/ }
+    end
+
+    describe command('a2dissite 000-default') do
+      its(:stdout) { should match /Site 000-default already disabled/ }
+    end
 end
