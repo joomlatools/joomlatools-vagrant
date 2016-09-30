@@ -1,14 +1,16 @@
 require 'spec_helper'
 
-describe package('varnish'), :if => os[:family] == 'ubuntu' do
-  it { should be_installed }
-end
+describe '## Varnish' do
+    describe package('varnish'), :if => os[:family] == 'ubuntu' do
+      it { should be_installed }
+    end
 
-describe service('varnish'), :if => os[:family] == 'ubuntu' do
-  it { should be_enabled }
-  it { should be_running }
-end
+    describe service('varnish'), :if => os[:family] == 'ubuntu' do
+      it { should be_enabled }
+      it { should be_running }
+    end
 
-describe port(80) do
-  it { should be_listening }
+    describe port(80) do
+      it { should be_listening }
+    end
 end
