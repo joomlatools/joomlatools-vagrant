@@ -33,7 +33,9 @@ if (is_readable('/etc/phpmyadmin/config-db.php')) {
 /* Configure according to dbconfig-common if enabled */
 if (!empty($dbname)) {
     /* Authentication type */
-    $cfg['Servers'][$i]['auth_type'] = 'cookie';
+    $cfg['Servers'][$i]['auth_type'] = 'config';
+    $cfg['Servers'][$i]['user'] = 'root';
+    $cfg['Servers'][$i]['password'] = 'root';
     /* Server parameters */
     if (empty($dbserver)) $dbserver = 'localhost';
     $cfg['Servers'][$i]['host'] = $dbserver;
@@ -70,7 +72,9 @@ if (!empty($dbname)) {
 $cfg['Servers'][$i]['AllowNoPassword'] = false;
 
 /* Authentication type */
-//$cfg['Servers'][$i]['auth_type'] = 'cookie';
+$cfg['Servers'][$i]['auth_type'] = 'config';
+$cfg['Servers'][$i]['user'] = 'root';
+$cfg['Servers'][$i]['password'] = 'root';
 /* Server parameters */
 //$cfg['Servers'][$i]['host'] = 'localhost';
 //$cfg['Servers'][$i]['connect_type'] = 'tcp';
@@ -106,7 +110,10 @@ $cfg['SaveDir'] = '';
 
 $cfg['Servers'][$i]['extension'] = 'mysqli';
 
-/* @TODO hide all warnings for the dev box*/
+/* @TODO hide all warnings for the dev box */
 $cfg['PmaNoRelation_DisableWarning'] = true;
 $cfg['McryptDisableWarning'] = true;
 $cfg['blowfish_secret'] = 'sdf09sdf09ssfdsewqjl23jk243089sdioshkldehki';
+
+/* Allow frames for joomla.box dashboard */
+$cfg['AllowThirdPartyFraming'] = true;

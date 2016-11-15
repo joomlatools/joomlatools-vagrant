@@ -56,4 +56,3 @@ $navigation['webgrind']['title'] = 'Webgrind';
 $navigation['webgrind']['source'] = 'http://webgrind.joomla.box';
 $navigation['webgrind']['type'] = 'iframe';
 $navigation['webgrind']['status'] = extension_loaded('xdebug') ? 'active' : 'disabled';
-?>
