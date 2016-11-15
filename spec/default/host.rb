@@ -18,7 +18,13 @@ describe '## System' do
         its(:stdout) { should match /\d\.\d\.\d$/ }
     end
 
-    describe command('/sbin/swapon -s') do
-        its(:stdout) { should match /\/mnt\/swap\.1\s+file\s+548860/ }
+    describe fstab do
+      it do
+         should have_entry(
+            :device => '/mnt/swap.1',
+            :mount_point => '/mnt/swap.1',
+            :type => 'swap'
+         )
+       end
     end
 end

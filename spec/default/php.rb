@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'type/multi_file'
 
 describe '## PHP' do
 
@@ -61,6 +62,20 @@ describe '## PHP' do
         describe command('/usr/bin/composer --version') do
           its(:exit_status) { should eq 0 }
           its(:stdout) { should match /Composer version/ }
+        end
+
+        apc_dashboard_files = ['/home/vagrant/scripts/apc-dashboard.php', '/home/vagrant/scripts/apcu.php', '/home/vagrant/scripts/apc.php']
+        describe multi_file(apc_dashboard_files) do
+          its(:content) { should match /apc/ }
+        end
+
+        describe file('/home/vagrant/scripts/apc-dashboard.php') do
+           it { should exist }
+        end
+
+        describe file('/etc/apache2/sites-available/00-joomla.box.conf') do
+          its(:content) { should match /Alias \/apc \/home\/vagrant\/scripts\/apc-dashboard.php/ }
+          its(:content) { should match /Alias \/phpinfo \/home\/vagrant\/scripts\/phpinfo.php/ }
         end
     end
 
