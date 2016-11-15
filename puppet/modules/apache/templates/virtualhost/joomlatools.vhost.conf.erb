@@ -27,17 +27,15 @@
     Alias /apc /home/vagrant/scripts/apc-dashboard.php
     Alias /phpinfo /home/vagrant/scripts/phpinfo.php
 
-    Alias /dashboard /home/vagrant/scripts/dashboard
+    Alias /index.php /home/vagrant/scripts/index.php
+    Alias /assets /home/vagrant/scripts/assets
+
     Alias /pimpmylog /usr/share/pimpmylog/vendor/potsky/pimp-my-log
     Alias /varnish-enabled /home/vagrant/scripts/varnish-enabled
 
     Redirect permanent /terminal http://joomla.box:3000
     Redirect permanent /mailcatcher http://joomla.box:1080
     Redirect permanent /filebrowser http://joomla.box:8001/fs/var/www
-
-    RewriteEngine on
-    RewriteCond %{REQUEST_URI} ^/$
-    RewriteRule (.*) /dashboard/ [R=301]
 
     <Directory /home/vagrant/scripts>
             Require all granted
@@ -105,14 +103,11 @@
         ErrorLog  <%= scope.lookupvar('apache::log_dir') %>/<%= @name %>-error_log
         CustomLog <%= scope.lookupvar('apache::log_dir') %>/<%= @name %>-access_log common
 
+        Alias /index.php /home/vagrant/scripts/index.php
+        Alias /assets /home/vagrant/scripts/assets
+
         Alias /apc /home/vagrant/scripts/apc-dashboard.php
         Alias /phpinfo /home/vagrant/scripts/phpinfo.php
-
-        Alias /dashboard /home/vagrant/scripts/dashboard
-
-        RewriteEngine on
-        RewriteCond %{REQUEST_URI} ^/$
-        RewriteRule (.*) /dashboard/ [R=301]
 
         <Directory /home/vagrant/scripts>
                 Require all granted
