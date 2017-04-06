@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'type/multi_file'
 
 describe '## PHP' do
 
@@ -64,9 +63,10 @@ describe '## PHP' do
           its(:stdout) { should match /Composer version/ }
         end
 
-        apc_dashboard_files = ['/home/vagrant/scripts/apc-dashboard.php', '/home/vagrant/scripts/apcu.php', '/home/vagrant/scripts/apc.php']
-        describe multi_file(apc_dashboard_files) do
-          its(:content) { should match /apc/ }
+        ['/home/vagrant/scripts/apc-dashboard.php', '/home/vagrant/scripts/apcu.php', '/home/vagrant/scripts/apc.php'].each do |path|
+            describe file(path) do
+                its(:content) { should match /apc/ }
+            end
         end
 
         describe file('/home/vagrant/scripts/apc-dashboard.php') do

@@ -2,7 +2,17 @@
 require 'spec_helper'
 
 describe '## Command Line Tools' do
+    describe command('id') do
+       let(:disable_sudo) { true }
+       its(:stdout) { should match /vagrant/ }
+    end
+
+    describe user('vagrant') do
+      it { should have_login_shell '/bin/bash' }
+    end
+
     describe command('phpmetrics -V') do
+      let(:sudo_options) { '-u vagrant -i' } # Simulate a login as the user, so that the PATH variable is loaded
       its(:exit_status) { should eq 0 }
       its(:stdout) { should match'PhpMetrics, by Jean' }
     end

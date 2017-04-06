@@ -14,10 +14,6 @@ describe '## System' do
         its(:stdout) { should eq "joomlatools\n" }
     end
 
-    describe command('echo $JOOMLATOOLS_BOX') do
-        its(:stdout) { should match /\d\.\d\.\d$/ }
-    end
-
     describe fstab do
       it do
          should have_entry(
