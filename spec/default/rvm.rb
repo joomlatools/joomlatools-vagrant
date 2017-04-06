@@ -5,6 +5,8 @@ rvm_init_script = File.join('', 'home', 'vagrant', '.rvm', 'scripts', 'rvm' )
 
 describe '## RVM and Ruby' do
 
+    let(:sudo_options) { '-u vagrant -i' }
+
     describe file( rvm_init_script ) do
       it { should be_file }
       it { should be_owned_by 'vagrant' }
@@ -14,17 +16,14 @@ describe '## RVM and Ruby' do
     end
 
     describe command("rvm version") do
-      let(:sudo_options) { '-u vagrant -i' }
       its(:stdout) { should match /^rvm\s+[\d.-_]+/ }
     end
 
     describe command("rvm list strings") do
-      let(:sudo_options) { '-u vagrant -i' }
       its(:stdout) { should contain( rvm_default_ruby ) }
     end
 
     describe command("ruby --version") do
-      let(:sudo_options) { '-u vagrant -i' }
       its(:stdout) { should match rvm_default_ruby.split('-')[-1].to_s }
     end
 

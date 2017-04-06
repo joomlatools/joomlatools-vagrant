@@ -151,6 +151,8 @@ Run ServerSpec tests
 1. Install `serverspec` with `bundle install`
 2. Run the tests: `rake spec`
 
+Note: to run _on_ the box, run `BACKEND=exec rake spec`
+
 Reporting issues
 ----------------
 

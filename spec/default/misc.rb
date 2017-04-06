@@ -41,4 +41,27 @@ describe '## Miscellaneous' do
         end
      end
 
+     describe '### PimpMyLog' do
+        describe file('/etc/apache2/sites-available/00-joomla.box.conf') do
+          its(:content) { should match /Alias \/pimpmylog \/usr\/share\/pimpmylog\/vendor\/potsky\/pimp-my-log/ }
+        end
+
+        describe file("/usr/share/pimpmylog/vendor/potsky/pimp-my-log/index.php") do
+            it { should exist }
+            its(:content) { should match /pimpmylog/ }
+        end
+
+        ['apache2', 'mysql', 'syslog'].each do |conf|
+            describe file("/usr/share/pimpmylog/config.user.d/#{conf}.json") do
+                it { should exist }
+            end
+        end
+
+        ['/var/log/syslog'].each do |log|
+            describe file(log) do
+              it { should be_mode 644 }
+            end
+        end
+     end
+
 end

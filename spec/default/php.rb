@@ -65,18 +65,27 @@ describe '## PHP' do
 
         ['/home/vagrant/scripts/apc-dashboard.php', '/home/vagrant/scripts/apcu.php', '/home/vagrant/scripts/apc.php'].each do |path|
             describe file(path) do
+                it { should exist }
                 its(:content) { should match /apc/ }
             end
         end
 
-        describe file('/home/vagrant/scripts/apc-dashboard.php') do
-           it { should exist }
+        describe file('/usr/share/webgrind-1.2/config.php') do
+            it { should exist }
+            its(:content) { should match /Webgrind_Config/ }
+        end
+
+        describe file('/etc/apache2/sites-available/10-webgrind.conf') do
+          it { should exist }
+          its(:content) { should match /ServerAlias webgrind.joomla.box/ }
+          its(:content) { should match /DocumentRoot \/usr\/share\/webgrind-1.2/ }
         end
 
         describe file('/etc/apache2/sites-available/00-joomla.box.conf') do
           its(:content) { should match /Alias \/apc \/home\/vagrant\/scripts\/apc-dashboard.php/ }
           its(:content) { should match /Alias \/phpinfo \/home\/vagrant\/scripts\/phpinfo.php/ }
         end
+
     end
 
     describe '### PECL' do

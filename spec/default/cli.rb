@@ -2,8 +2,9 @@
 require 'spec_helper'
 
 describe '## Command Line Tools' do
+    let(:sudo_options) { '-u vagrant -i' } # Simulate a login as the user, so that the PATH variable is loaded
+
     describe command('id') do
-       let(:disable_sudo) { true }
        its(:stdout) { should match /vagrant/ }
     end
 
@@ -12,7 +13,6 @@ describe '## Command Line Tools' do
     end
 
     describe command('phpmetrics -V') do
-      let(:sudo_options) { '-u vagrant -i' } # Simulate a login as the user, so that the PATH variable is loaded
       its(:exit_status) { should eq 0 }
       its(:stdout) { should match'PhpMetrics, by Jean' }
     end
@@ -31,6 +31,10 @@ describe '## Command Line Tools' do
        its(:stdout) { should match /sass-\d+\.\d+\.\d+/ }
        its(:stdout) { should match /compass-\d+\.\d+\.\d+/ }
        its(:stdout) { should match /bundler-\d+\.\d+\.\d+/ }
+    end
+
+    describe command('sass -v') do
+      its(:stdout) { should match /Sass \d\.\d+\.\d+/ }
     end
 
     describe package('git') do

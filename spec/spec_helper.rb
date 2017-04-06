@@ -34,7 +34,7 @@ if backend.equal? :ssh
     set :ssh_options, options
 
     # Disable sudo
-    set :disable_sudo, false
+    # set :disable_sudo, false
 
     # Set environment variables
     # set :env, :LANG => 'C', :LC_MESSAGES => 'C'
