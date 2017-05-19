@@ -4,7 +4,7 @@ if (file_exists('/home/vagrant/scripts/updater/UPDATE_AVAILABLE')) {
     exit;
 }
 
-exec("composer show joomlatools/joomla-console 2>&1", $result, $code);
+exec("composer show --all joomlatools/joomla-console 2>&1", $result, $code);
 
 if ($code === 1) {
     exit(1); // Failed to fetch info from packagist
