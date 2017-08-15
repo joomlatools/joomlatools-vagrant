@@ -66,15 +66,20 @@ For more details refer to our [FAQ](https://www.joomlatools.com/developer/tools/
 Sharing access to the box
 -------------------------
 
-One of the great features of Vagrant is [Vagrant Share](https://docs.vagrantup.com/v2/share/index.html). Please note that Vagrant Share requires an account with [HashiCorp's Atlas](https://atlas.hashicorp.com/).
+One of the great features of Vagrant is [Vagrant Share](https://docs.vagrantup.com/v2/share/index.html). Note that Vagrant Share requires [ngrok](https://ngrok.com/) to work. We recommend you follow these set up steps first:
 
-To share access, run this command and follow the instructions:
+1. Upgrade Vagrant to the latest version.
+1. Create your (free) [account](https://dashboard.ngrok.com/user/signup) on ngrok.
+1. [Download](https://ngrok.com/download) and install ngrok.
+1. Set up the authentication token on your machine as described in the [ngrok documentation](https://ngrok.com/docs/2#authtoken).
+
+Now you're ready to start sharing access. Run this command and share the resulting Ngrok HTTP URL:
 
 ```
 vagrant share --http 80
 ```
 
-For more options please refer to the [Vagrant docs](https://docs.vagrantup.com/v2/share/index.html).
+For more options and background please refer to the [Vagrant docs](https://docs.vagrantup.com/v2/share/index.html).
 
 For hacking on the box
 ----------------------
