@@ -14,6 +14,24 @@ class Ini extends Command
     {
         $this->setName('php:ini')
              ->setDescription('Get or set PHP config directive for the currently active PHP version')
+             ->setHelp(<<<EOF
+To retrieve a value from the currently installed PHP version, you can use the `box php:ini <directive>` command. For example, to get the current `mysql.default_socket` value:
+
+    <info>box php:ini mysql.default_socket</info>
+
+To change this value into something else, append the new value:
+
+    <info>box php:ini mysql.default_socket /path/to/new/socket</info>
+
+The script puts these directives into an additional config file that overrides the default values. To remove the directive again, pass in an empty value:
+
+    <info>box php:ini mysql.default_socket ""</info>
+
+If you want to get the list of the scanned .ini files, run the command without arguments:
+
+    <info>box php:ini</info>
+EOF
+             )
              ->addArgument(
                 'key',
                 InputArgument::OPTIONAL,

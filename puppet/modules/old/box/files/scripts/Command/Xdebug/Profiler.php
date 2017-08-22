@@ -5,14 +5,37 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Profiler extends Xdebug
 {
     protected function configure()
     {
+        $output_dir  = \Helper\Ini::getPHPConfig('xdebug.profiler_output_dir');
+
         $this->setName('xdebug:profiler')
              ->setDescription('Toggle profiling')
+            ->setHelp(<<<EOF
+To profile your PHP code, you have to start the Xdebug profiler first:
+
+    <info>box xdebug:profiler start</info>
+
+Every PHP file that gets executed will now generate profiling information in the form of a cachegrind file.
+You can analyze these files using an application like KCacheGrind, MCG or PHPStorm.
+
+The box has Webgrind pre-installed and configured at http://webgrind.joomla.box. However, please note that it
+might fail on complex and large cachegrind files. A desktop app is recommended.
+
+By default, cachegrind files will be stored in $output_dir.
+
+Remember to disable profiling once you are done:
+
+    <info>box xdebug:profiler stop</info>
+
+For more information about Xdebug profiling, refer to the official documentation at <info>http://www.xdebug.org/docs/profiler</info>.
+EOF
+            )
             ->addArgument(
                 'action',
                 InputArgument::REQUIRED,
@@ -24,27 +47,28 @@ class Profiler extends Xdebug
     {
         parent::execute($input, $output);
 
-        if (!extension_loaded('xdebug'))
-        {
-            $output->writeln('[error] XDebug is not loaded. You can enable it using the <comment>box xdebug:enable</comment> command.');
-            exit();
-        }
-
         $action = strtolower($input->getArgument('action'));
 
         if (!in_array($action, array('start', 'stop'))) {
             throw new \RuntimeException('Action must be one of start|stop');
         }
 
-        $inis = \Helper\Ini::findIniFiles(array('zray-php5.5.ini', 'zray-php5.6.ini'), false);
+        if (!extension_loaded('xdebug') && $action == 'start')
+        {
+            $output->writeln('[<comment>notice</comment>] XDebug is not loaded. Enabling ..');
+
+            $this->getApplication()->find('xdebug:enable')->run(new ArrayInput(array('command' => 'xdebug:enable')), new NullOutput());
+        }
+
+        $inis = \Helper\Ini::findIniFiles(array('zray.ini'), false);
         $ini  = array_pop($inis);
         if ($action == 'start' && file_exists($ini))
         {
             $contents = file_get_contents($ini);
             if (preg_match('/^zend_extension\\s*=\\s*.+zray\\.so/', $contents))
             {
-                $output->writeln('[warning] <info>Zend Z-Ray</info> is enabled. This will generate a lot of profiler output!');
-                $output->writeln('[warning] You can disable <info>Zend Z-Ray</info> with this command: <comment>box zray:disable</comment>');
+                $output->writeln('[<comment>warning</comment>] <info>Zend Z-Ray</info> is enabled. This will generate a lot of profiler output!');
+                $output->writeln('[<comment>warning</comment>] You can disable <info>Zend Z-Ray</info> with this command: <comment>box zray:disable</comment>');
             }
         }
 
@@ -64,7 +88,7 @@ class Profiler extends Xdebug
             \Helper\Ini::update($file, 'xdebug.profiler_enable', $value);
         }
 
-        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart')), $output);
+        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart')), new NullOutput());
 
         $output_dir  = \Helper\Ini::getPHPConfig('xdebug.profiler_output_dir');
 

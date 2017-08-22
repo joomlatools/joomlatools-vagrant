@@ -1,10 +1,10 @@
 #!/bin/bash
 ##
-# Joomlatools PHP Manager script - https://github.com/joomlatools/joomla-vagrant
+# Joomlatools PHP Manager script - https://github.com/joomlatools/joomlatools-vagrant
 #
 # @copyright	Copyright (C) 2011 - 2015 Johan Janssens and Timble CVBA. (http://www.timble.net)
 # @license		MPL 2.0 <http://www.mozilla.org/MPL/2.0/>
-# @link		    http://github.com/joomlatools/joomla-vagrant for the canonical source repository
+# @link		    http://github.com/joomlatools/joomlatools-vagrant for the canonical source repository
 ##
 
 ##
@@ -164,16 +164,16 @@ command_use() {
     [[ -f "/usr/lib/apache2/modules/${DELNAME}" ]] && sudo rm "/usr/lib/apache2/modules/${DELNAME}"
     sudo cp "/opt/php/${VERSION}/lib/apache/${LIBNAME}" "/usr/lib/apache2/modules/${LIBNAME}"
 
-    # Update the Z-Ray vhost
+    # Update Z-Ray symlink
+    sudo rm /opt/zray
+    sudo a2dissite 00-zray &> /dev/null
+
     if [[ "$SHORT" -ge 5500 ]] && [[ "$SHORT" -lt 5600 ]]; then
-        sudo a2ensite  00-zray-php5.5 &> /dev/null
-        sudo a2dissite 00-zray-php5.6 &> /dev/null
+        sudo ln -s /opt/zray-php-104202-php5.5.31-linux-debian7-amd64/zray /opt/zray
+        sudo a2ensite 00-zray &> /dev/null
     elif [[ "$SHORT" -ge 5600 ]] && [[ "$SHORT" -lt 7000 ]]; then
-        sudo a2ensite  00-zray-php5.6 &> /dev/null
-        sudo a2dissite 00-zray-php5.5 &> /dev/null
-    else
-        sudo a2dissite 00-zray-php5.6 &> /dev/null
-        sudo a2dissite 00-zray-php5.5 &> /dev/null
+        sudo ln -s /opt/zray-php-104202-php5.6.17-linux-debian7-amd64/zray /opt/zray
+        sudo a2ensite 00-zray &> /dev/null
     fi
 
     echo -n "Restarting Apache .. "
@@ -363,8 +363,13 @@ command_restore() {
 
     sudo cp "/usr/lib/apache2/modules/libphp5.so.original" "/usr/lib/apache2/modules/libphp5.so"
 
-    sudo a2ensite 00-zray-php5.6 &> /dev/null
-    sudo a2dissite 00-zray-php5.5 &> /dev/null
+    sudo a2ensite 00-zray &> /dev/null
+
+    if [ -f /opt/zray ]; then
+        sudo rm /opt/zray
+    fi
+
+    sudo ln -s /opt/zray-php-104202-php5.6.17-linux-debian7-amd64/zray /opt/zray
 
     echo -n "Restarting Apache .. "
     sudo a2enmod php5 &> /dev/null
@@ -449,10 +454,8 @@ sub_pear() {
 sub_zray() {
     VERSION="$1"
 
-    if [[ "$SHORT" -ge 5500 ]] && [[ "$SHORT" -lt 5600 ]]; then
-        cp /etc/php5/mods-available/zray-php5.5.ini "/opt/php/${VERSION}/etc/conf.d/zray-php5.5.ini"
-    elif [[ "$SHORT" -ge 5600 ]] && [[ "$SHORT" -lt 7000 ]]; then
-        cp /etc/php5/mods-available/zray-php5.6.ini "/opt/php/${VERSION}/etc/conf.d/zray-php5.6.ini"
+    if [[ "$SHORT" -ge 5500 ]] && [[ "$SHORT" -lt 7000 ]]; then
+        cp /etc/php5/mods-available/zray.ini "/opt/php/${VERSION}/etc/conf.d/zray.ini"
     fi
 }
 
@@ -577,6 +580,15 @@ sub_getoptions() {
     # Build the mysql configuration string
     MYSQL=""
     if [[ "$SHORT" -lt 5213 ]] ; then
+        if [[ ! -d "/opt/mysql-5.1.73-linux-x86_64-glibc23/" ]] ; then
+            echo "Downloading MySQL 5.1.73 dependencies .."
+            wget -O /tmp/mysql-5.1.73.tar.gz --no-check-certificate https://downloads.skysql.com/archives/mysql-5.1/mysql-5.1.73-linux-x86_64-glibc23.tar.gz
+            sudo tar -xf /tmp/mysql-5.1.73.tar.gz -C /opt/
+            sudo chown -R root:root /opt/mysql-5.1.73-linux-x86_64-glibc23
+            sudo ln -s /opt/mysql-5.1.73-linux-x86_64-glibc23/lib /opt/mysql-5.1.73-linux-x86_64-glibc23/lib/x86_64-linux-gnu
+            rm /tmp/mysql-5.1.73.tar.gz
+        fi
+
         CFG="/opt/mysql-5.1.73-linux-x86_64-glibc23/bin/mysql_config"
 	    MYSQL="--with-mysql=/opt/mysql-5.1.73-linux-x86_64-glibc23 --with-mysqli=${CFG} --with-pdo-mysql=${CFG}"
 
@@ -604,7 +616,7 @@ sub_getoptions() {
         OPENSSL="--with-openssl=/opt/openssl-1.0.1f"
         patch -p1 < /home/vagrant/phpmanager/patches/openssl.ssl2.patch &> /dev/null
     else
-        OPENSSL="--with-openssl=/opt/openssl-1.0.1f"
+        OPENSSL="--with-openssl=/opt/openssl-1.0.2g"
     fi
     OPTIONS="$OPTIONS $OPENSSL"
 

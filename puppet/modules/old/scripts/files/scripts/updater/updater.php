@@ -42,7 +42,7 @@ if (!$manifest) {
 $currentVersion = false;
 foreach ($manifest->packages as $package)
 {
-    if ($package->name == 'joomlatools/joomla-console')
+    if ($package->name == 'joomlatools/console')
     {
         if (substr($package->version, 0, 1) != 'v') {
             return; // Only update stable releases

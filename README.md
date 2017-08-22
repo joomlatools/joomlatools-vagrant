@@ -1,11 +1,9 @@
-![Screenshot](http://www.joomlatools.com/images/blog/2015/joomla-vagrant-13-dashboard.png)
+![Screenshot](/screenshot.png?raw=true)
 
-Joomlatools Vagrant box
-=======================
+Joomlatools Vagrant
+=================
 
-This project automates the setup of a Joomla development environment.
-
-It is capable of running a full featured LAMP stack with a single command so that you can start working on your Joomla projects quickly.
+[Joomlatools Vagrant] automates the setup of a Joomla development environment. It is capable of running a full featured LAMP stack with a single command so that you can start working on your Joomla projects quickly.
 
 Installation
 ------------
@@ -17,8 +15,8 @@ Installation
 1. Run the following commands in a folder of your choice:
 
     ```
-vagrant init joomlatools/box
-vagrant up
+    vagrant init joomlatools/box
+    vagrant up
     ```
 
     This will download the Vagrant box and get it running.
@@ -26,7 +24,7 @@ vagrant up
 1. Add the following line into your ***hosts file*** (/etc/hosts on Linux and MacOS, for other operating systems see [here](http://en.wikipedia.org/wiki/Hosts_(file)#Location_in_the_file_system))
 
     ```
-33.33.33.58 joomla.box webgrind.joomla.box phpmyadmin.joomla.box
+    33.33.33.58 joomla.box webgrind.joomla.box phpmyadmin.joomla.box
     ```
 
 1. The dashboard is now available at [joomla.box](http://joomla.box)
@@ -39,31 +37,49 @@ Getting started
 1. Once you have installed the box as described above, SSH into the box:
 
     ```
-vagrant ssh
+    vagrant ssh
     ```
 
 1. Create your first Joomla website with this command:
 
     ```
-joomla site:create mysite
+    joomla site:create mysite
     ```
 
 1. Your new site is available at [joomla.box/mysite](http://joomla.box/mysite). You can login using the credentials  `admin` / `admin`.
 
-1. You can now symlink and install your custom extensions into the site, manage PHP versions and much more. Head over to our [documentation pages](http://developer.joomlatools.com/tools/vagrant/introduction.html) to learn more about the box and its possibilities.
+1. You can now symlink and install your custom extensions into the site, manage PHP versions and much more. Head over to our [documentation pages][Joomlatools Vagrant] to learn more about the box and its possibilities.
+
+Updating to the latest version
+------------------------------
+
+When new versions of the box are released you can update your local machine by executing:
+
+```
+vagrant box update
+```
+
+Note that updating the box will not update an already-running Vagrant machine. To reflect the changes in the box, you will have to destroy (`vagrant destroy`) and bring back up the Vagrant machine (`vagrant up`).
+
+For more details refer to our [FAQ](https://www.joomlatools.com/developer/tools/vagrant/faq/#how-can-i-update-the-box-to-the-latest-version).
 
 Sharing access to the box
 -------------------------
 
-One of the great features of Vagrant is [Vagrant Share](https://docs.vagrantup.com/v2/share/index.html). Please note that Vagrant Share requires an account with [HashiCorp's Atlas](https://atlas.hashicorp.com/).
+One of the great features of Vagrant is [Vagrant Share](https://docs.vagrantup.com/v2/share/index.html). Note that Vagrant Share requires [ngrok](https://ngrok.com/) to work. We recommend you follow these set up steps first:
 
-To share access, run this command and follow the instructions:
+1. Upgrade Vagrant to the latest version.
+1. Create your (free) [account](https://dashboard.ngrok.com/user/signup) on ngrok.
+1. [Download](https://ngrok.com/download) and install ngrok.
+1. Set up the authentication token on your machine as described in the [ngrok documentation](https://ngrok.com/docs/2#authtoken).
+
+Now you're ready to start sharing access. Run this command and share the resulting Ngrok HTTP URL:
 
 ```
 vagrant share --http 80
 ```
 
-For more options please refer to the [Vagrant docs](https://docs.vagrantup.com/v2/share/index.html).
+For more options and background please refer to the [Vagrant docs](https://docs.vagrantup.com/v2/share/index.html).
 
 For hacking on the box
 ----------------------
@@ -73,27 +89,27 @@ If you want to make changes to the box's infrastructure, you can do so by buildi
 1. Clone this repository:
 
     ```
-git clone https://github.com/joomlatools/joomla-vagrant.git
+    git clone https://github.com/joomlatools/joomlatools-vagrant.git
     ```
 
 1. Install required Vagrant plugins
 
     ```
-vagrant plugin install vagrant-puppet-install
-vagrant plugin install vagrant-vbguest
+    vagrant plugin install vagrant-puppet-install
+    vagrant plugin install vagrant-vbguest
     ```
 
 1. Go to the repository folder and provision the box:
 
     ```
-cd joomla-vagrant
-vagrant up
+    cd joomlatools-vagrant
+    vagrant up
     ```
 
 1. You can now edit the Puppet configuration. To apply your changes, provision the box again:
 
     ```
-vagrant provision
+    vagrant provision
     ```
 
 Building and releasing using Packer
@@ -104,7 +120,7 @@ We use [Packer](https://www.packer.io/) to automatically build and deploy the bo
 1. Clone this repository:
 
     ```
-git clone https://github.com/joomlatools/joomla-vagrant.git
+    git clone https://github.com/joomlatools/joomlatools-vagrant.git
     ```
 
 1. Install [Packer](https://www.packer.io/)
@@ -112,35 +128,35 @@ git clone https://github.com/joomlatools/joomla-vagrant.git
 1. Make the token available to Packer in the current terminal session:
 
     ```
-export ATLAS_TOKEN=<token>
+    export ATLAS_TOKEN=<token>
     ```
 
 1. Now edit the `packer.json` file. Look for the current version and increase the version number.
 The version number is defined in the post-processor section and can be found at the bottom of the file. It looks like this:
 
     ```js
-"post-processors": [
+    "post-processors": [
        ...
       {
           "type": "atlas",
           ...
           "metadata": {
               "provider": "virtualbox",
-              "version": "1.3.0"
+              "version": "1.4.3"
           }
       }]
-]
+    ]
     ```
 
     If you are not updating the `joomlatools/box` but want to create your own version, be sure to replace all occurences of `joomlatools/box` with your account and box name in the `packer.json` file.
 
     *Note* A build cannot overwrite an existing version. If you want to replace an existing version, you will have to delete it on Atlas first!
-
+1. Also increase the `$box_version` variable in `puppet/manifests/default.pp` and update the changelog.
 1. Commit the change and push back to GitHub.
 1. Instruct packer to start the build:
 
     ```
-packer push packer.json
+    packer push packer.json
     ```
 
 You can follow-up the build progress on the [Builds](https://atlas.hashicorp.com/builds) page. Once it's finished, the new version will be automatically available on the [your boxes](https://atlas.hashicorp.com/vagrant) section. Add a changelog and release it to the public.
@@ -156,18 +172,32 @@ Note: to run _on_ the box, run `BACKEND=exec rake spec`
 Reporting issues
 ----------------
 
-We deliberately keep the Issues section on Github closed for now as we want to encourage people to submit code to add features or fix bugs by opening up Pull Requests instead of Issues.
+The box is a very complex piece of technology, based on many different open source tools and libraries many of which are far beyond our capabilities and understanding.
 
-Of course, it's not always easy to fix an obscure bug in someone else's code, but we still want to encourage everyone to make an effort. We do not have the intention to maintain a support forum here just yet!
+We therefore deliberately keep the Issues section on this specific Github repo closed as we want to encourage people to submit code to add features or fix bugs by opening up Pull Requests instead of report bug or problems through Issues.
 
+If you do have a problem running the box please use either our [forum](https://groups.google.com/forum/#!forum/joomlatools-dev) or [chat room](http://gitter.im/joomlatools/dev) to get in touch with us and we are most happy to try and help you.
 
-Contributing
-------------
+## Contributing
 
-Fork the project, create a feature branch from the `develop` branch, and send us a pull request.
+Joomlatools Box is an open source, community-driven project. Contributions are welcome from everyone.
+We have [contributing guidelines](CONTRIBUTING.md) to help you get started.
 
+## Contributors
 
-Authors
--------
+See the list of [contributors](https://github.com/joomlatools/joomlatools-vagrant/contributors).
 
-See the list of [contributors](https://github.com/joomlatools/joomla-vagrant/contributors).
+## License
+
+Joomlatools Box is free and open-source software licensed under the [MPLv2 license](LICENSE.txt).
+
+## Community
+
+Keep track of development and community news.
+
+* Follow [@joomlatoolsdev on Twitter](https://twitter.com/joomlatoolsdev)
+* Join [joomlatools/dev on Gitter](http://gitter.im/joomlatools/dev)
+* Read the [Joomlatools Developer Blog](https://www.joomlatools.com/developer/blog/)
+* Subscribe to the [Joomlatools Developer Newsletter](https://www.joomlatools.com/developer/newsletter/)
+
+[Joomlatools Vagrant]: https://www.joomlatools.com/developer/tools/vagrant/

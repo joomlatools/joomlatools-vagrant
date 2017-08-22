@@ -1,6 +1,22 @@
-group { 'puppet': ensure => present }
-Exec { path => [ '/bin/', '/sbin/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/' ], timeout => 900 }
-File { owner => 0, group => 0, backup => false }
+File { owner => 0, group => 0, mode => 0644 }
+
+$box_version = '1.4.4'
+
+system::hostname { 'joomlatools':
+  ip => '127.0.1.1'
+}
+
+host { 'joomla.box':
+  ip => '127.0.1.1'
+}
+
+file { '/etc/profile.d/joomlatools-box.sh':
+  ensure  => present,
+  owner   => 'root',
+  group   => 'root',
+  mode    => 644,
+  content => "export JOOMLATOOLS_BOX=${::box_version}\n",
+}
 
 user { 'vagrant': }
 
@@ -162,7 +178,7 @@ file { ['/etc/php5/apache2/conf.d/20-yaml.ini', '/etc/php5/cli/conf.d/20-yaml.in
 }
 
 php::pecl::module { 'oauth':
-  use_package => no,
+  use_package => yes,
   ensure      => present,
   require     => Php::Pear::Config['download_dir']
 }
@@ -173,7 +189,6 @@ puphpet::ini { 'oauth':
   ],
   ini     => '/etc/php5/mods-available/oauth.ini',
   notify  => Service['apache'],
-  version => '1.2.3',
   require => [Class['php'], Php::Pecl::Module['oauth']]
 }
 
@@ -200,6 +215,15 @@ exec { "composer-plugin-changelogs":
   require => Class['Composer']
 }
 
+exec { "composer-plugin-prestissimo":
+  command => "composer global require hirak/prestissimo",
+  path    => ['/usr/bin' , '/bin'],
+  creates => '/home/vagrant/.composer/vendor/hirak/prestissimo',
+  user    => vagrant,
+  environment => 'COMPOSER_HOME=/home/vagrant/.composer',
+  require => Class['Composer']
+}
+
 puphpet::ini { 'custom':
   value   => [
     'sendmail_path = /home/vagrant/.rvm/gems/ruby-2.2.1/bin/catchmail -fnoreply@example.com',
@@ -220,7 +244,9 @@ puphpet::ini { 'custom':
     'xdebug.profiler_enable = 0',
     'xdebug.profiler_enable_trigger = 0',
     'xdebug.max_nesting_level = 1000',
-    'xdebug.profiler_output_dir = /var/www/'
+    'xdebug.profiler_output_dir = /var/www/',
+    'openssl.cafile = /etc/ssl/certs/ca-certificates.crt',
+    'openssl.capath = /usr/lib/ssl/'
   ],
   ini     => '/etc/php5/mods-available/custom.ini',
   notify  => Service['apache'],
@@ -255,7 +281,8 @@ apache::vhost { 'phpmyadmin':
   docroot       => '/usr/share/phpmyadmin',
   port          => 8080,
   priority      => '10',
-  require       => Class['phpmyadmin'],
+  template      => 'apache/virtualhost/vhost-no-zray.conf.erb',
+  require       => Class['phpmyadmin']
 }
 
 single_user_rvm::install { 'vagrant':
@@ -291,7 +318,8 @@ apache::vhost { 'webgrind':
   docroot       => '/usr/share/webgrind-1.2',
   port          => 8080,
   priority      => '10',
-  require       => Class['webgrind'],
+  template      => 'apache/virtualhost/vhost-no-zray.conf.erb',
+  require       => Class['webgrind']
 }
 
 apache::vhost { 'joomla.box':
@@ -322,7 +350,7 @@ exec { 'enable-shared-paths-config':
 }
 
 exec { 'set-env-for-debugging':
-  command => "echo \"\nSetEnv JOOMLATOOLS_BOX 1\" >> /etc/apache2/apache2.conf",
+  command => "echo \"\nSetEnv JOOMLATOOLS_BOX ${::box_version}\" >> /etc/apache2/apache2.conf",
   unless  => "grep JOOMLATOOLS_BOX /etc/apache2/apache2.conf",
   notify  => Service['apache'],
   require => Apache::Vhost['joomla.box']
@@ -334,7 +362,7 @@ class { 'phpmanager': }
 
 exec {'install-capistrano-gem':
   user    => vagrant,
-  command => 'bash -c "source ~/.rvm/scripts/rvm; gem install capistrano --version="',
+  command => 'bash -c "source ~/.rvm/scripts/rvm; gem install capistrano"',
   environment => ['HOME=/home/vagrant'],
   timeout => 900,
   require => Exec['set-default-ruby-for-vagrant']

@@ -6,6 +6,21 @@ define('JPATH_PLATFORM', true);
 $dir = new DirectoryIterator('/var/www');
 $i   = 1;
 $sites = array();
+
+$canonical = function($version) {
+    if (isset($version->RELEASE)) {
+        return 'v' . $version->RELEASE . '.' . $version->DEV_LEVEL;
+    }
+
+    // Joomla 3.5 and up uses constants instead of properties in JVersion
+    $className = get_class($version);
+    if (defined("$className::RELEASE")) {
+        return 'v'. $version::RELEASE . '.' . $version::DEV_LEVEL;
+    }
+
+    return 'unknown';
+};
+
 foreach ($dir as $fileinfo)
 {
     $code = $application = null;
@@ -13,9 +28,9 @@ foreach ($dir as $fileinfo)
     if ($fileinfo->isDir() && !$fileinfo->isDot())
     {
         $files = array(
-            'joomla-cms'      => $fileinfo->getPathname() . '/libraries/cms/version/version.php',
-            'joomla-platform' => $fileinfo->getPathname() . '/lib/libraries/cms/version/version.php',
-            'joomla-1.5'      => $fileinfo->getPathname() . '/libraries/joomla/version.php'
+            'joomla-cms'           => $fileinfo->getPathname() . '/libraries/cms/version/version.php',
+            'joomlatools-platform' => $fileinfo->getPathname() . '/lib/libraries/cms/version/version.php',
+            'joomla-1.5'           => $fileinfo->getPathname() . '/libraries/joomla/version.php'
         );
 
         foreach ($files as $type => $file)
@@ -41,11 +56,12 @@ foreach ($dir as $fileinfo)
 
             $class   = 'JVersion'.$identifier;
             $version = new $class();
+
             $sites[] = (object) array(
                 'name'    => $fileinfo->getFilename(),
-                'docroot' => $fileinfo->getFilename() . '/' . ($application == 'joomla-platform' ? 'web' : ''),
+                'docroot' => $fileinfo->getFilename() . '/' . ($application == 'joomlatools-platform' ? 'web' : ''),
                 'type'    => $application,
-                'version' => $version->RELEASE.'.'.$version->DEV_LEVEL
+                'version' => $canonical($version)
             );
         }
     }
@@ -94,7 +110,7 @@ foreach ($dir as $fileinfo)
         </div>
         <div class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
-            <li><a href="https://github.com/joomlatools/joomla-vagrant">Contribute on GitHub</a></li>
+            <li><a href="https://github.com/joomlatools/joomlatools-vagrant">Contribute on GitHub</a></li>
             <li><a href="http://developer.joomlatools.com/tools/vagrant/introduction.html" target="_blank">Docs</a></li>
           </ul>
         </div>
@@ -115,7 +131,7 @@ foreach ($dir as $fileinfo)
                 <li><a href="/apc">APC dashboard</a></li>
             <?php endif; ?>
             <?php if (function_exists('zray_disable')): ?>
-                <li><a href="/ZendServer">Z-Ray</a></li>
+                <li><a href="http://joomla.box:8080/ZendServer">Z-Ray</a></li>
             <?php endif; ?>
             <?php if (extension_loaded('xdebug')): ?>
                 <li><a href="http://webgrind.joomla.box">Webgrind</a></li>
@@ -146,9 +162,9 @@ foreach ($dir as $fileinfo)
                 <tr>
                   <td><?php echo $i; ?></td>
                   <td>
-                    <a target="_blank" href="/<?php echo $site->docroot . '/administrator/'; ?>">
+                    <a target="_blank" href="/<?php echo rtrim($site->docroot, "/") . '/administrator/'; ?>">
                       <?php echo $site->name ?></a>
-                    <small>(<?php echo $site->type ?> v<?php echo $site->version; ?>)</small>
+                    <small>(<?php echo $site->type ?> <?php echo $site->version; ?>)</small>
                   </td> 
                   <td>
 
@@ -156,7 +172,7 @@ foreach ($dir as $fileinfo)
                       <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Options <span class="caret"></span></a>
                       <ul class="dropdown-menu" role="menu">
                           <li><a href="/<?php echo $site->docroot; ?>" target="_blank">Site</a></li>
-                          <li><a href="/<?php echo $site->docroot . '/administrator/'; ?>" target="_blank">Administrator</a></li>
+                          <li><a href="/<?php echo rtrim($site->docroot, "/") . '/administrator/'; ?>" target="_blank">Administrator</a></li>
                       </ul>
                     </div>
                   </td>

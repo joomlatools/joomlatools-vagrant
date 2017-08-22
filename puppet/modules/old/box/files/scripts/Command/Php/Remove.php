@@ -11,7 +11,7 @@ class Remove extends Command
     protected function configure()
     {
         $this->setName('php:remove')
-             ->setDescription('Uninstall a PHP version')
+             ->setDescription('Uninstall a custom PHP version')
              ->addArgument(
                 'version',
                 InputArgument::REQUIRED,

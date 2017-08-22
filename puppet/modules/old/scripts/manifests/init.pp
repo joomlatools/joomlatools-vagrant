@@ -19,9 +19,17 @@ class scripts {
   }
 
   exec { 'add-console':
-    command => 'composer global require joomlatools/joomla-console:* --no-interaction',
-    unless  => '[ -d /home/vagrant/.composer/vendor/joomlatools/joomla-console ]',
+    command => 'composer global require joomlatools/console:* --no-interaction',
+    unless  => '[ -d /home/vagrant/.composer/vendor/joomlatools/console ]',
     require => [File['/home/vagrant/scripts'], Class['Composer']],
+    user    => vagrant,
+    environment => 'COMPOSER_HOME=/home/vagrant/.composer'
+  }
+
+  exec { 'add-console-joomlatools-plugin':
+    command => 'composer --working-dir=/home/vagrant/.composer/vendor/joomlatools/console/plugins require joomlatools/console-joomlatools --no-interaction',
+    unless  => '[ -d /home/vagrant/.composer/vendor/joomlatools/console/plugins/vendor/joomlatools/console-joomlatools ]',
+    require => Exec['add-console'],
     user    => vagrant,
     environment => 'COMPOSER_HOME=/home/vagrant/.composer'
   }
@@ -30,10 +38,10 @@ class scripts {
     ensure => file,
     owner  => vagrant,
     group  => vagrant,
-    notify => [File_line['joomla-console-updater'], File_line['cd-to-www-dir']]
+    notify => [File_line['joomlatools-console-updater'], File_line['cd-to-www-dir']]
   }
 
-  file_line { 'joomla-console-updater':
+  file_line { 'joomlatools-console-updater':
     path    => '/home/vagrant/.bash_profile',
     line    => '/home/vagrant/scripts/updater/login.sh',
     require => Exec['make-scripts-executable']

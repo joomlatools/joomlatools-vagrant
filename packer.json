@@ -1,4 +1,8 @@
 {
+  "variables": {
+    "guest_additions_url": "http://download.virtualbox.org/virtualbox/5.0.16/VBoxGuestAdditions_5.0.16.iso",
+    "guest_additions_sha256": "8190f1e4031f8195971c2a97d2d3b1cf2d86fc83219f750d05cee9255c7dad85"
+  },
   "push": {
     "name": "joomlatools/box",
     "vcs": true
@@ -23,7 +27,7 @@
         " keyboard-configuration/layout=USA<wait>",
         " keyboard-configuration/variant=USA<wait>",
         " locale=en_US<wait>",
-        " netcfg/get_hostname=ubuntu-1404<wait>",
+        " netcfg/get_hostname=joomlatools<wait>",
         " netcfg/get_domain=vagrantup.com<wait>",
         " noapic<wait>",
         " preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<wait>",
@@ -33,10 +37,12 @@
       "boot_wait": "10s",
       "disk_size": 8000,
       "guest_os_type": "Ubuntu_64",
+      "guest_additions_url": "{{user `guest_additions_url`}}",
+      "guest_additions_sha256": "{{user `guest_additions_sha256`}}",
       "http_directory": "packer/http",
-      "iso_checksum": "9e5fecc94b3925bededed0fdca1bd417",
+      "iso_checksum": "2ac1f3e0de626e54d05065d6f549fa3a",
       "iso_checksum_type": "md5",
-      "iso_url": "http://releases.ubuntu.com/14.04/ubuntu-14.04.3-server-amd64.iso",
+      "iso_url": "http://releases.ubuntu.com/14.04/ubuntu-14.04.4-server-amd64.iso",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
       "ssh_port": 22,
@@ -90,7 +96,7 @@
             "artifact_type": "vagrant.box",
             "metadata": {
                 "provider": "virtualbox",
-                "version": "1.4.0"
+                "version": "1.4.4"
             }
         }]
   ]

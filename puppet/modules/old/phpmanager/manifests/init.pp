@@ -87,19 +87,11 @@ class phpmanager::buildtools {
 
   puppi::netinstall { 'flex-2.5.4a':
     path => ["${phpmanager::installation_path}/bison-2.2/bin:/bin:/sbin:/usr/bin:/usr/sbin"],
-    url => 'http://fossies.org/unix/misc/old/flex-2.5.4a.tar.gz',
+    url => 'ftp://ftp.gnome.org/mirror/temp/sf2015/f/fl/flex/flex/2.5.4.a/flex-2.5.4a.tar.gz',
     extracted_dir => 'flex-2.5.4',
     destination_dir => $phpmanager::source_path,
     postextract_command => "${phpmanager::source_path}/flex-2.5.4/configure --prefix=${phpmanager::installation_path}/flex-2.5.4 && make && sudo make install",
     require => Puppi::Netinstall['bison-2.2'],
-  }
-
-  puppi::netinstall { 'mysql-5.1.73':
-    url => 'https://downloads.skysql.com/archives/mysql-5.1/mysql-5.1.73-linux-x86_64-glibc23.tar.gz',
-    retrieve_args => '--no-check-certificate',
-    extracted_dir => 'mysql-5.1.73-linux-x86_64-glibc23',
-    destination_dir => $phpmanager::installation_path,
-    postextract_command => "ln -s ${phpmanager::installation_path}/mysql-5.1.73-linux-x86_64-glibc23/lib ${phpmanager::installation_path}/mysql-5.1.73-linux-x86_64-glibc23/lib/x86_64-linux-gnu"
   }
 
   puppi::netinstall { 'openssl-0.9.7g':
@@ -120,6 +112,15 @@ class phpmanager::buildtools {
     require => Package['build-essential']
   }
 
+  puppi::netinstall { 'openssl-1.0.2g':
+    url => 'https://www.openssl.org/source/openssl-1.0.2g.tar.gz',
+    retrieve_args => '--no-check-certificate',
+    extracted_dir => 'openssl-1.0.2g',
+    destination_dir => $phpmanager::source_path,
+    postextract_command => "${phpmanager::source_path}/openssl-1.0.2g/config --prefix=${phpmanager::installation_path}/openssl-1.0.2g -fPIC no-gost && make && make depend && make install_sw && ln -s /opt/openssl-1.0.2g/lib /opt/openssl-1.0.2g/lib/x86_64-linux-gnu",
+    require => Package['build-essential']
+  }
+
   puppi::netinstall { 'libxml2-2.7.8':
     url => 'ftp://xmlsoft.org/libxml2/libxml2-2.7.8.tar.gz',
     extracted_dir => 'libxml2-2.7.8',
@@ -137,7 +138,7 @@ class phpmanager::buildtools {
   }
 
   puppi::netinstall { 'curl-7.15.3':
-    url => 'http://ftp.sunet.se/pub/www/utilities/curl/curl-7.15.3.tar.gz',
+    url => 'ftp://ftp.belnet.be/mirror/pub/ftp.sunet.se/pub/www/utilities/curl/curl-7.15.3.tar.gz',
     extracted_dir => 'curl-7.15.3',
     destination_dir => $phpmanager::source_path,
     require => File["$phpmanager::source_path"]
