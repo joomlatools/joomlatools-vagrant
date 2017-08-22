@@ -1,6 +1,6 @@
 class profiles::mysql(
   $root_password = 'root',
-  $mysqld_config = {'bind-adress' => false}
+  $mysqld_config = {}
 ) {
 
     apt::source { 'mariadb':
