@@ -1,6 +1,6 @@
 class profiles::mysql(
   $root_password = 'root',
-  $mysqld_config = {}
+  $mysqld_config = {'bind-address' => '*'}
 ) {
 
     apt::source { 'mariadb':
@@ -17,13 +17,13 @@ class profiles::mysql(
           'mysqld' => $mysqld_config
         },
         users => {
-          'root@127.0.0.1' => {
+          'root@%' => {
             ensure          => 'present',
             password_hash   => mysql_password($root_password)
           }
         },
         grants => {
-          'root@127.0.0.1/*.*' => {
+          'root@%/*.*' => {
             ensure     => 'present',
             options    => ['GRANT'],
             privileges => ['ALL'],
