@@ -1,6 +1,6 @@
 class profiles::mysql(
   $root_password = 'root',
-  $mysqld_config = undef
+  $mysqld_config = {'bind-adress' => false}
 ) {
 
     apt::source { 'mariadb':
@@ -10,7 +10,8 @@ class profiles::mysql(
     }
 
     class { '::mysql::server':
-        package_name     => "mariadb-server",
+        package_name     => mariadb-server,
+        package_ensure   => latest,
         root_password    => $root_password,
         override_options => {
           'mysqld' => $mysqld_config
@@ -27,7 +28,7 @@ class profiles::mysql(
             options    => ['GRANT'],
             privileges => ['ALL'],
             table      => '*.*',
-            user       => 'root@127.0.0.1',
+            user       => 'root@%',
           }
         },
         require => Apt::Source['mariadb'],

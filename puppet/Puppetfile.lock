@@ -32,9 +32,9 @@ GIT
 
 DEPENDENCIES
   jippi-nodes-php (>= 0)
-  petems-swap_file (>= 0)
+  petems-swap_file (= 4.0.0)
   puppetlabs-apt (= 1.8.0)
-  puppetlabs-concat (>= 0)
-  puppetlabs-mysql (>= 0)
-  puppetlabs-stdlib (>= 0)
+  puppetlabs-concat (= 4.0.1)
+  puppetlabs-mysql (= 3.11.0)
+  puppetlabs-stdlib (= 4.19.0)
 

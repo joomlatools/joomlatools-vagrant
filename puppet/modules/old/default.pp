@@ -259,18 +259,6 @@ file { ['/etc/php5/apache2/conf.d/99-custom.ini', '/etc/php5/cli/conf.d/99-custo
   require => Puphpet::Ini['custom']
 }
 
-class { 'mysql::server':
-  config_hash   => {
-    'root_password' => 'root',
-    'bind_address' => false
-  }
-}
-
-exec { 'grant-all-to-root':
-  command     => "mysql --user='root' --password='root' --execute=\"GRANT ALL ON *.* TO 'root'@'%' IDENTIFIED BY 'root' WITH GRANT OPTION;\"",
-  require => Class['phpmyadmin']
-}
-
 class { 'phpmyadmin':
   require => [Class['mysql::server'], Class['mysql::config'], Class['php']],
 }
