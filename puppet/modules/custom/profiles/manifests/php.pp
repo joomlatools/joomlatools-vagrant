@@ -1,45 +1,45 @@
-class profiles::php(
-  $apache_ini_settings = [],
-  $cli_ini_settings    = []
-) {
+class profiles::php {
 
-  Php::Extension <| |>
-    -> Php::Config <| |>
-
-  Package['php5-common']
-    -> Package['php5-dev']
-    -> Package['php5-cli']
-    -> Php::Extension <| |>
-
-  Php::Extension <| |> ~> Service['php5-fpm']
-  Php::Fpm::Pool <| |> ~> Service['php5-fpm']
-
-  apt::key { 'php5':
-    key  => '14AA40EC0831756756D7F66C4F4EA0AAE5267A6C'
+  class { '::php':
+    service       => 'apache',
+    version       => 'latest',
+    module_prefix => '',
+    require       => Package['apache'],
   }
 
-  apt::ppa { 'ppa:ondrej/php5-5.6':
-      require => Apt::Key['php5']
+  php::module { 'php5-mysql': }
+  php::module { 'php5-cli': }
+  php::module { 'php5-curl': }
+  php::module { 'php5-gd': }
+  php::module { 'php5-imagick': }
+  php::module { 'php5-intl': }
+  php::module { 'php5-mcrypt': }
+  php::module { 'php5-sqlite': }
+  php::module { 'php5-apcu': }
+
+  class { 'php::devel':
+    require => Class['php'],
   }
 
-  include ::php
-  include ::php::dev
-
-  class { 'php::apache':
-    settings => $apache_ini_settings
+  class { 'php::pear':
+    require => Class['php'],
   }
 
-  class { 'php::cli':
-    settings => $cli_ini_settings
+  php::pear::config {
+    download_dir: value => "/tmp/pear/download",
+      require => Class['php::pear']
   }
 
-  class { ['php::composer', 'php::composer::auto_update']: }
-  class { ['php::extension::apcu', 'php::extension::curl', 'php::extension::gd', 'php::extension::imagick', 'php::extension::mcrypt', 'php::extension::mysql']: }
-  class { 'php::extension::xdebug': }
+  php::pear::module { 'Console_CommandLine':
+    use_package => false
+  }
 
-  class { 'php::pear': }
+  php::pear::module { 'Phing':
+    use_package => false,
+    repository  => 'pear.phing.info'
+  }
 
-  php::extension { 'oauth':
+/*  php::extension { 'oauth':
     ensure   => latest,
     package  => 'oauth',
     provider => 'pecl',
@@ -58,6 +58,6 @@ class profiles::php(
     command => '/usr/sbin/php5enmod oauth',
     unless  => '/usr/bin/php -i | grep oauth.ini',
     require => Php::Config['php-extension-oauth']
-  }
+  }*/
 
 }

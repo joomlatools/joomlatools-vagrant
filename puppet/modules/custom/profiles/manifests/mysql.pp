@@ -4,7 +4,7 @@ class profiles::mysql(
 ) {
 
     apt::source { 'mariadb':
-        location   => 'http://mariadb.mirror.nucleus.be/repo/10.1/ubuntu',
+        location   => 'http://mariadb.mirror.nucleus.be/repo/10.2/ubuntu',
         repos      => 'main',
         key        => '199369E5404BD5FC7D2FE43BCBCB082A1BB943DB'
     }
@@ -35,7 +35,7 @@ class profiles::mysql(
     }
 
     class { '::mysql::client':
-        package_name  => 'mariadb-client',
+        package_name  => mariadb-client,
         require       => Class['mysql::server']
     }
 

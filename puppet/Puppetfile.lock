@@ -1,6 +1,19 @@
 FORGE
   remote: https://forgeapi.puppetlabs.com
   specs:
+    camptocamp-openssl (1.2.4)
+      puppetlabs-stdlib (< 5.0.0, >= 2.0.0)
+    example42-firewall (2.1.3)
+      example42-iptables (>= 2.0.0)
+      example42-puppi (>= 2.0.0)
+    example42-iptables (2.1.15)
+      example42-puppi (>= 2.0.0)
+      puppetlabs-concat (>= 0)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+    example42-monitor (2.0.4)
+      example42-puppi (>= 2.0.0)
+    example42-puppi (2.2.3)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
     herculesteam-augeasproviders_core (2.1.3)
       puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
     herculesteam-augeasproviders_sysctl (2.2.0)
@@ -14,24 +27,36 @@ FORGE
       puppetlabs-stdlib (>= 2.2.1)
     puppetlabs-concat (4.0.1)
       puppetlabs-stdlib (< 5.0.0, >= 4.13.1)
-    puppetlabs-inifile (2.0.0)
     puppetlabs-mysql (3.11.0)
       puppet-staging (< 3.0.0, >= 1.0.1)
       puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
     puppetlabs-stdlib (4.19.0)
 
 GIT
-  remote: https://github.com/jippi/puppet-php.git
-  ref: master
-  sha: ebc85247af025b7d79c3682076e7c59f5f44b905
+  remote: https://github.com/example42/puppet-apache
+  ref: v2.1.13
+  sha: f47cb88846a47c2159a186137f1ce095d6dc194d
   specs:
-    jippi-nodes-php (0.9.0)
-      puppetlabs-apt (> 0.0.0)
-      puppetlabs-inifile (> 0.0.0)
-      puppetlabs-stdlib (> 0.0.0)
+    example42-apache (2.1.12)
+      example42-firewall (>= 2.0.0)
+      example42-iptables (>= 2.0.0)
+      example42-monitor (>= 2.0.0)
+      example42-puppi (>= 2.0.0)
+      puppetlabs-concat (>= 1.0.0)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+
+GIT
+  remote: https://github.com/example42/puppet-php
+  ref: v2.0.27
+  sha: 4c65e1b8f005312bab40809dcabee5714c49165d
+  specs:
+    example42-php (2.0.26)
+      example42-puppi (>= 2.0.0)
 
 DEPENDENCIES
-  jippi-nodes-php (>= 0)
+  camptocamp-openssl (= 1.2.4)
+  example42-apache (>= 0)
+  example42-php (>= 0)
   petems-swap_file (= 4.0.0)
   puppetlabs-apt (= 1.8.0)
   puppetlabs-concat (= 4.0.1)

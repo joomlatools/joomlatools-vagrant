@@ -1,7 +1,3 @@
-File { owner => 0, group => 0, mode => 0644 }
-
-$box_version = '1.4.4'
-
 system::hostname { 'joomlatools':
   ip => '127.0.1.1'
 }
@@ -63,94 +59,6 @@ package { [
   ensure  => 'installed'
 }
 
-class apache::certificate {
-  class { 'openssl': }
-
-  file { ['/etc/apache2',  '/etc/apache2/ssl']:
-    ensure => 'directory',
-  }
-
-  openssl::certificate::x509 { 'server':
-    country      => 'BE',
-    organization => 'Joomlatools',
-    commonname   => 'localhost.ssl',
-    email        => 'info@joomlatools.com',
-    days         => 3650,
-    base_dir     => '/etc/apache2/ssl',
-  }
-}
-
-class { 'apache::certificate':}
-
-class { 'apache':
-  require => Class['apache::certificate'],
-}
-
-exec { 'apache-set-servername':
-  command => "echo \"ServerName joomlatools\" > /etc/apache2/conf-available/fqdn.conf; a2enconf fqdn",
-  path    => ['/usr/bin' , '/bin', '/usr/sbin/'],
-  creates => '/etc/apache2/conf-available/fqdn',
-  require => Class['apache']
-}
-
-apache::dotconf { 'custom':
-  content => template("apache/custom.conf.erb"),
-}
-
-apache::module { 'rewrite': }
-apache::module { 'ssl': }
-apache::module { 'proxy_fcgi': }
-apache::module { 'headers': }
-
-class { 'php':
-  service       => 'apache',
-  version       => 'latest',
-  module_prefix => '',
-  require       => Package['apache'],
-}
-
-$apache_hhvm_proxy = "
-<FilesMatch \\.php$>
-  SetHandler \"proxy:fcgi://127.0.0.1:9000\"
-</FilesMatch>"
-
-file { '/etc/apache2/conf-available/hhvm.conf':
-  ensure  => file,
-  content => $apache_hhvm_proxy,
-  require => Class['apache']
-}
-
-php::module { 'php5-mysql': }
-php::module { 'php5-cli': }
-php::module { 'php5-curl': }
-php::module { 'php5-gd': }
-php::module { 'php5-imagick': }
-php::module { 'php5-intl': }
-php::module { 'php5-mcrypt': }
-php::module { 'php5-sqlite': }
-php::module { 'php5-apcu': }
-
-class { 'php::devel':
-  require => Class['php'],
-}
-
-class { 'php::pear':
-  require => Class['php'],
-}
-
-php::pear::config {
-  download_dir: value => "/tmp/pear/download",
-    require => Class['php::pear']
-}
-
-php::pear::module { 'Console_CommandLine':
-  use_package => false
-}
-
-php::pear::module { 'Phing':
-  use_package => false,
-  repository  => 'pear.phing.info'
-}
 
 package { 'libyaml-dev':
   ensure => present,
@@ -320,28 +228,6 @@ apache::vhost { 'joomla.box':
   directory_allow_override   => 'All',
   directory_options => 'Indexes FollowSymLinks MultiViews',
   template     => 'apache/virtualhost/joomlatools.vhost.conf.erb',
-}
-
-exec { 'disable-default-vhost':
-  command => 'a2dissite 000-default',
-  require => Apache::Vhost['joomla.box']
-}
-
-file { '/etc/apache2/conf-available/shared_paths.conf':
-  ensure => file,
-  require => Apache::Vhost['joomla.box']
-}
-
-exec { 'enable-shared-paths-config':
-  command => 'a2enconf shared_paths',
-  require => File['/etc/apache2/conf-available/shared_paths.conf']
-}
-
-exec { 'set-env-for-debugging':
-  command => "echo \"\nSetEnv JOOMLATOOLS_BOX ${::box_version}\" >> /etc/apache2/apache2.conf",
-  unless  => "grep JOOMLATOOLS_BOX /etc/apache2/apache2.conf",
-  notify  => Service['apache'],
-  require => Apache::Vhost['joomla.box']
 }
 
 class { 'scripts': }
