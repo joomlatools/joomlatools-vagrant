@@ -24,6 +24,8 @@ class profiles::base {
       always_apt_update => true,
     }
 
+    user { 'vagrant': }
+
     # Fix the locale errors
     exec { 'fix-missing-locale':
       command   => '/usr/sbin/locale-gen en_US.UTF-8 && echo "LC_ALL=\"en_US.UTF-8\"" >> /etc/default/locale',

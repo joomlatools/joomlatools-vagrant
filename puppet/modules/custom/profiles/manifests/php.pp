@@ -1,5 +1,11 @@
 class profiles::php {
 
+  #apt::key { '4F4EA0AAE5267A6C': }
+
+  #apt::ppa { 'ppa:ondrej/php5-5.6':
+  #  require => Apt::Key['4F4EA0AAE5267A6C']
+  #}
+
   class { '::php':
     service       => 'apache',
     version       => 'latest',
@@ -18,11 +24,11 @@ class profiles::php {
   php::module { 'php5-apcu': }
 
   class { 'php::devel':
-    require => Class['php'],
+    require => Class['::php'],
   }
 
   class { 'php::pear':
-    require => Class['php'],
+    require => Class['::php'],
   }
 
   php::pear::config {
@@ -39,25 +45,51 @@ class profiles::php {
     repository  => 'pear.phing.info'
   }
 
-/*  php::extension { 'oauth':
-    ensure   => latest,
-    package  => 'oauth',
-    provider => 'pecl',
-    require  => Class['::php::dev']
+  # Required extensions
+  package { 'libyaml-dev':
+    ensure => present,
   }
 
-  php::config { 'php-extension-oauth':
-    file   => "${::php::params::config_root_ini}/oauth.ini",
-    config => [
-      'set ".anon/extension" "oauth.so"'
+  ::php::pecl::module { 'yaml':
+    use_package => no,
+    ensure => present,
+    require => [Php::Pear::Config['download_dir'], Package['libyaml-dev']]
+  }
+
+  ::profiles::php::ini { 'yaml.ini':
+    value   => [
+      'extension=yaml.so'
     ],
-    require => Php::Extension['oauth']
+    ini     => '/etc/php5/mods-available/yaml.ini',
+    notify  => Service['apache'],
+    require => Php::Pecl::Module['yaml']
   }
 
-  exec { 'php-enable-oauth':
-    command => '/usr/sbin/php5enmod oauth',
-    unless  => '/usr/bin/php -i | grep oauth.ini',
-    require => Php::Config['php-extension-oauth']
-  }*/
+  file { ['/etc/php5/apache2/conf.d/20-yaml.ini', '/etc/php5/cli/conf.d/20-yaml.ini']:
+    ensure => link,
+    target => '/etc/php5/mods-available/yaml.ini',
+    require => ::Profiles::Php::Ini['yaml.ini']
+  }
+
+  php::pecl::module { 'oauth':
+    use_package => yes,
+    ensure      => present,
+    require     => Php::Pear::Config['download_dir']
+  }
+
+  ::profiles::php::ini { 'oauth.ini':
+    value   => [
+      'extension=oauth.so'
+    ],
+    ini     => '/etc/php5/mods-available/oauth.ini',
+    notify  => Service['apache'],
+    require => Php::Pecl::Module['oauth']
+  }
+
+  file { ['/etc/php5/apache2/conf.d/20-oauth.ini', '/etc/php5/cli/conf.d/20-oauth.ini']:
+    ensure => link,
+    target => '/etc/php5/mods-available/oauth.ini',
+    require => ::Profiles::Php::Ini['oauth.ini']
+  }
 
 }

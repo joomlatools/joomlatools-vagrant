@@ -14,23 +14,6 @@ file { '/etc/profile.d/joomlatools-box.sh':
   content => "export JOOMLATOOLS_BOX=${::box_version}\n",
 }
 
-user { 'vagrant': }
-
-class {'apt':
-  always_apt_update => true,
-}
-
-Class['::apt::update'] -> Package <|
-  title != 'python-software-properties'
-  and title != 'software-properties-common'
-|>
-
-apt::key { '4F4EA0AAE5267A6C': }
-
-apt::ppa { 'ppa:ondrej/php5-5.6':
-  require => Apt::Key['4F4EA0AAE5267A6C']
-}
-
 apt::ppa { 'ppa:resmo/git-ftp': }
 
 include '::gnupg'
@@ -47,63 +30,6 @@ file { '/home/vagrant/.bash_aliases':
   owner  => vagrant,
   group  => vagrant,
   source => 'puppet:///modules/puphpet/dot/.bash_aliases',
-}
-
-package { [
-  'build-essential',
-  'vim',
-  'curl',
-  'git-core',
-  'unzip'
-]:
-  ensure  => 'installed'
-}
-
-
-package { 'libyaml-dev':
-  ensure => present,
-}
-
-php::pecl::module { 'yaml':
-  use_package => no,
-  ensure => present,
-  require => [Php::Pear::Config['download_dir'], Package['libyaml-dev']]
-}
-
-puphpet::ini { 'yaml':
-  value   => [
-    'extension=yaml.so'
-  ],
-  ini     => '/etc/php5/mods-available/yaml.ini',
-  notify  => Service['apache'],
-  require => [Class['php'], Php::Pecl::Module['yaml']]
-}
-
-file { ['/etc/php5/apache2/conf.d/20-yaml.ini', '/etc/php5/cli/conf.d/20-yaml.ini']:
-  ensure => link,
-  target => '/etc/php5/mods-available/yaml.ini',
-  require => Puphpet::Ini['yaml']
-}
-
-php::pecl::module { 'oauth':
-  use_package => yes,
-  ensure      => present,
-  require     => Php::Pear::Config['download_dir']
-}
-
-puphpet::ini { 'oauth':
-  value   => [
-    'extension=oauth.so'
-  ],
-  ini     => '/etc/php5/mods-available/oauth.ini',
-  notify  => Service['apache'],
-  require => [Class['php'], Php::Pecl::Module['oauth']]
-}
-
-file { ['/etc/php5/apache2/conf.d/20-oauth.ini', '/etc/php5/cli/conf.d/20-oauth.ini']:
-  ensure => link,
-  target => '/etc/php5/mods-available/oauth.ini',
-  require => Puphpet::Ini['oauth']
 }
 
 class { 'xdebug':
@@ -289,11 +215,6 @@ package { 'git-ftp':
 
 package { 'httpie':
   ensure => latest
-}
-
-swap_file::files { 'default':
-  ensure   => present,
-  swapfilesize => '512 MB'
 }
 
 class { 'hhvm':

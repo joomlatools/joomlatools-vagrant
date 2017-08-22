@@ -101,13 +101,6 @@ If you want to make changes to the box's infrastructure, you can do so by buildi
    bundle install
    ```
 
-1. Download the required Puppet modules:
-
-   ```
-   cd puppet
-   librarian-puppet install --path modules/common/
-   ```
-
 1. Go to the repository folder and build the box:
 
     ```
