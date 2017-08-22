@@ -1,0 +1,40 @@
+FORGE
+  remote: https://forgeapi.puppetlabs.com
+  specs:
+    herculesteam-augeasproviders_core (2.1.3)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+    herculesteam-augeasproviders_sysctl (2.2.0)
+      herculesteam-augeasproviders_core (< 3.0.0, >= 2.1.0)
+    petems-swap_file (4.0.0)
+      herculesteam-augeasproviders_core (< 3.0.0, >= 2.1.0)
+      herculesteam-augeasproviders_sysctl (< 3.0.0, >= 2.1.0)
+      puppetlabs-stdlib (< 5.0.0, >= 4.7.0)
+    puppet-staging (2.2.0)
+    puppetlabs-apt (1.8.0)
+      puppetlabs-stdlib (>= 2.2.1)
+    puppetlabs-concat (4.0.1)
+      puppetlabs-stdlib (< 5.0.0, >= 4.13.1)
+    puppetlabs-inifile (2.0.0)
+    puppetlabs-mysql (3.11.0)
+      puppet-staging (< 3.0.0, >= 1.0.1)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+    puppetlabs-stdlib (4.19.0)
+
+GIT
+  remote: https://github.com/jippi/puppet-php.git
+  ref: master
+  sha: ebc85247af025b7d79c3682076e7c59f5f44b905
+  specs:
+    jippi-nodes-php (0.9.0)
+      puppetlabs-apt (> 0.0.0)
+      puppetlabs-inifile (> 0.0.0)
+      puppetlabs-stdlib (> 0.0.0)
+
+DEPENDENCIES
+  jippi-nodes-php (>= 0)
+  petems-swap_file (>= 0)
+  puppetlabs-apt (= 1.8.0)
+  puppetlabs-concat (>= 0)
+  puppetlabs-mysql (>= 0)
+  puppetlabs-stdlib (>= 0)
+
