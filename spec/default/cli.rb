@@ -4,6 +4,10 @@ require 'spec_helper'
 describe '## Command Line Tools' do
     let(:sudo_options) { '-u vagrant -i' } # Simulate a login as the user, so that the PATH variable is loaded
 
+    describe command('echo $JOOMLATOOLS_BOX') do
+      its(:stdout) { should match /\d\.\d+\.\d+/ }
+    end
+
     describe command('id') do
        its(:stdout) { should match /vagrant/ }
     end

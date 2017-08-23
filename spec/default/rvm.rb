@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-rvm_default_ruby = 'ruby-2.2'
+rvm_default_ruby = 'ruby-2.2.6'
 rvm_init_script = File.join('', 'home', 'vagrant', '.rvm', 'scripts', 'rvm' )
 
 describe '## RVM and Ruby' do

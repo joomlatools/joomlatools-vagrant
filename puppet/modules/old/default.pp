@@ -15,21 +15,6 @@ apache::vhost { 'phpmyadmin':
   require       => Class['phpmyadmin']
 }
 
-single_user_rvm::install { 'vagrant':
-  require => Gnupg_key['gpg-rvm-signature']
-}
-single_user_rvm::install_ruby { '2.2':
-  user => vagrant
-}
-
-exec {'set-default-ruby-for-vagrant':
-  user        => vagrant,
-  command     => 'bash -c "source ~/.rvm/scripts/rvm; rvm --default use 2.2"',
-  environment => ['HOME=/home/vagrant'],
-  path        => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/vagrant/.rvm/bin/',
-  require     => Single_user_rvm::Install_ruby['2.2']
-}
-
 class {'mailcatcher':
   require => Exec['set-default-ruby-for-vagrant']
 }

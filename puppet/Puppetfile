@@ -16,3 +16,5 @@ mod 'camptocamp-openssl', '1.2.4'
 
 mod 'golja-gnupg', '1.2.3'
 mod 'petems-swap_file', '4.0.0'
+
+mod 'eirc-single_user_rvm', '0.3.0'
