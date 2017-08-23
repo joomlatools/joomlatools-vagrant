@@ -22,7 +22,7 @@ class profiles::apache {
     path    => ['/usr/bin' , '/bin', '/usr/sbin/'],
     creates => '/etc/apache2/conf-available/fqdn',
     unless  => 'grep "ServerName joomlatools" /etc/apache2/conf-enabled/fqdn.conf',
-    require => Class['::apache']
+    require => Package['apache']
   }
 
   apache::dotconf { 'custom':
@@ -42,7 +42,7 @@ class profiles::apache {
   file { '/etc/apache2/conf-available/hhvm.conf':
     ensure  => file,
     content => $apache_hhvm_proxy,
-    require => Class['::apache']
+    require => Package['apache']
   }
 
   exec { 'disable-default-vhost':

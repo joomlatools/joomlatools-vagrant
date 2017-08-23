@@ -55,6 +55,13 @@ GIT
     example42-php (2.0.26)
       example42-puppi (>= 2.0.0)
 
+GIT
+  remote: https://github.com/frastel/puppet-phpmyadmin
+  ref: master
+  sha: b66963cdaffd3f0787311bfb7cecd90cd2933db7
+  specs:
+    puppet-phpmyadmin (0.0.1)
+
 DEPENDENCIES
   camptocamp-openssl (= 1.2.4)
   eirc-single_user_rvm (= 0.3.0)
@@ -62,6 +69,7 @@ DEPENDENCIES
   example42-php (>= 0)
   golja-gnupg (= 1.2.3)
   petems-swap_file (= 4.0.0)
+  puppet-phpmyadmin (>= 0)
   puppetlabs-apt (= 1.8.0)
   puppetlabs-concat (= 4.0.1)
   puppetlabs-mysql (= 3.11.0)

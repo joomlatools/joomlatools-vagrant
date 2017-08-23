@@ -1,19 +1,6 @@
 
 apt::ppa { 'ppa:resmo/git-ftp': }
 
-class { 'phpmyadmin':
-  require => [Class['mysql::server'], Class['mysql::config'], Class['php']],
-}
-
-apache::vhost { 'phpmyadmin':
-  server_name   => 'phpmyadmin',
-  serveraliases => 'phpmyadmin.joomla.box',
-  docroot       => '/usr/share/phpmyadmin',
-  port          => 8080,
-  priority      => '10',
-  template      => 'apache/virtualhost/vhost-no-zray.conf.erb',
-  require       => Class['phpmyadmin']
-}
 
 class {'mailcatcher':
   require => Exec['set-default-ruby-for-vagrant']
