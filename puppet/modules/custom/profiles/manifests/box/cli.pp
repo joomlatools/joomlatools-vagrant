@@ -1,6 +1,7 @@
-class box {
+class profiles::box::cli {
+
   file { '/home/vagrant/box':
-    source => 'puppet:///modules/box/scripts',
+    source => 'puppet:///modules/profiles/box/cli/scripts',
     recurse => true,
     owner    => vagrant,
     group    => vagrant

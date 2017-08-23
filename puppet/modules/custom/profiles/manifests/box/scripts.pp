@@ -1,7 +1,7 @@
-class profiles::scripts {
+class profiles::box::scripts {
 
   file { '/home/vagrant/scripts':
-    source => 'puppet:///modules/profiles/scripts',
+    source => 'puppet:///modules/profiles/box/scripts',
     recurse => true,
     owner    => vagrant,
     group    => vagrant,

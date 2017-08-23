@@ -1,17 +1,17 @@
-class phpmanager {
+class profiles::box::phpmanager {
   $script_path = '/home/vagrant/phpmanager'
   $source_path = '/usr/local/src'
   $php_source_path = "${source_path}/php"
   $xdebug_source_path = "${source_path}/xdebug"
   $installation_path = '/opt'
 
-  class {"phpmanager::install": }
-  class {"phpmanager::buildtools": }
+  include ::profiles::box::phpmanager::install
+  include ::profiles::box::phpmanager::buildtools
 }
 
-class phpmanager::install {
+class profiles::box::phpmanager::install {
   file { '/home/vagrant/phpmanager':
-    source => 'puppet:///modules/phpmanager/scripts',
+    source => 'puppet:///modules/profiles/box/phpmanager/scripts',
     recurse => true,
     owner    => vagrant,
     group    => vagrant
@@ -65,7 +65,7 @@ class phpmanager::install {
   }
 }
 
-class phpmanager::buildtools {
+class profiles::box::phpmanager::buildtools {
   package { ['autoconf2.13', 're2c', 'apache2-dev', 'bison', 'g++-4.4', 'gcc-4.4']: ensure  => 'installed' }
   package { ['libcurl4-openssl-dev', 'libmysqlclient-dev', 'libmcrypt-dev', 'libbz2-dev', 'libjpeg-dev', 'libpng12-dev', 'libfreetype6-dev', 'libicu-dev', 'libxml2-dev', 'libxslt1-dev', 'libssl-dev']: ensure => 'installed' }
 

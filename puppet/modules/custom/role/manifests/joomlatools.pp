@@ -5,9 +5,10 @@ class role::joomlatools inherits role {
   include ::profiles::mysql
 
   include ::profiles::rvm
+  include ::profiles::nodejs
 
   include ::profiles::phpmyadmin
 
-  include ::profiles::scripts
+  include ::profiles::box
 
 }

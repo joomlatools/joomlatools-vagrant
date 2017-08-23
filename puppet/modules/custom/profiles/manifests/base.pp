@@ -12,6 +12,7 @@ class profiles::base {
       -> Augeas <| |>
 
     package { [
+        'build-essential',
         'curl',
         'git-core',
         'libaugeas-ruby',

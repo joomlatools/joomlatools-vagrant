@@ -1,5 +1,5 @@
-class nodejs {
-  include apt
+class profiles::nodejs {
+  include ::apt
 
   apt::ppa { 'ppa:chris-lea/node.js': }
 
@@ -7,4 +7,5 @@ class nodejs {
     ensure  => present,
     require => Anchor['apt::ppa::ppa:chris-lea/node.js'],
   }
+
 }
