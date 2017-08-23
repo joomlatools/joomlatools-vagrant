@@ -36,8 +36,6 @@ apache::vhost { 'joomla.box':
   template     => 'apache/virtualhost/joomlatools.vhost.conf.erb',
 }
 
-class { 'scripts': }
-
 class { 'phpmanager': }
 
 exec {'install-capistrano-gem':

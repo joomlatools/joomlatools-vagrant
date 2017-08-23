@@ -1,7 +1,7 @@
-class scripts {
+class profiles::scripts {
 
   file { '/home/vagrant/scripts':
-    source => 'puppet:///modules/scripts/scripts',
+    source => 'puppet:///modules/profiles/scripts',
     recurse => true,
     owner    => vagrant,
     group    => vagrant,
@@ -9,6 +9,7 @@ class scripts {
 
   exec { 'make-scripts-executable': 
     command => 'chmod +x /home/vagrant/scripts/remove_dotunderscore /home/vagrant/scripts/updater/login.sh',
+    unless  => 'test -x /home/vagrant/scripts/remove_dotunderscore',
     require => File['/home/vagrant/scripts']
   }
 
@@ -21,7 +22,7 @@ class scripts {
   exec { 'add-console':
     command => 'composer global require joomlatools/console:* --no-interaction',
     unless  => '[ -d /home/vagrant/.composer/vendor/joomlatools/console ]',
-    require => [File['/home/vagrant/scripts'], Class['Composer']],
+    require => [File['/home/vagrant/scripts'], Class['profiles::php::composer']],
     user    => vagrant,
     environment => 'COMPOSER_HOME=/home/vagrant/.composer'
   }

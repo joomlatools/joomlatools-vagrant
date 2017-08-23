@@ -8,4 +8,6 @@ class role::joomlatools inherits role {
 
   include ::profiles::phpmyadmin
 
+  include ::profiles::scripts
+
 }

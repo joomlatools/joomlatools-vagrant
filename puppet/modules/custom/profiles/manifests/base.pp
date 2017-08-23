@@ -22,9 +22,7 @@ class profiles::base {
     ensure  => 'installed'
     }
 
-    class {'apt':
-      always_apt_update => true,
-    }
+    include ::apt
 
     user { 'vagrant': }
 

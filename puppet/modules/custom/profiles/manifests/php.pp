@@ -28,7 +28,6 @@ class profiles::php {
     require => Package['php5', 'curl']
   }
 
-
   class { 'php::devel':
     require => Class['::php'],
   }
