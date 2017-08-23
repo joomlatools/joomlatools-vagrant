@@ -1,4 +1,4 @@
-define system::hostname(
+define profiles::system::hostname(
   $ip = $::ipaddress
 ){
   $alias = regsubst($name, '^([^.]*).*$', '\1')

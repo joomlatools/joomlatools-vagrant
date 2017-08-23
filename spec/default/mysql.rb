@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe '## MySQL' do
-    describe package('mysql-server-5.6'), :if => os[:family] == 'ubuntu' do
+    describe package('mariadb-server-10.2'), :if => os[:family] == 'ubuntu' do
       it { should be_installed }
     end
 
