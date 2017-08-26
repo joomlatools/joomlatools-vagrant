@@ -1,8 +1,4 @@
 
-class {'mailcatcher':
-  require => Exec['set-default-ruby-for-vagrant']
-}
-
 class { 'webgrind':
   require => Package['unzip'],
 }

@@ -8,6 +8,7 @@ class role::joomlatools inherits role {
   include ::profiles::nodejs
 
   include ::profiles::phpmyadmin
+  include ::profiles::mailcatcher
 
   include ::profiles::box
 
