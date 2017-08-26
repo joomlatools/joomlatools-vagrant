@@ -35,6 +35,13 @@ FORGE
     puppetlabs-stdlib (4.19.0)
 
 GIT
+  remote: https://github.com/camptocamp/puppet-archive
+  ref: 0.8.1
+  sha: 57cd546e7e32eaf3085c4548f134b5609d8562a5
+  specs:
+    camptocamp-archive (0.8.1)
+
+GIT
   remote: https://github.com/example42/puppet-apache
   ref: v2.1.13
   sha: f47cb88846a47c2159a186137f1ce095d6dc194d
@@ -63,6 +70,7 @@ GIT
     puppet-phpmyadmin (0.0.1)
 
 DEPENDENCIES
+  camptocamp-archive (>= 0)
   camptocamp-openssl (= 1.2.4)
   eirc-single_user_rvm (= 0.3.0)
   example42-apache (>= 0)

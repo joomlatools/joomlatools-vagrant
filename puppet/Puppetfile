@@ -21,3 +21,7 @@ mod 'eirc-single_user_rvm', '0.3.0'
 
 mod 'puppet-phpmyadmin',
    :git => 'https://github.com/frastel/puppet-phpmyadmin'
+
+mod 'camptocamp-archive',
+   :git => 'https://github.com/camptocamp/puppet-archive',
+   :ref => '0.8.1'

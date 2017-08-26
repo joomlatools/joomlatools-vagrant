@@ -1,17 +1,4 @@
 
-class { 'webgrind':
-  require => Package['unzip'],
-}
-
-apache::vhost { 'webgrind':
-  server_name   => 'webgrind',
-  serveraliases => 'webgrind.joomla.box',
-  docroot       => '/usr/share/webgrind-1.2',
-  port          => 8080,
-  priority      => '10',
-  template      => 'apache/virtualhost/vhost-no-zray.conf.erb',
-  require       => Class['webgrind']
-}
 
 apache::vhost { 'joomla.box':
   server_admin  => 'webmaster@localhost',
@@ -22,7 +9,7 @@ apache::vhost { 'joomla.box':
   directory     => '/var/www',
   directory_allow_override   => 'All',
   directory_options => 'Indexes FollowSymLinks MultiViews',
-  template     => 'apache/virtualhost/joomlatools.vhost.conf.erb',
+  template     => 'apache/vi rtualhost/joomlatools.vhost.conf.erb',
 }
 
 class {'wetty': }

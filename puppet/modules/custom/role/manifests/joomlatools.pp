@@ -9,6 +9,7 @@ class role::joomlatools inherits role {
 
   include ::profiles::phpmyadmin
   include ::profiles::mailcatcher
+  include ::profiles::webgrind
 
   include ::profiles::box
 
