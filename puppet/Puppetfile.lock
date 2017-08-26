@@ -20,6 +20,7 @@ FORGE
       puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
     herculesteam-augeasproviders_sysctl (2.2.0)
       herculesteam-augeasproviders_core (< 3.0.0, >= 2.1.0)
+    maestrodev-wget (1.7.3)
     petems-swap_file (4.0.0)
       herculesteam-augeasproviders_core (< 3.0.0, >= 2.1.0)
       herculesteam-augeasproviders_sysctl (< 3.0.0, >= 2.1.0)
@@ -33,6 +34,16 @@ FORGE
       puppet-staging (< 3.0.0, >= 1.0.1)
       puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
     puppetlabs-stdlib (4.19.0)
+
+GIT
+  remote: https://github.com/Mayflower/puppet-hhvm
+  ref: 0.1.2
+  sha: edd7b05b01c6d90262b36a5a9806adacb5fc2aeb
+  specs:
+    mayflower-hhvm (0.1.2)
+      maestrodev-wget (>= 1.0.0)
+      puppetlabs-apt (>= 1.0.0)
+      puppetlabs-stdlib (>= 4.0.0)
 
 GIT
   remote: https://github.com/camptocamp/puppet-archive
@@ -76,6 +87,7 @@ DEPENDENCIES
   example42-apache (>= 0)
   example42-php (>= 0)
   golja-gnupg (= 1.2.3)
+  mayflower-hhvm (>= 0)
   petems-swap_file (= 4.0.0)
   puppet-phpmyadmin (>= 0)
   puppetlabs-apt (= 1.8.0)

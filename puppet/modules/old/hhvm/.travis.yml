@@ -1,9 +1,0 @@
-language: ruby
-rvm:
-  - 2.1.0
-  - 2.0.0
-  - 1.9.3
-env:
-  - PUPPET_VERSION=3.4.3
-  - PUPPET_VERSION=3.5.1
-  - PUPPET_VERSION=3.6.2
