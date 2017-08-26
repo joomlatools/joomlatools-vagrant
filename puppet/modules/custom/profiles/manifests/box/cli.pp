@@ -19,6 +19,7 @@ class profiles::box::cli {
 
   exec { 'make-box-executable':
     command => 'chmod +x /home/vagrant/box/box',
+    unless  => 'test -x /home/vagrant/box/box',
     require => File['/home/vagrant/box']
   }
 

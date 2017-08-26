@@ -9,7 +9,8 @@ class profiles::webgrind {
     url              => 'https://github.com/alpha0010/webgrind/archive/1.2.tar.gz',
     target           => '/usr/share',
     follow_redirects => true,
-    checksum         => false
+    checksum         => false,
+    verbose          => false
   }
   ->
   file { '/usr/share/webgrind-1.2/config.php':

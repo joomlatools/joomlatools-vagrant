@@ -9,7 +9,7 @@ class profiles::box::scripts {
 
   exec { 'make-scripts-executable': 
     command => 'chmod +x /home/vagrant/scripts/remove_dotunderscore /home/vagrant/scripts/updater/login.sh',
-    unless  => 'test -x /home/vagrant/scripts/remove_dotunderscore',
+    unless  => ['test -x /home/vagrant/scripts/remove_dotunderscore', 'test -x /home/vagrant/scripts/updater/login.sh'],
     require => File['/home/vagrant/scripts']
   }
 

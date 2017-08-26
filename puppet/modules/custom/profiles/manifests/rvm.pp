@@ -1,6 +1,7 @@
 class profiles::rvm {
 
   single_user_rvm::install { 'vagrant':
+    version => latest,
     require => Gnupg_key['gpg-rvm-signature']
   }
 
