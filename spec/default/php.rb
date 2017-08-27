@@ -7,7 +7,7 @@ describe '## PHP' do
           it { should be_installed }
         end
 
-        modules = ['php5-apcu', 'php5-cli', 'php5-curl', 'php5-dev', 'php5-gd', 'php5-imagick', 'php5-intl', 'php5-json', 'php5-mcrypt', 'php5-mysql', 'php-pear', 'php5-readline', 'php5-sqlite', 'php5-xdebug']
+        modules = ['php5-apcu', 'php5-cli', 'php5-curl', 'php5-dev', 'php5-gd', 'php5-imagick', 'php5-intl', 'php5-json', 'php5-mcrypt', 'php5-mysql', 'php-pear', 'php5-readline', 'php5-sqlite'] # 'php5-xdebug']
         modules.each { |package|
           describe package(package), :if => os[:family] == 'ubuntu' do
             it { should be_installed }
