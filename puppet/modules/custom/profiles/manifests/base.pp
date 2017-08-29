@@ -20,7 +20,7 @@ class profiles::base {
         'vim',
         'zip'
     ]:
-    ensure  => 'installed'
+    ensure  => latest
     }
 
     include ::apt

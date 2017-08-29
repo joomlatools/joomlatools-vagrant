@@ -1,7 +1,17 @@
 class profiles::mysql(
   $root_password = 'root',
-  $mysqld_config = {'bind-address' => '*'}
+  $mysqld_config = {}
 ) {
+
+    $default_mysqld_config = {
+      'default-storage-engine'   => 'InnoDB',
+      'bind-address'             => '*',
+      'sql-mode'                 => 'ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION',
+      'character-set-server'     => 'utf8',
+      'collation-server'         => 'utf8_general_ci'
+    }
+
+    $mysqld_options = merge($default_mysqld_config, $mysqld_config)
 
     apt::source { 'mariadb':
         location   => 'http://mariadb.mirror.nucleus.be/repo/10.2/ubuntu',
@@ -14,7 +24,7 @@ class profiles::mysql(
         package_ensure   => latest,
         root_password    => $root_password,
         override_options => {
-          'mysqld' => $mysqld_config
+          'mysqld' => $mysqld_options
         },
         users => {
           'root@%' => {
