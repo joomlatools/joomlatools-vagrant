@@ -1,0 +1,30 @@
+forge 'https://forgeapi.puppetlabs.com'
+
+mod 'puppetlabs/apt', '1.8.0'
+mod 'puppetlabs/concat', '4.0.1'
+mod 'puppetlabs/mysql', '3.11.0'
+mod 'puppetlabs/stdlib', '4.19.0'
+
+mod 'example42-php',
+  :git => 'https://github.com/example42/puppet-php',
+  :ref => 'v2.0.27'
+mod 'mayflower-hhvm',
+  :git => 'https://github.com/Mayflower/puppet-hhvm',
+  :ref => '0.1.2'
+  
+mod 'example42-apache',
+  :git => 'https://github.com/example42/puppet-apache',
+  :ref => 'v2.1.13'
+mod 'camptocamp-openssl', '1.2.4'
+
+mod 'golja-gnupg', '1.2.3'
+mod 'petems-swap_file', '4.0.0'
+
+mod 'eirc-single_user_rvm', '0.3.0'
+
+mod 'puppet-phpmyadmin',
+   :git => 'https://github.com/frastel/puppet-phpmyadmin'
+
+mod 'camptocamp-archive',
+   :git => 'https://github.com/camptocamp/puppet-archive',
+   :ref => '0.8.1'

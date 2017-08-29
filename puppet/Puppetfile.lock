@@ -1,0 +1,97 @@
+FORGE
+  remote: https://forgeapi.puppetlabs.com
+  specs:
+    camptocamp-openssl (1.2.4)
+      puppetlabs-stdlib (< 5.0.0, >= 2.0.0)
+    eirc-single_user_rvm (0.3.0)
+    example42-firewall (2.1.3)
+      example42-iptables (>= 2.0.0)
+      example42-puppi (>= 2.0.0)
+    example42-iptables (2.1.15)
+      example42-puppi (>= 2.0.0)
+      puppetlabs-concat (>= 0)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+    example42-monitor (2.0.4)
+      example42-puppi (>= 2.0.0)
+    example42-puppi (2.2.3)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+    golja-gnupg (1.2.3)
+    herculesteam-augeasproviders_core (2.1.3)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+    herculesteam-augeasproviders_sysctl (2.2.0)
+      herculesteam-augeasproviders_core (< 3.0.0, >= 2.1.0)
+    maestrodev-wget (1.7.3)
+    petems-swap_file (4.0.0)
+      herculesteam-augeasproviders_core (< 3.0.0, >= 2.1.0)
+      herculesteam-augeasproviders_sysctl (< 3.0.0, >= 2.1.0)
+      puppetlabs-stdlib (< 5.0.0, >= 4.7.0)
+    puppet-staging (2.2.0)
+    puppetlabs-apt (1.8.0)
+      puppetlabs-stdlib (>= 2.2.1)
+    puppetlabs-concat (4.0.1)
+      puppetlabs-stdlib (< 5.0.0, >= 4.13.1)
+    puppetlabs-mysql (3.11.0)
+      puppet-staging (< 3.0.0, >= 1.0.1)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+    puppetlabs-stdlib (4.19.0)
+
+GIT
+  remote: https://github.com/Mayflower/puppet-hhvm
+  ref: 0.1.2
+  sha: edd7b05b01c6d90262b36a5a9806adacb5fc2aeb
+  specs:
+    mayflower-hhvm (0.1.2)
+      maestrodev-wget (>= 1.0.0)
+      puppetlabs-apt (>= 1.0.0)
+      puppetlabs-stdlib (>= 4.0.0)
+
+GIT
+  remote: https://github.com/camptocamp/puppet-archive
+  ref: 0.8.1
+  sha: 57cd546e7e32eaf3085c4548f134b5609d8562a5
+  specs:
+    camptocamp-archive (0.8.1)
+
+GIT
+  remote: https://github.com/example42/puppet-apache
+  ref: v2.1.13
+  sha: f47cb88846a47c2159a186137f1ce095d6dc194d
+  specs:
+    example42-apache (2.1.12)
+      example42-firewall (>= 2.0.0)
+      example42-iptables (>= 2.0.0)
+      example42-monitor (>= 2.0.0)
+      example42-puppi (>= 2.0.0)
+      puppetlabs-concat (>= 1.0.0)
+      puppetlabs-stdlib (< 5.0.0, >= 3.2.0)
+
+GIT
+  remote: https://github.com/example42/puppet-php
+  ref: v2.0.27
+  sha: 4c65e1b8f005312bab40809dcabee5714c49165d
+  specs:
+    example42-php (2.0.26)
+      example42-puppi (>= 2.0.0)
+
+GIT
+  remote: https://github.com/frastel/puppet-phpmyadmin
+  ref: master
+  sha: b66963cdaffd3f0787311bfb7cecd90cd2933db7
+  specs:
+    puppet-phpmyadmin (0.0.1)
+
+DEPENDENCIES
+  camptocamp-archive (>= 0)
+  camptocamp-openssl (= 1.2.4)
+  eirc-single_user_rvm (= 0.3.0)
+  example42-apache (>= 0)
+  example42-php (>= 0)
+  golja-gnupg (= 1.2.3)
+  mayflower-hhvm (>= 0)
+  petems-swap_file (= 4.0.0)
+  puppet-phpmyadmin (>= 0)
+  puppetlabs-apt (= 1.8.0)
+  puppetlabs-concat (= 4.0.1)
+  puppetlabs-mysql (= 3.11.0)
+  puppetlabs-stdlib (= 4.19.0)
+

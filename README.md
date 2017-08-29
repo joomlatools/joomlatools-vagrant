@@ -1,12 +1,10 @@
 ![Screenshot](/screenshot.png?raw=true)
 
-Joomlatools Vagrant
-=================
+# Joomlatools Vagrant
 
 [Joomlatools Vagrant] automates the setup of a Joomla development environment. It is capable of running a full featured LAMP stack with a single command so that you can start working on your Joomla projects quickly.
 
-Installation
-------------
+## Installation
 
 1. Install [VirtualBox](http://www.virtualbox.org/)
 
@@ -31,8 +29,7 @@ Installation
 
 There will be two new folders created called `www` and `Projects`. These folders act as shared folders between your host computer and the box.
 
-Getting started
----------------
+## Getting started
 
 1. Once you have installed the box as described above, SSH into the box:
 
@@ -50,8 +47,7 @@ Getting started
 
 1. You can now symlink and install your custom extensions into the site, manage PHP versions and much more. Head over to our [documentation pages][Joomlatools Vagrant] to learn more about the box and its possibilities.
 
-Updating to the latest version
-------------------------------
+## Updating to the latest version
 
 When new versions of the box are released you can update your local machine by executing:
 
@@ -63,8 +59,7 @@ Note that updating the box will not update an already-running Vagrant machine. T
 
 For more details refer to our [FAQ](https://www.joomlatools.com/developer/tools/vagrant/faq/#how-can-i-update-the-box-to-the-latest-version).
 
-Sharing access to the box
--------------------------
+## Sharing access to the box
 
 One of the great features of Vagrant is [Vagrant Share](https://docs.vagrantup.com/v2/share/index.html). Note that Vagrant Share requires [ngrok](https://ngrok.com/) to work. We recommend you follow these set up steps first:
 
@@ -82,8 +77,9 @@ vagrant share
 
 For more options and background please refer to the [Vagrant docs](https://docs.vagrantup.com/v2/share/index.html).
 
-For hacking on the box
-----------------------
+## Hacking on the box
+
+### Set up
 
 If you want to make changes to the box's infrastructure, you can do so by building the box from scratch. Follow these steps to get started:
 
@@ -100,7 +96,13 @@ If you want to make changes to the box's infrastructure, you can do so by buildi
     vagrant plugin install vagrant-vbguest
     ```
 
-1. Go to the repository folder and provision the box:
+1. Install dependencies with [bundler](http://bundler.io/):
+
+   ```
+   bundle install
+   ```
+
+1. Go to the repository folder and build the box:
 
     ```
     cd joomlatools-vagrant
@@ -113,8 +115,7 @@ If you want to make changes to the box's infrastructure, you can do so by buildi
     vagrant provision
     ```
 
-Building and releasing using Packer
------------------------------------
+### Building and releasing using Packer
 
 We use [Packer](https://www.packer.io/) to automatically build and deploy the box on [Atlas](https://atlas.hashicorp.com/joomlatools/box). To launch a build, follow these steps:
 
@@ -162,8 +163,14 @@ The version number is defined in the post-processor section and can be found at 
 
 You can follow-up the build progress on the [Builds](https://atlas.hashicorp.com/builds) page. Once it's finished, the new version will be automatically available on the [your boxes](https://atlas.hashicorp.com/vagrant) section. Add a changelog and release it to the public.
 
-Reporting issues
-----------------
+### Run ServerSpec tests
+
+1. Install `serverspec` with `gem install`
+2. Run the tests: `rake spec`
+
+Note: to run _on_ the box, run `BACKEND=exec rake spec`
+
+## Reporting issues
 
 The box is a very complex piece of technology, based on many different open source tools and libraries many of which are far beyond our capabilities and understanding.
 

@@ -1,0 +1,16 @@
+---
+profiles::php::apache_ini_settings:
+  - set 'PHP/upload_max_filesize' '10M'
+  - set 'PHP/post_max_size' '12M'
+  - set 'PHP/display_errors' 'On'
+  - set 'PHP/short_open_tag' 'On'
+  - set 'PHP/html_errors' 'On'
+  - set 'PHP/error_reporting' 'E_ALL & ~E_STRICT & ~E_DEPRECATED & ~E_NOTICE'
+  - set 'PHP/memory_limit' '256M'
+  - set 'Date/date.timezone' 'Europe/Brussels'
+profiles::php::cli_ini_settings:
+  - set 'Date/date.timezone' 'Europe/Brussels'
+
+profiles::mysql::root_password: 'root'
+profiles::mysql::mysqld_config:
+  default-storage-engine: InnoDB
