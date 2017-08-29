@@ -289,9 +289,7 @@ command_install() {
     sudo /opt/php/${VERSION}/bin/pecl channel-update pecl.php.net
 
     # Build Xdebug
-    if [[ "$SHORT" -lt 7000 ]] ; then
-        sub_xdebug "$VERSION" "$LOGFILE"
-    fi
+    sub_xdebug "$VERSION" "$LOGFILE"
 
     # Install z-ray if applicable
     sub_zray "$VERSION"
