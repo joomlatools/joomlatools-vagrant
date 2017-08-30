@@ -11,8 +11,7 @@ class profiles::phpmyadmin {
     serveraliases => 'phpmyadmin.joomla.box',
     docroot       => '/usr/share/phpmyadmin',
     port          => 8080,
-    priority      => '10',
-    template      => 'profiles/apache/virtualhost/vhost-no-zray.conf.erb',
+    priority      => '10'
   }
 
 }

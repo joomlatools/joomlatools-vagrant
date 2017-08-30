@@ -19,10 +19,6 @@ class Start extends Command
         `sudo service apache2 start 2>&1 1> /dev/null`;
         `sudo service mysql start 2>&1 1> /dev/null`;
 
-        if (\Helper\System::getEngine() === 'hhvm') {
-            `sudo service hhvm start  2>&1 1> /dev/null`;
-        }
-
         $output->writeln('Server has been started');
     }
 }

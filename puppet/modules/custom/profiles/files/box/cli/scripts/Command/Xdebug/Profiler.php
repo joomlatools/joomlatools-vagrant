@@ -60,18 +60,6 @@ EOF
             $this->getApplication()->find('xdebug:enable')->run(new ArrayInput(array('command' => 'xdebug:enable')), new NullOutput());
         }
 
-        $inis = \Helper\Ini::findIniFiles(array('zray.ini'), false);
-        $ini  = array_pop($inis);
-        if ($action == 'start' && file_exists($ini))
-        {
-            $contents = file_get_contents($ini);
-            if (preg_match('/^zend_extension\\s*=\\s*.+zray\\.so/', $contents))
-            {
-                $output->writeln('[<comment>warning</comment>] <info>Zend Z-Ray</info> is enabled. This will generate a lot of profiler output!');
-                $output->writeln('[<comment>warning</comment>] You can disable <info>Zend Z-Ray</info> with this command: <comment>box zray:disable</comment>');
-            }
-        }
-
         $current = \Helper\Ini::getPHPConfig('xdebug.profiler_enable');
         $value   = $action == 'start' ? 1 : 0;
         $word    = $action == 'start' ? 'started' : 'stopped';

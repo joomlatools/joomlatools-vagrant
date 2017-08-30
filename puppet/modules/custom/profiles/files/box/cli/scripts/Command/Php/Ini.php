@@ -92,10 +92,6 @@ EOF
 
     protected function _getIniOverride()
     {
-        if (\Helper\System::getEngine() === 'hhvm') {
-            return '/etc/hhvm/php.ini';
-        }
-
         $bin = \Helper\System::getPHPCommand();
         $filelist = `$bin -r 'echo php_ini_scanned_files();'`;
 

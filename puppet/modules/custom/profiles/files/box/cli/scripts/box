@@ -40,7 +40,6 @@ $application->add(new Command\Server\Restart());
 $application->add(new Command\Server\Start());
 $application->add(new Command\Server\Stop());
 
-$application->add(new Command\Php\Engine());
 $application->add(new Command\Php\Ini());
 $application->add(new Command\Php\UseVersion());
 $application->add(new Command\Php\ListVersion());
@@ -51,9 +50,6 @@ $application->add(new Command\Php\Reset());
 $application->add(new Command\Varnish\Enable());
 $application->add(new Command\Varnish\Disable());
 $application->add(new Command\Varnish\Clear());
-
-$application->add(new Command\Zray\Disable());
-$application->add(new Command\Zray\Enable());
 
 $application->add(new Command\Backup());
 $application->add(new Command\Restore());

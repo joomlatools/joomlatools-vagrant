@@ -23,8 +23,7 @@ class profiles::webgrind {
     serveraliases => 'webgrind.joomla.box',
     docroot       => '/usr/share/webgrind-1.2',
     port          => 8080,
-    priority      => '10',
-    template      => 'profiles/apache/virtualhost/vhost-no-zray.conf.erb'
+    priority      => '10'
   }
 
 }
