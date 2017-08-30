@@ -65,7 +65,7 @@ class profiles::box::tools {
     unless  => '[ -d /usr/share/phpmetrics/vendor/halleck45 ]',
     user    => vagrant,
     environment => 'COMPOSER_HOME=/home/vagrant/.composer',
-    require => [File['/usr/share/phpmetrics'], Class['profiles::php::composer']]
+    require => [File['/usr/share/phpmetrics'], Anchor['php::end']]
   }
 
   exec { 'add-phpmetrics-to-path':
@@ -80,7 +80,7 @@ class profiles::box::tools {
     creates     => "/home/vagrant/.composer/vendor/phing/phing",
     user        => vagrant,
     environment => "COMPOSER_HOME=/home/vagrant/.composer",
-    require     => Class['php::composer']
+    require     => Anchor['php::end']
   }
 
 }

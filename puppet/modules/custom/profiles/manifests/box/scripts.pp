@@ -22,7 +22,7 @@ class profiles::box::scripts {
   exec { 'add-console':
     command => 'composer global require joomlatools/console:* --no-interaction',
     unless  => '[ -d /home/vagrant/.composer/vendor/joomlatools/console ]',
-    require => [File['/home/vagrant/scripts'], Class['profiles::php::composer']],
+    require => [File['/home/vagrant/scripts'], Anchor['php::end']],
     user    => vagrant,
     environment => 'COMPOSER_HOME=/home/vagrant/.composer'
   }
