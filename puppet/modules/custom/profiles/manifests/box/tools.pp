@@ -75,4 +75,12 @@ class profiles::box::tools {
     require => Exec['install-phpmetrics']
   }
 
+  exec { 'install-phing':
+    command     => '/usr/local/bin/composer global require phing/phing:"2.*" --no-interaction',
+    creates     => "/home/vagrant/.composer/vendor/phing/phing",
+    user        => vagrant,
+    environment => "COMPOSER_HOME=/home/vagrant/.composer",
+    require     => Class['php::composer']
+  }
+
 }
