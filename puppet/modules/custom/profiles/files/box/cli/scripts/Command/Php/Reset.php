@@ -16,10 +16,6 @@ class Reset extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (\Helper\System::getEngine() === 'hhvm') {
-            $this->getApplication()->find('php:engine')->run(new ArrayInput(array('command' => 'php:engine', 'engine' => 'zend')), $output);
-        }
-
         passthru('phpmanager restore');
     }
 }

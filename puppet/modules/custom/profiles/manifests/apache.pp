@@ -34,17 +34,6 @@ class profiles::apache {
   apache::module { 'proxy_fcgi': }
   apache::module { 'headers': }
 
-  $apache_hhvm_proxy = "
-<FilesMatch \\.php$>
-  SetHandler \"proxy:fcgi://127.0.0.1:9000\"
-</FilesMatch>"
-
-  file { '/etc/apache2/conf-available/hhvm.conf':
-    ensure  => file,
-    content => $apache_hhvm_proxy,
-    require => Package['apache']
-  }
-
   exec { 'disable-default-vhost':
     command => 'a2dissite 000-default',
     onlyif  => 'test -L /etc/apache2/sites-enabled/000-default.conf',

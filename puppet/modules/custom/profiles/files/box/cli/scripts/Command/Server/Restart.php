@@ -16,8 +16,8 @@ class Restart extends Command
              ->addArgument(
                  'service',
                  InputArgument::IS_ARRAY,
-                 'Service to restart. Can be one or more of: apache|varnish|mysql|hhvm. Leave empty to restart all services at once.',
-                array('apache', 'varnish', 'mysql', 'hhvm')
+                 'Service to restart. Can be one or more of: apache|varnish|mysql. Leave empty to restart all services at once.',
+                array('apache', 'varnish', 'mysql')
              );
     }
 
@@ -26,20 +26,11 @@ class Restart extends Command
         $services = $input->getArgument('service');
 
         if (!count($services)) {
-            $services = array('apache2', 'varnish', 'mysql', 'hhvm');
+            $services = array('apache2', 'varnish', 'mysql');
         }
 
         if (($key = array_search('apache', $services)) !== false) {
             $services[$key] = 'apache2';
-        }
-
-        if (($key = array_search('hhvm', $services)) !== false)
-        {
-            if (\Helper\System::getEngine() === 'hhvm') {
-                `sudo service hhvm restart  2>&1 1> /dev/null`;
-            }
-
-            unset($services[$key]);
         }
 
         foreach ($services as $service) {

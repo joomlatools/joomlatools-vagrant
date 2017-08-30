@@ -8,9 +8,6 @@ mod 'puppetlabs/stdlib', '4.19.0'
 mod 'example42-php',
   :git => 'https://github.com/example42/puppet-php',
   :ref => 'v2.0.27'
-mod 'mayflower-hhvm',
-  :git => 'https://github.com/Mayflower/puppet-hhvm',
-  :ref => '0.1.2'
   
 mod 'example42-apache',
   :git => 'https://github.com/example42/puppet-apache',
