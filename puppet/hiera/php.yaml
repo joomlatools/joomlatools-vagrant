@@ -57,12 +57,15 @@ php::extensions:
   json: {}
   mbstring: {}
   mcrypt: {}
-  mysql: {}
+  mysql:
+    settings:
+      extension: ~ # Prevent mysql.so from being loaded. See https://github.com/voxpupuli/puppet-php/pull/330#issuecomment-319694939
   oauth:
     package_prefix: php-
-  # sqlite: {}
+  sqlite3: {}
   tidy: {}
   xdebug:
+    zend: true
     package_prefix: php-
     settings:
       xdebug/xdebug.remote_autostart: 0
