@@ -6,7 +6,7 @@ class profiles::box {
   include ::profiles::box::scripts
   include ::profiles::box::tools
   include ::profiles::box::cli
-  # include ::profiles::box::phpmanager
+  include ::profiles::box::phpmanager
 
   apache::vhost { 'joomla.box':
     server_admin  => 'webmaster@localhost',

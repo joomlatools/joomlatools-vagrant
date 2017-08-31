@@ -67,7 +67,7 @@ class profiles::box::phpmanager::install {
 
 class profiles::box::phpmanager::buildtools {
   package { ['autoconf2.13', 're2c', 'apache2-dev', 'bison', 'g++-4.4', 'gcc-4.4']: ensure  => 'installed' }
-  package { ['libcurl4-openssl-dev', 'libmysqlclient-dev', 'libmcrypt-dev', 'libbz2-dev', 'libjpeg-dev', 'libpng12-dev', 'libfreetype6-dev', 'libicu-dev', 'libxml2-dev', 'libxslt1-dev', 'libssl-dev']: ensure => 'installed' }
+  package { ['libcurl4-openssl-dev', 'libmariadbclient-dev', 'libmcrypt-dev', 'libbz2-dev', 'libjpeg-dev', 'libpng12-dev', 'libfreetype6-dev', 'libicu-dev', 'libxml2-dev', 'libxslt1-dev', 'libssl-dev']: ensure => 'installed' }
 
   puppi::netinstall { 'bison-2.2':
     url => 'http://ftp.gnu.org/gnu/bison/bison-2.2.tar.gz',
