@@ -133,6 +133,10 @@ command_use() {
         sudo /usr/bin/update-alternatives --set "${SBINARY}" "/opt/php/$VERSION/sbin/$SBINARY" &> /dev/null
     done
 
+    sudo rm -f /run/php/php-fpm.sock
+    sudo ln -s "/run/php/${VERSION}-fpm.sock" /run/php/php-fpm.sock
+    sudo service php-fpm restart
+
     echo -e "Installed binaries. PHP version is now:\n"
     php -v
 }
@@ -275,6 +279,10 @@ command_restore() {
     do
         sudo /usr/bin/update-alternatives --auto "${SBINARY}" &> /dev/null
     done
+
+    sudo rm -f /run/php/php-fpm.sock
+    sudo ln -s "/run/php/php7.1-fpm.sock" /run/php/php-fpm.sock
+    sudo service php-fpm restart
 
     echo -e "Restored PHP, version is now: \n"
     php -v

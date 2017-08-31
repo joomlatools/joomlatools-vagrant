@@ -33,4 +33,19 @@ class profiles::php {
     require => Anchor['php::end']
   }
 
+  file { '/etc/init/php-fpm.conf':
+    ensure => present,
+    source => 'puppet:///modules/profiles/php/php-fpm.conf'
+  }
+
+  service { 'php-fpm':
+    ensure     => running,
+    provider   => 'upstart',
+    hasrestart => true,
+    restart    => 'service php-fpm reload',
+    hasstatus  => true,
+    subscribe  => File['/etc/init/php-fpm.conf'],
+    require    => Anchor['php::end']
+  }
+
 }
