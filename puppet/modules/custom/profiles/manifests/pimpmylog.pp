@@ -15,7 +15,7 @@ class profiles::pimpmylog {
         path    => '/usr/bin',
         user    => vagrant,
         environment => 'COMPOSER_HOME=/home/vagrant/.composer',
-        require => [File['/usr/share/pimpmylog'], Class['profiles::php::composer']]
+        require => [File['/usr/share/pimpmylog'], Anchor['php::end']]
     }
 
     exec { 'make-apache-logrotate-world-readable':

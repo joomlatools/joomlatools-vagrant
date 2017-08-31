@@ -1,0 +1,85 @@
+---
+php::globals::php_version: '7.1'
+php::repo::ubuntu::ppa: 'ondrej/php'
+php::manage_repos: true
+php::package_prefix: 'php7.1-'
+php::ensure: 'latest'
+php::config_root_ini: '/etc/php/7.1/mods-available'
+php::fpm_service_name: 'php7.1-fpm'
+php::ext_tool_enable: '/usr/sbin/phpenmod -v 7.1'
+php::ext_tool_query: '/usr/sbin/phpquery -v 7.1'
+php::phpunit: true
+php::settings:
+  PHP/upload_max_filesize: '128M'
+  PHP/post_max_size: '129M'
+  PHP/default_charset: 'UTF-8'
+  PHP/display_errors: 'On'
+  PHP/display_startup_errors: 'On'
+  PHP/short_open_tag: 'On'
+  PHP/html_errors: 'On'
+  PHP/error_reporting: 'E_ALL & ~E_STRICT & ~E_DEPRECATED & ~E_NOTICE'
+  PHP/memory_limit: '256M'
+  PHP/expose_php: 'On'
+  PHP/sendmail_path: '/home/vagrant/.rvm/gems/ruby-2.2.1/bin/catchmail -fnoreply@example.com'
+  Date/date.timezone: 'UTC'
+  opcache/opcache.validate_timestamps: 'On' # Disable on production machines!
+  openssl/openssl.cafile: /etc/ssl/certs/ca-certificates.crt
+  openssl/openssl.capath: /usr/lib/ssl/
+
+php::fpm::inifile: '/etc/php/7.1/fpm/php.ini'
+php::fpm::config::pool_base_dir: '/etc/php/7.1/fpm/pool.d/'
+php::fpm::config::config_file: '/etc/php/7.1/fpm/php-fpm.conf'
+php::fpm::config::emergency_restart_threshold: '5'
+php::fpm::config::emergency_restart_interval: '1m'
+
+php::cli::inifile: '/etc/php/7.1/cli/php.ini'
+
+php::fpm::pools:
+  www:
+    listen: '/var/run/php-fpm.sock'
+    listen_owner: 'www-data'
+    listen_group: 'www-data'
+    pm_max_children: 10
+    pm_start_servers: 3
+    pm_min_spare_servers: 3
+    pm_max_spare_servers: 5
+    pm_max_requests: 250
+    pm_status_path: '/php-fpm-status'
+
+php::extensions:
+  apcu:
+    package_prefix: php-
+  curl: {}
+  gd: {}
+  imagick:
+    package_prefix: php-
+  intl: {}
+  json: {}
+  mbstring: {}
+  mcrypt: {}
+  mysql:
+    settings:
+      extension: ~ # Prevent mysql.so from being loaded. See https://github.com/voxpupuli/puppet-php/pull/330#issuecomment-319694939
+  oauth:
+    package_prefix: php-
+  sqlite3: {}
+  tidy: {}
+  xdebug:
+    zend: true
+    package_prefix: php-
+    settings:
+      xdebug/xdebug.remote_autostart: 0
+      xdebug/xdebug.remote_connect_back: 1
+      xdebug/xdebug.remote_enable: 1
+      xdebug/xdebug.remote_handler: "dbgp"
+      xdebug/xdebug.remote_port: 9000
+      xdebug/xdebug.remote_host: "33.33.33.1"
+      xdebug/xdebug.show_local_vars: 1
+      xdebug/xdebug.profiler_enable: 0
+      xdebug/xdebug.profiler_enable_trigger: 0
+      xdebug/xdebug.max_nesting_level: 1000
+      xdebug/xdebug.profiler_output_dir: /var/www/
+  xml: {}
+  yaml:
+    package_prefix: php-
+  zip: {}

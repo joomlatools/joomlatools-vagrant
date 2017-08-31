@@ -65,7 +65,7 @@ class profiles::box::tools {
     unless  => '[ -d /usr/share/phpmetrics/vendor/halleck45 ]',
     user    => vagrant,
     environment => 'COMPOSER_HOME=/home/vagrant/.composer',
-    require => [File['/usr/share/phpmetrics'], Class['profiles::php::composer']]
+    require => [File['/usr/share/phpmetrics'], Anchor['php::end']]
   }
 
   exec { 'add-phpmetrics-to-path':
@@ -73,6 +73,14 @@ class profiles::box::tools {
     unless  => 'grep ":/usr/share/phpmetrics/vendor/bin" /home/vagrant/.bash_profile',
     user    => vagrant,
     require => Exec['install-phpmetrics']
+  }
+
+  exec { 'install-phing':
+    command     => '/usr/local/bin/composer global require phing/phing:"2.*" --no-interaction',
+    creates     => "/home/vagrant/.composer/vendor/phing/phing",
+    user        => vagrant,
+    environment => "COMPOSER_HOME=/home/vagrant/.composer",
+    require     => Anchor['php::end']
   }
 
 }
