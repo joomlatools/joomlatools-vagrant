@@ -6,7 +6,7 @@ mod 'puppetlabs/mysql', '3.11.0'
 mod 'puppetlabs/stdlib', '4.19.0'
 
 mod 'puppet-php',
-  :git => 'https://github.com/voxpupuli/puppet-php.git',
+  :git => 'https://github.com/voxpupuli/puppet-php',
   :ref => 'v4.0.0'
   
 mod 'example42-apache',
