@@ -36,7 +36,7 @@ php::cli::inifile: '/etc/php/7.1/cli/php.ini'
 
 php::fpm::pools:
   www:
-    listen: '/var/run/php-fpm.sock'
+    listen: '/run/php/php7.1-fpm.sock'
     listen_owner: 'www-data'
     listen_group: 'www-data'
     pm_max_children: 10
