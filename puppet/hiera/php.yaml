@@ -39,10 +39,8 @@ php::fpm::pools:
     listen: '/run/php/php7.1-fpm.sock'
     listen_owner: 'www-data'
     listen_group: 'www-data'
+    pm: ondemand
     pm_max_children: 10
-    pm_start_servers: 3
-    pm_min_spare_servers: 3
-    pm_max_spare_servers: 5
     pm_max_requests: 250
     pm_status_path: '/php-fpm-status'
 
