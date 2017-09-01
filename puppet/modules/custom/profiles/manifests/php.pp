@@ -48,4 +48,9 @@ class profiles::php {
     require    => Anchor['php::end']
   }
 
+  ::php::config { 'php.ini-template':
+    file   => '/home/vagrant/php.ini-template',
+    config => hiera('php::settings', {})
+  }
+
 }

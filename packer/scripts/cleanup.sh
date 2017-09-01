@@ -1,3 +1,6 @@
+echo "removing puppet"
+sudo apt-get purge --auto-remove puppet
+
 echo "cleaning up apt"
 apt-get -y autoremove
 apt-get -y clean

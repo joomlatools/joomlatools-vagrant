@@ -127,7 +127,7 @@ foreach ($dir as $fileinfo)
             <li role="presentation" class="dropdown-header">Tools</li>
             <li><a href="http://phpmyadmin.joomla.box/">phpMyAdmin</a></li>
             <li><a href="/mailcatcher">MailCatcher</a></li>
-            <?php if (function_exists('apc_cache_info') && @apc_cache_info('opcode')): ?>
+            <?php if (function_exists('apc_cache_info')): ?>
                 <li><a href="/apc">APC dashboard</a></li>
             <?php endif; ?>
             <?php if (extension_loaded('xdebug')): ?>

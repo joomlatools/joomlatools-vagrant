@@ -87,7 +87,7 @@ class profiles::box::phpmanager::buildtools {
 
   puppi::netinstall { 'flex-2.5.4a':
     path => ["${phpmanager::installation_path}/bison-2.2/bin:/bin:/sbin:/usr/bin:/usr/sbin"],
-    url => 'ftp://ftp.gnome.org/mirror/temp/sf2015/f/fl/flex/flex/2.5.4.a/flex-2.5.4a.tar.gz',
+    url => 'https://ftp.gnu.org/old-gnu/gnu-0.2/src/flex-2.5.4.tar.gz',
     extracted_dir => 'flex-2.5.4',
     destination_dir => $phpmanager::source_path,
     postextract_command => "${phpmanager::source_path}/flex-2.5.4/configure --prefix=${phpmanager::installation_path}/flex-2.5.4 && make && sudo make install",

@@ -24,9 +24,20 @@ php::settings:
   PHP/expose_php: 'On'
   PHP/sendmail_path: '/home/vagrant/.rvm/gems/ruby-2.2.1/bin/catchmail -fnoreply@example.com'
   Date/date.timezone: 'UTC'
-  opcache/opcache.validate_timestamps: 'On' # Disable on production machines!
+  opcache/opcache.validate_timestamps: 'On'
   openssl/openssl.cafile: /etc/ssl/certs/ca-certificates.crt
   openssl/openssl.capath: /usr/lib/ssl/
+  xdebug/xdebug.remote_autostart: 0
+  xdebug/xdebug.remote_connect_back: 1
+  xdebug/xdebug.remote_enable: 1
+  xdebug/xdebug.remote_handler: "dbgp"
+  xdebug/xdebug.remote_port: 9000
+  xdebug/xdebug.remote_host: "33.33.33.1"
+  xdebug/xdebug.show_local_vars: 1
+  xdebug/xdebug.profiler_enable: 0
+  xdebug/xdebug.profiler_enable_trigger: 0
+  xdebug/xdebug.max_nesting_level: 1000
+  xdebug/xdebug.profiler_output_dir: /var/www/
 
 php::fpm::inifile: '/etc/php/7.1/fpm/php.ini'
 php::fpm::config::pool_base_dir: '/etc/php/7.1/fpm/pool.d/'
@@ -67,18 +78,6 @@ php::extensions:
   xdebug:
     zend: true
     package_prefix: php-
-    settings:
-      xdebug/xdebug.remote_autostart: 0
-      xdebug/xdebug.remote_connect_back: 1
-      xdebug/xdebug.remote_enable: 1
-      xdebug/xdebug.remote_handler: "dbgp"
-      xdebug/xdebug.remote_port: 9000
-      xdebug/xdebug.remote_host: "33.33.33.1"
-      xdebug/xdebug.show_local_vars: 1
-      xdebug/xdebug.profiler_enable: 0
-      xdebug/xdebug.profiler_enable_trigger: 0
-      xdebug/xdebug.max_nesting_level: 1000
-      xdebug/xdebug.profiler_output_dir: /var/www/
   xml: {}
   yaml:
     package_prefix: php-
