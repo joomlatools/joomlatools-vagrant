@@ -22,7 +22,7 @@ php::settings:
   PHP/error_reporting: 'E_ALL & ~E_STRICT & ~E_DEPRECATED & ~E_NOTICE'
   PHP/memory_limit: '256M'
   PHP/expose_php: 'On'
-  PHP/sendmail_path: '/home/vagrant/.rvm/gems/ruby-2.2.1/bin/catchmail -fnoreply@example.com'
+  PHP/sendmail_path: '/home/vagrant/.rvm/gems/ruby-2.2.6/bin/catchmail -fnoreply@example.com'
   Date/date.timezone: 'UTC'
   opcache/opcache.validate_timestamps: 'On'
   openssl/openssl.cafile: /etc/ssl/certs/ca-certificates.crt

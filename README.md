@@ -165,7 +165,7 @@ You can follow-up the build progress on the [Builds](https://atlas.hashicorp.com
 
 ### Run ServerSpec tests
 
-1. Install `serverspec` with `gem install`
+1. Install `serverspec` with `bundle install`
 2. Run the tests: `rake spec`
 
 Note: to run _on_ the box, run `BACKEND=exec rake spec`
