@@ -29,6 +29,7 @@ foreach ($dir as $fileinfo)
     {
         $files = array(
             'joomla-cms'           => $fileinfo->getPathname() . '/libraries/cms/version/version.php',
+            'joomla-cms-new'       => $fileinfo->getPathname() . '/libraries/src/Version.php', // 3.8+
             'joomlatools-platform' => $fileinfo->getPathname() . '/lib/libraries/cms/version/version.php',
             'joomla-1.5'           => $fileinfo->getPathname() . '/libraries/joomla/version.php'
         );
@@ -50,17 +51,21 @@ foreach ($dir as $fileinfo)
 
             $source = file_get_contents($code);
             $source = preg_replace('/<\?php/', '', $source, 1);
-            $source = preg_replace('/class JVersion/i', 'class JVersion' . $identifier, $source);
+
+            $pattern     = $application == 'joomla-cms-new' ? '/class Version/i' : '/class JVersion/i';
+            $replacement = $application == 'joomla-cms-new' ? 'class Version' . $identifier : 'class JVersion' . $identifier;
+
+            $source = preg_replace($pattern, $replacement, $source);
 
             eval($source);
 
-            $class   = 'JVersion'.$identifier;
+            $class   = $application == 'joomla-cms-new' ? '\\Joomla\\CMS\\Version'.$identifier : 'JVersion'.$identifier;
             $version = new $class();
 
             $sites[] = (object) array(
                 'name'    => $fileinfo->getFilename(),
                 'docroot' => $fileinfo->getFilename() . '/' . ($application == 'joomlatools-platform' ? 'web' : ''),
-                'type'    => $application,
+                'type'    => $application == 'joomla-cms-new' ? 'joomla-cms' : $application,
                 'version' => $canonical($version)
             );
         }
