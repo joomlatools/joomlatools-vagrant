@@ -39,6 +39,9 @@ php::settings:
   xdebug/xdebug.max_nesting_level: 1000
   xdebug/xdebug.profiler_output_dir: /var/www/
 
+php::cli::settings:
+  apc/apc.enable_cli: On
+
 php::fpm::inifile: '/etc/php/7.1/fpm/php.ini'
 php::fpm::config::pool_base_dir: '/etc/php/7.1/fpm/pool.d/'
 php::fpm::config::config_file: '/etc/php/7.1/fpm/php-fpm.conf'
