@@ -1,4 +1,6 @@
 <?php
+require_once '/home/vagrant/.composer/vendor/autoload.php';
+
 define('_JEXEC', true);
 define('JPATH_BASE', true);
 define('JPATH_PLATFORM', true);
@@ -27,46 +29,15 @@ foreach ($dir as $fileinfo)
 
     if ($fileinfo->isDir() && !$fileinfo->isDot())
     {
-        $files = array(
-            'joomla-cms'           => $fileinfo->getPathname() . '/libraries/cms/version/version.php',
-            'joomla-cms-new'       => $fileinfo->getPathname() . '/libraries/src/Version.php', // 3.8+
-            'joomlatools-platform' => $fileinfo->getPathname() . '/lib/libraries/cms/version/version.php',
-            'joomla-1.5'           => $fileinfo->getPathname() . '/libraries/joomla/version.php'
-        );
+        $version = Joomlatools\Console\Joomla\Util::getJoomlaVersion($fileinfo->getPathname());
 
-        foreach ($files as $type => $file)
+        if ($version !== false)
         {
-            if (file_exists($file))
-            {
-                $code        = $file;
-                $application = $type;
-
-                break;
-            }
-        }
-
-        if (!is_null($code) && file_exists($code))
-        {
-            $identifier = uniqid();
-
-            $source = file_get_contents($code);
-            $source = preg_replace('/<\?php/', '', $source, 1);
-
-            $pattern     = $application == 'joomla-cms-new' ? '/class Version/i' : '/class JVersion/i';
-            $replacement = $application == 'joomla-cms-new' ? 'class Version' . $identifier : 'class JVersion' . $identifier;
-
-            $source = preg_replace($pattern, $replacement, $source);
-
-            eval($source);
-
-            $class   = $application == 'joomla-cms-new' ? '\\Joomla\\CMS\\Version'.$identifier : 'JVersion'.$identifier;
-            $version = new $class();
-
             $sites[] = (object) array(
                 'name'    => $fileinfo->getFilename(),
-                'docroot' => $fileinfo->getFilename() . '/' . ($application == 'joomlatools-platform' ? 'web' : ''),
-                'type'    => $application == 'joomla-cms-new' ? 'joomla-cms' : $application,
-                'version' => $canonical($version)
+                'docroot' => $docroot . '/' . $fileinfo->getFilename() . '/' . ($version->type == 'joomlatools-platform' ? 'web' : ''),
+                'type'    => $version->type == 'joomla-cms-new' ? 'joomla-cms' : $version->type,
+                'version' => $version->release
             );
         }
     }
