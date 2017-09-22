@@ -5,7 +5,7 @@ class profiles::php {
 
   $version = hiera('php::globals::php_version', '7.1')
 
-  file { '/run/php/php-fpm.sock':
+  file { '/opt/php/php-fpm.sock':
     ensure => link,
     target => '/run/php/php7.1-fpm.sock',
     notify => Service['apache']
