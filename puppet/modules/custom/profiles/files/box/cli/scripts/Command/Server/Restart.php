@@ -16,8 +16,8 @@ class Restart extends Command
              ->addArgument(
                  'service',
                  InputArgument::IS_ARRAY,
-                 'Service to restart. Can be one or more of: apache|varnish|mysql. Leave empty to restart all services at once.',
-                array('apache', 'varnish', 'mysql')
+                 'Service to restart. Valid values: apache, php, varnish or mysql. Leave empty to restart all services at once.',
+                array('apache', 'varnish', 'mysql', 'php')
              );
     }
 
@@ -26,11 +26,15 @@ class Restart extends Command
         $services = $input->getArgument('service');
 
         if (!count($services)) {
-            $services = array('apache2', 'varnish', 'mysql');
+            $services = array('apache2', 'varnish', 'mysql', 'php');
         }
 
         if (($key = array_search('apache', $services)) !== false) {
             $services[$key] = 'apache2';
+        }
+
+        if (($key = array_search('php', $services)) !== false) {
+            $services[$key] = 'php-fpm';
         }
 
         foreach ($services as $service) {

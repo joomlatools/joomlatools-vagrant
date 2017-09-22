@@ -19,6 +19,7 @@ class Stop extends Command
         `sudo service varnish stop 2>&1 1> /dev/null`;
         `sudo service apache2 stop 2>&1 1> /dev/null`;
         `sudo service mysql stop 2>&1 1> /dev/null`;
+        `sudo service php-fpm stop 2>&1 1> /dev/null`;
 
         $output->writeln("Server has been stopped");
     }
