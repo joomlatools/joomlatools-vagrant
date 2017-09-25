@@ -1,27 +1,11 @@
 <?php
 require_once '/home/vagrant/.composer/vendor/autoload.php';
 
-define('_JEXEC', true);
 define('JPATH_BASE', true);
-define('JPATH_PLATFORM', true);
 
 $dir = new DirectoryIterator('/var/www');
-$i   = 1;
 $sites = array();
 
-$canonical = function($version) {
-    if (isset($version->RELEASE)) {
-        return 'v' . $version->RELEASE . '.' . $version->DEV_LEVEL;
-    }
-
-    // Joomla 3.5 and up uses constants instead of properties in JVersion
-    $className = get_class($version);
-    if (defined("$className::RELEASE")) {
-        return 'v'. $version::RELEASE . '.' . $version::DEV_LEVEL;
-    }
-
-    return 'unknown';
-};
 
 foreach ($dir as $fileinfo)
 {
@@ -35,9 +19,9 @@ foreach ($dir as $fileinfo)
         {
             $sites[] = (object) array(
                 'name'    => $fileinfo->getFilename(),
-                'docroot' => $docroot . '/' . $fileinfo->getFilename() . '/' . ($version->type == 'joomlatools-platform' ? 'web' : ''),
-                'type'    => $version->type == 'joomla-cms-new' ? 'joomla-cms' : $version->type,
-                'version' => $version->release
+                'docroot' => $fileinfo->getFilename() . '/' . ($application == 'joomlatools-platform' ? 'web' : ''),
+                'type'    => $application == 'joomla-cms-new' ? 'joomla-cms' : $application,
+                'version' => $canonical($version)
             );
         }
     }
