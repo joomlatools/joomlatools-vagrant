@@ -9,14 +9,20 @@ describe '## Joomlatools' do
           its(:stdout) { should match /Joomla Console tools version \d\.\d+\.\d+/ }
         end
 
-        #describe command('joomla site:create serverspectest') do
-        #  its(:exit_status) { should eq 0 }
-        #end
+        describe command('joomla site:create serverspectest') do
+          its(:exit_status) { should eq 0 }
 
-        #describe command('joomla site:delete serverspectest') do
-        #  its(:exit_status) { should eq 0 }
-        #end
+          describe command('mysql -s -N -uroot -proot -e "SHOW DATABASES;"') do
+            its(:stdout) { should match /sites_serverspectest/ }
+          end
 
+          describe command('curl -s http://joomla.box/dashboard/') do
+            its(:stdout) { should match /serverspectest/ }
+          end
+        end
+
+        describe command('joomla site:delete serverspectest') do
+          its(:exit_status) { should eq 0 }
+        end
     end
-
 end

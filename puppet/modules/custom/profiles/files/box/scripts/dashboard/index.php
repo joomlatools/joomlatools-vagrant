@@ -1,76 +1,16 @@
 <?php
-define('_JEXEC', true);
-define('JPATH_BASE', true);
-define('JPATH_PLATFORM', true);
+$result   = `/home/vagrant/.composer/vendor/bin/joomla site:list --format=json`;
+$response = json_decode($result);
 
-$dir = new DirectoryIterator('/var/www');
-$i   = 1;
-$sites = array();
+$docroot = function($site) {
+  $path = $site->name;
 
-$canonical = function($version) {
-    if (isset($version->RELEASE)) {
-        return 'v' . $version->RELEASE . '.' . $version->DEV_LEVEL;
-    }
+  if ($site->type == 'joomlatools-platform') {
+    $path .= '/web/';
+  }
 
-    // Joomla 3.5 and up uses constants instead of properties in JVersion
-    $className = get_class($version);
-    if (defined("$className::RELEASE")) {
-        return 'v'. $version::RELEASE . '.' . $version::DEV_LEVEL;
-    }
-
-    return 'unknown';
+  return $path;
 };
-
-foreach ($dir as $fileinfo)
-{
-    $code = $application = null;
-
-    if ($fileinfo->isDir() && !$fileinfo->isDot())
-    {
-        $files = array(
-            'joomla-cms'           => $fileinfo->getPathname() . '/libraries/cms/version/version.php',
-            'joomla-cms-new'       => $fileinfo->getPathname() . '/libraries/src/Version.php', // 3.8+
-            'joomlatools-platform' => $fileinfo->getPathname() . '/lib/libraries/cms/version/version.php',
-            'joomla-1.5'           => $fileinfo->getPathname() . '/libraries/joomla/version.php'
-        );
-
-        foreach ($files as $type => $file)
-        {
-            if (file_exists($file))
-            {
-                $code        = $file;
-                $application = $type;
-
-                break;
-            }
-        }
-
-        if (!is_null($code) && file_exists($code))
-        {
-            $identifier = uniqid();
-
-            $source = file_get_contents($code);
-            $source = preg_replace('/<\?php/', '', $source, 1);
-
-            $pattern     = $application == 'joomla-cms-new' ? '/class Version/i' : '/class JVersion/i';
-            $replacement = $application == 'joomla-cms-new' ? 'class Version' . $identifier : 'class JVersion' . $identifier;
-
-            $source = preg_replace($pattern, $replacement, $source);
-
-            eval($source);
-
-            $class   = $application == 'joomla-cms-new' ? '\\Joomla\\CMS\\Version'.$identifier : 'JVersion'.$identifier;
-            $version = new $class();
-
-            $sites[] = (object) array(
-                'name'    => $fileinfo->getFilename(),
-                'docroot' => $fileinfo->getFilename() . '/' . ($application == 'joomlatools-platform' ? 'web' : ''),
-                'type'    => $application == 'joomla-cms-new' ? 'joomla-cms' : $application,
-                'version' => $canonical($version)
-            );
-        }
-    }
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -160,11 +100,11 @@ foreach ($dir as $fileinfo)
               <tbody>
               <?php
               $i = 1;
-              foreach ($sites as $site): ?>
+              foreach ($response->data as $site): ?>
                 <tr>
                   <td><?php echo $i; ?></td>
                   <td>
-                    <a target="_blank" href="/<?php echo rtrim($site->docroot, "/") . '/administrator/'; ?>">
+                    <a target="_blank" href="/<?php echo rtrim($docroot($site), "/") . '/administrator/'; ?>">
                       <?php echo $site->name ?></a>
                     <small>(<?php echo $site->type ?> <?php echo $site->version; ?>)</small>
                   </td> 
@@ -173,8 +113,8 @@ foreach ($dir as $fileinfo)
                     <div class="btn-group">
                       <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Options <span class="caret"></span></a>
                       <ul class="dropdown-menu" role="menu">
-                          <li><a href="/<?php echo $site->docroot; ?>" target="_blank">Site</a></li>
-                          <li><a href="/<?php echo rtrim($site->docroot, "/") . '/administrator/'; ?>" target="_blank">Administrator</a></li>
+                          <li><a href="/<?php echo $docroot($site); ?>" target="_blank">Site</a></li>
+                          <li><a href="/<?php echo rtrim($docroot($site), "/") . '/administrator/'; ?>" target="_blank">Administrator</a></li>
                       </ul>
                     </div>
                   </td>
