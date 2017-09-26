@@ -48,7 +48,8 @@ class profiles::box::phpmanager::install {
   }
 
   exec { 'make-phpmanager-executable':
-    command => 'chmod +x /home/vagrant/phpmanager/phpmanager;',
+    command => 'chmod +x /home/vagrant/phpmanager/phpmanager',
+    unless  => 'test -x /home/vagrant/phpmanager/phpmanager',
     require => File['/home/vagrant/phpmanager']
   }
 
