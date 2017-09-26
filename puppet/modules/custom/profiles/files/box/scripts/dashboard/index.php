@@ -1,31 +1,16 @@
 <?php
-require_once '/home/vagrant/.composer/vendor/autoload.php';
+$result   = `/home/vagrant/.composer/vendor/bin/joomla site:list --format=json`;
+$response = json_decode($result);
 
-define('JPATH_BASE', true);
+$docroot = function($site) {
+  $path = $site->name;
 
-$dir = new DirectoryIterator('/var/www');
-$sites = array();
+  if ($site->type == 'joomlatools-platform') {
+    $path .= '/web/';
+  }
 
-
-foreach ($dir as $fileinfo)
-{
-    $code = $application = null;
-
-    if ($fileinfo->isDir() && !$fileinfo->isDot())
-    {
-        $version = Joomlatools\Console\Joomla\Util::getJoomlaVersion($fileinfo->getPathname());
-
-        if ($version !== false)
-        {
-            $sites[] = (object) array(
-                'name'    => $fileinfo->getFilename(),
-                'docroot' => $fileinfo->getFilename() . '/' . ($application == 'joomlatools-platform' ? 'web' : ''),
-                'type'    => $application == 'joomla-cms-new' ? 'joomla-cms' : $application,
-                'version' => $canonical($version)
-            );
-        }
-    }
-}
+  return $path;
+};
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -115,11 +100,11 @@ foreach ($dir as $fileinfo)
               <tbody>
               <?php
               $i = 1;
-              foreach ($sites as $site): ?>
+              foreach ($response->data as $site): ?>
                 <tr>
                   <td><?php echo $i; ?></td>
                   <td>
-                    <a target="_blank" href="/<?php echo rtrim($site->docroot, "/") . '/administrator/'; ?>">
+                    <a target="_blank" href="/<?php echo rtrim($docroot($site), "/") . '/administrator/'; ?>">
                       <?php echo $site->name ?></a>
                     <small>(<?php echo $site->type ?> <?php echo $site->version; ?>)</small>
                   </td> 
@@ -128,8 +113,8 @@ foreach ($dir as $fileinfo)
                     <div class="btn-group">
                       <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Options <span class="caret"></span></a>
                       <ul class="dropdown-menu" role="menu">
-                          <li><a href="/<?php echo $site->docroot; ?>" target="_blank">Site</a></li>
-                          <li><a href="/<?php echo rtrim($site->docroot, "/") . '/administrator/'; ?>" target="_blank">Administrator</a></li>
+                          <li><a href="/<?php echo $docroot($site); ?>" target="_blank">Site</a></li>
+                          <li><a href="/<?php echo rtrim($docroot($site), "/") . '/administrator/'; ?>" target="_blank">Administrator</a></li>
                       </ul>
                     </div>
                   </td>
