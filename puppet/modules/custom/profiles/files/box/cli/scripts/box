@@ -1,4 +1,4 @@
-#!/usr/bin/php5
+#!/usr/bin/env php
 <?php
 $autoload = __DIR__.'/vendor/autoload.php';
 

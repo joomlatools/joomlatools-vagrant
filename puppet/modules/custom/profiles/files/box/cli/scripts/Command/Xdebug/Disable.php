@@ -17,8 +17,6 @@ class Disable extends Xdebug
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        parent::execute($input, $output);
-
         if (!extension_loaded('xdebug'))
         {
             $output->writeln('[<comment>notice</comment>] XDebug is already disabled');
@@ -40,7 +38,7 @@ class Disable extends Xdebug
             \Helper\Ini::update($file, 'xdebug.profiler_enable', 0);
         }
 
-        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart', 'service' => array('apache'))), new NullOutput());
+        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart', 'service' => array('php'))), new NullOutput());
 
         $output->writeln('Xdebug has been disabled');
     }

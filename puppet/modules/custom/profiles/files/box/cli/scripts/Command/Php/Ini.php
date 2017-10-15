@@ -81,7 +81,7 @@ EOF
             {
                 \Helper\Ini::update($ini, $key, $value);
 
-                $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart')), $output);
+                $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart', 'service' => array('php'))), $output);
 
                 $output->writeln("$key value is now <info>$value</info>, was <info>$current</info>");
             }

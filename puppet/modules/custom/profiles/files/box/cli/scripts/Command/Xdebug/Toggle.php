@@ -17,8 +17,6 @@ class Toggle extends Xdebug
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        parent::execute($input, $output);
-
         if (extension_loaded('xdebug'))
         {
             $this->getApplication()->find('xdebug:disable')->run($input, $output);
