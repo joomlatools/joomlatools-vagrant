@@ -1,4 +1,4 @@
-#!/usr/bin/php5
+#!/usr/bin/env php
 <?php
 if (file_exists('/home/vagrant/scripts/updater/UPDATE_AVAILABLE')) {
     exit;

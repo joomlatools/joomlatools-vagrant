@@ -45,8 +45,6 @@ EOF
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        parent::execute($input, $output);
-
         $action = strtolower($input->getArgument('action'));
 
         if (!in_array($action, array('start', 'stop'))) {

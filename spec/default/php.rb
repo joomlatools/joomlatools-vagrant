@@ -3,11 +3,11 @@ require 'spec_helper'
 describe '## PHP' do
 
     describe '### Core PHP installation' do
-        describe package('php5'), :if => os[:family] == 'ubuntu' do
+        describe package('php7.1-cli'), :if => os[:family] == 'ubuntu' do
           it { should be_installed }
         end
 
-        modules = ['php5-apcu', 'php5-cli', 'php5-curl', 'php5-dev', 'php5-gd', 'php5-imagick', 'php5-intl', 'php5-json', 'php5-mcrypt', 'php5-mysql', 'php-pear', 'php5-readline', 'php5-sqlite'] # 'php5-xdebug']
+        modules = ['php-apcu', 'php7.1-cli', 'php7.1-curl', 'php7.1-dev', 'php7.1-gd', 'php-imagick', 'php7.1-intl', 'php7.1-json', 'php7.1-mcrypt', 'php7.1-mysql', 'php-pear', 'php7.1-readline', 'php7.1-sqlite3', 'php-xdebug', 'php-oauth', 'php-yaml']
         modules.each { |package|
           describe package(package), :if => os[:family] == 'ubuntu' do
             it { should be_installed }
@@ -16,7 +16,7 @@ describe '## PHP' do
 
         describe '### PHP config parameters' do
             context php_config('sendmail_path') do
-              its(:value) { should match /\/home\/vagrant\/.rvm\/gems\/ruby-2.2.1\/bin\/catchmail -fnoreply@example.com/ }
+              its(:value) { should match /\/home\/vagrant\/.rvm\/gems\/ruby-2.2.6\/bin\/catchmail -fnoreply@example.com/ }
             end
 
             context php_config('xdebug.profiler_output_dir') do
@@ -30,26 +30,6 @@ describe '## PHP' do
             context php_config('xdebug.remote_host') do
               its(:value) { should eq '33.33.33.1' }
             end
-        end
-    end
-
-    describe '### Apache module' do
-        describe package('libapache2-mod-php5'), :if => os[:family] == 'ubuntu' do
-          it { should be_installed }
-        end
-    end
-
-    describe '### HHVM' do
-        describe package('hhvm'), :if => os[:family] == 'ubuntu' do
-          it { should be_installed }
-        end
-
-        describe service('hhvm'), :if => os[:family] == 'ubuntu' do
-          it { should be_running }
-        end
-
-        describe port(9000)do
-          it { should be_listening }
         end
     end
 
@@ -86,18 +66,6 @@ describe '## PHP' do
           its(:content) { should match /Alias \/phpinfo \/home\/vagrant\/scripts\/phpinfo.php/ }
         end
 
-    end
-
-    describe '### PECL' do
-        describe command('/usr/bin/pecl list') do
-          its(:stdout) { should match /oauth/ }
-          its(:stdout) { should match /yaml/ }
-        end
-
-        describe command('/usr/bin/php -i') do
-          its(:stdout) { should match /OAuth/ }
-          its(:stdout) { should match /LibYAML/ }
-        end
     end
 
 end

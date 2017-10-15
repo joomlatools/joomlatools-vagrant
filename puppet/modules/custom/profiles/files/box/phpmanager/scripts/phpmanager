@@ -21,7 +21,8 @@ BASENAME=$(basename $0)
 AVAILABLE_PHP_VERSIONS=()
 INSTALLED_PHP_VERSIONS=()
 CURRENT_PHP_VERSION=''
-BINARIES=('php' 'pear' 'pecl' 'phar' 'phing' 'php-config' 'phpize')
+BINARIES=('php' 'pear' 'pecl' 'php-config' 'phpize')
+SBINARIES=('php-fpm')
 
 SOURCE=/usr/local/src/php
 TARGET=/opt/php/
@@ -39,13 +40,13 @@ fi
 # Print out usage
 usage() {
     echo "phpmanager v${SCRIPT_VERSION}"
-    echo "Copyright (C) 2011 - 2014 Johan Janssens and Timble CVBA. (http://www.timble.net)"
+    echo "Copyright (C) 2011 - 2017 Johan Janssens and Timble CVBA. (http://www.timble.net)"
 	echo "Usage: "
 	echo "  $BASENAME versions              -- List all available PHP versions."
 	echo "  $BASENAME available             -- Show all PHP version which have been built locally."
 	echo "  $BASENAME use <version>         -- Installs selected PHP version. Builds from source if version does not exist yet. "
 	echo "  $BASENAME install <version>     -- Attempts to build PHP version from source."
-	echo "  $BASENAME restore               -- Put the original binaries and Apache module back in place."
+	echo "  $BASENAME restore               -- Put the original PHP version back in place."
 	echo "  $BASENAME remove <version>      -- Remove given version from disk."
 	echo "  $BASENAME help                  -- Show help"
 	echo ""
@@ -124,68 +125,19 @@ command_use() {
     # Install the binaries
     for BINARY in "${BINARIES[@]}"
     do
-        # Check if we've already made backups
-        if [ ! -f "/usr/bin/${BINARY}.original" ] && [ -f "/usr/bin/${BINARY}" ] ; then
-            sudo mv "/usr/bin/${BINARY}" "/usr/bin/${BINARY}.original"
-        fi
-
-        # Now symlink the new binaries
-        if [ -f "/opt/php/$VERSION/bin/$BINARY" ] ; then
-            sudo ln -fs "/opt/php/$VERSION/bin/$BINARY" "/usr/bin/$BINARY"
-        elif [ -f "/usr/bin/$BINARY" ] ; then
-            sudo rm "/usr/bin/$BINARY"
-        fi
+        sudo /usr/bin/update-alternatives --set "${BINARY}" "/opt/php/$VERSION/bin/$BINARY" &> /dev/null
     done
 
-    # Change the Apache module
-    if [ ! -f "/usr/lib/apache2/modules/libphp5.so.original" ] ; then
-        sudo cp "/usr/lib/apache2/modules/libphp5.so" "/usr/lib/apache2/modules/libphp5.so.original"
-    fi
+    for SBINARY in "${SBINARIES[@]}"
+    do
+        sudo /usr/bin/update-alternatives --set "${SBINARY}" "/opt/php/$VERSION/sbin/$SBINARY" &> /dev/null
+    done
 
-    SHORT=$(sub_getshortversion $VERSION)
-    if [[ "$SHORT" -lt 7000 ]] ; then
-        LIBNAME="libphp5.so"
-        DELNAME="libphp7.so"
+    sudo rm -f /opt/php/php-fpm.sock
+    sudo ln -s "/run/php/${VERSION}-fpm.sock" /opt/php/php-fpm.sock
+    sudo service php-fpm restart
 
-        sudo a2dismod php7 &> /dev/null
-        sudo a2enmod php5 &> /dev/null
-    else
-        LIBNAME="libphp7.so"
-        DELNAME="libphp5.so"
-
-        if [[ ! -f "/etc/apache2/mods-available/php7.conf" ]] ; then
-            sudo cp /etc/apache2/mods-available/php5.conf /etc/apache2/mods-available/php7.conf
-        fi
-
-        sudo a2dismod php5 &> /dev/null
-        sudo a2enmod php7 &> /dev/null
-    fi
-
-    [[ -f "/usr/lib/apache2/modules/${DELNAME}" ]] && sudo rm "/usr/lib/apache2/modules/${DELNAME}"
-    sudo cp "/opt/php/${VERSION}/lib/apache/${LIBNAME}" "/usr/lib/apache2/modules/${LIBNAME}"
-
-    # Update Z-Ray symlink
-    sudo rm /opt/zray
-    sudo a2dissite 00-zray &> /dev/null
-
-    if [[ "$SHORT" -ge 5500 ]] && [[ "$SHORT" -lt 5600 ]]; then
-        sudo ln -s /opt/zray-php-104202-php5.5.31-linux-debian7-amd64/zray /opt/zray
-        sudo a2ensite 00-zray &> /dev/null
-    elif [[ "$SHORT" -ge 5600 ]] && [[ "$SHORT" -lt 7000 ]]; then
-        sudo ln -s /opt/zray-php-104202-php5.6.17-linux-debian7-amd64/zray /opt/zray
-        sudo a2ensite 00-zray &> /dev/null
-    fi
-
-    echo -n "Restarting Apache .. "
-    sudo service apache2 restart &> /dev/null
-
-    if [ $? -ne 0 ] ; then
-        echo -e "\033[31mFAILED\e[0m"
-    else
-        echo -e "\033[92mOK\033[0m"
-    fi
-
-    echo -e "Installed binaries and Apache module. PHP version is now:\n"
+    echo -e "Installed binaries. PHP version is now:\n"
     php -v
 }
 
@@ -262,37 +214,24 @@ command_install() {
     # Start the build
     sub_execute "make" "make" "$LOGFILE" "Building ${VERSION}"
 
-    if [[ "$SHORT" -lt 7000 ]] ; then
-        LIBNAME="libphp5.so"
-    else
-        LIBNAME="libphp7.so"
-    fi
-
-    # Backup the libphpX.so files as "make install" will overwrite them automatically
-    [[ -f "/usr/lib/apache2/modules/${LIBNAME}" ]] && sudo mv "/usr/lib/apache2/modules/${LIBNAME}" "/usr/lib/apache2/modules/${LIBNAME}.bak"
-
-    # Install the new binaries and module
+    # Install the new binaries
     sub_execute "sudo make install" "install" "$LOGFILE" "Installing ${VERSION}"
 
     # Create the extension directories
     EXTENSION=$(sub_getextensionnumber $VERSION)
     sudo mkdir -p "/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/"
-    sudo mkdir -p "/opt/php/${VERSION}/lib/apache"
 
     # Now setup the php.ini files
     sub_setupini "$VERSION"
 
-    # Setup PEAR dependencies
-    sub_pear "/opt/php/${VERSION}/bin/pear" "$LOGFILE"
+    # Configure php-fpm
+    sub_configurefpm "$VERSION"
 
     # Update the PECL channel
     sudo /opt/php/${VERSION}/bin/pecl channel-update pecl.php.net
 
     # Build Xdebug
     sub_xdebug "$VERSION" "$LOGFILE"
-
-    # Install z-ray if applicable
-    sub_zray "$VERSION"
 
     # Build APC or APCu+Opcache
     if [[ "$SHORT" -lt 7000 ]] ; then
@@ -303,30 +242,23 @@ command_install() {
         fi
     fi
 
-    # Store our newly built Apache module and put the original libphpX.so module back
-    if [[ -f "${SOURCE}/.libs/${LIBNAME}" ]] ; then
-        sudo cp "${SOURCE}/.libs/${LIBNAME}" "/opt/php/${VERSION}/lib/apache/${LIBNAME}"
-    elif [[ -f "/usr/lib/apache2/modules/${LIBNAME}" ]] ; then
-        sudo mv "/usr/lib/apache2/modules/${LIBNAME}" "/opt/php/${VERSION}/lib/apache/${LIBNAME}"
-    else
-        [[ -f /usr/lib/apache2/modules/${LIBNAME} ]] && sudo rm "/usr/lib/apache2/modules/${LIBNAME}"
-        sudo mv "/usr/lib/apache2/modules/${LIBNAME}.bak" "/usr/lib/apache2/modules/${LIBNAME}"
+    # Register as alternative
+    for BINARY in "${BINARIES[@]}"
+    do
+        sudo /usr/bin/update-alternatives --install "/usr/bin/${BINARY}" "${BINARY}" "/opt/php/$VERSION/bin/$BINARY" 20
+    done
 
-        echo -e "\033[31mERROR: Failed to build ${LIBNAME}!\e[0m"
-        echo "See ${LOGFILE} for more details or try again."
-        exit 1
-    fi
-
-    # Put the original apache module back in place
-    [[ -f "/usr/lib/apache2/modules/${LIBNAME}" ]] && sudo rm "/usr/lib/apache2/modules/${LIBNAME}"
-    [[ -f "/usr/lib/apache2/modules/${LIBNAME}.bak" ]] && sudo mv "/usr/lib/apache2/modules/${LIBNAME}.bak" "/usr/lib/apache2/modules/${LIBNAME}"
+    for SBINARY in "${SBINARIES[@]}"
+    do
+        sudo /usr/bin/update-alternatives --install "/usr/sbin/${SBINARY}" "${SBINARY}" "/opt/php/$VERSION/sbin/$SBINARY" 20
+    done
 
     echo -e "\n${VERSION} has been built and can be found at /opt/php/${VERSION} -- happy coding!"
 
     echo -e "Build completed at $(date) .. \n\n" > "$LOGFILE"
 }
 
-# Restore the original PHP binaries and Apache module
+# Restore the original PHP binaries
 command_restore() {
     if [ ${#INSTALLED_PHP_VERSIONS[@]} -eq 0 ]; then
         echo "Nothing to restore"
@@ -340,44 +272,17 @@ command_restore() {
 
     for BINARY in "${BINARIES[@]}"
     do
-        # Remove the symlink
-        if [ -L "/usr/bin/${BINARY}" ] ; then
-            sudo rm "/usr/bin/${BINARY}"
-        fi
-
-        if [ -f "/usr/bin/${BINARY}.original" ] ; then
-            sudo cp "/usr/bin/${BINARY}.original" "/usr/bin/${BINARY}"
-        fi
+        sudo /usr/bin/update-alternatives --auto "${BINARY}" &> /dev/null
     done
 
-    if [ -f "/usr/lib/apache2/modules/libphp5.so" ] ; then
-        sudo rm "/usr/lib/apache2/modules/libphp5.so"
-    fi
+    for SBINARY in "${SBINARIES[@]}"
+    do
+        sudo /usr/bin/update-alternatives --auto "${SBINARY}" &> /dev/null
+    done
 
-    if [ -f "/usr/lib/apache2/modules/libphp7.so" ] ; then
-        sudo a2dismod php7 &> /dev/null
-        sudo rm "/usr/lib/apache2/modules/libphp7.so"
-    fi
-
-    sudo cp "/usr/lib/apache2/modules/libphp5.so.original" "/usr/lib/apache2/modules/libphp5.so"
-
-    sudo a2ensite 00-zray &> /dev/null
-
-    if [ -f /opt/zray ]; then
-        sudo rm /opt/zray
-    fi
-
-    sudo ln -s /opt/zray-php-104202-php5.6.17-linux-debian7-amd64/zray /opt/zray
-
-    echo -n "Restarting Apache .. "
-    sudo a2enmod php5 &> /dev/null
-    sudo service apache2 restart &> /dev/null
-
-    if [ $? -ne 0 ] ; then
-        echo -e "\033[31mFAILED\e[0m"
-    else
-        echo -e "\033[92mOK\033[0m"
-    fi
+    sudo rm -f /opt/php/php-fpm.sock
+    sudo ln -s "/run/php/php7.1-fpm.sock" /opt/php/php-fpm.sock
+    sudo service php-fpm restart
 
     echo -e "Restored PHP, version is now: \n"
     php -v
@@ -402,6 +307,17 @@ command_remove() {
             echo "$VERSION is currently in use! Please switch to another version number before removing."
         else
             sudo rm -rf -- "/opt/php/${VERSION}"
+
+            for BINARY in "${BINARIES[@]}"
+            do
+                sudo /usr/bin/update-alternatives --remove "${BINARY}" "/opt/php/$VERSION/bin/$BINARY" &> /dev/null
+            done
+
+            for SBINARY in "${SBINARIES[@]}"
+            do
+                sudo /usr/bin/update-alternatives --remove "${SBINARY}" "/opt/php/$VERSION/sbin/$SBINARY" &> /dev/null
+            done
+
             echo "$VERSION has been removed."
         fi
     fi
@@ -434,29 +350,6 @@ sub_execute() {
     fi
 }
 
-# Install PEAR libraries that are required for the box to keep working.
-# Note: we do not display errors (except in the logfile) because the command will also fail if
-# the packages have already been installed for example.
-sub_pear() {
-    PEAR="$1"
-    LOGFILE="$2"
-
-    sudo "$PEAR" channel-discover pear.phing.info >> "$LOGFILE" 2>&1
-
-    for PACKAGE in "Console_CommandLine" "phing/phing"; do
-        sudo "$PEAR" install $PACKAGE >> "$LOGFILE" 2>&1
-    done
-}
-
-# Symlink z-ray ini files
-sub_zray() {
-    VERSION="$1"
-
-    if [[ "$SHORT" -ge 5500 ]] && [[ "$SHORT" -lt 7000 ]]; then
-        cp /etc/php5/mods-available/zray.ini "/opt/php/${VERSION}/etc/conf.d/zray.ini"
-    fi
-}
-
 # Build Xdebug for the given version
 sub_xdebug() {
     VERSION="$1"
@@ -467,7 +360,11 @@ sub_xdebug() {
     sub_cleanuprepo
 
     SHORT=$(sub_getshortversion $VERSION)
-    if [[ "$SHORT" -ge 5400 ]] ; then
+    if [[ "$SHORT" -ge 5400 ]] && [[ "$SHORT" -lt 5500 ]]; then
+        TAG="XDEBUG_2_4_1"
+    elif [[ "$SHORT" -ge 5500 ]] && [[ "$SHORT" -lt 7000 ]]; then
+        TAG="XDEBUG_2_5_5"
+    elif [[ "$SHORT" -ge 7000 ]]; then
         # Find the tag of the latest tagged commit in all branches
         TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
     else
@@ -491,7 +388,7 @@ sub_xdebug() {
         sudo cp "${SOURCE_XDEBUG}/modules/xdebug.so" "$LIB"
 
         # Note: the zend_extension directive requires the FULL path!
-        sudo echo "zend_extension=\"${LIB}\"" > "${INI}"
+        echo "zend_extension=\"${LIB}\"" | sudo tee "${INI}"
     else
         echo -e "\033[31mERROR: Failed to build Xdebug!\e[0m"
     fi
@@ -554,6 +451,7 @@ sub_getoptions() {
     # Default options :
     OPTIONS="--enable-calendar \
               --enable-cli \
+              --enable-fpm \
               --enable-exif \
               --enable-ftp \
               --enable-intl \
@@ -562,7 +460,6 @@ sub_getoptions() {
               --enable-sockets \
               --enable-zip \
               --prefix=/opt/php/${VERSION} \
-              --with-apxs2=/usr/bin/apxs2 \
               --with-bz2 \
               --with-config-file-scan-dir=/opt/php/${VERSION}/etc/conf.d/ \
               --with-curl \
@@ -572,7 +469,7 @@ sub_getoptions() {
               --with-mcrypt \
               --with-pcre-regex \
               --with-readline \
-              --with-xmlrpc
+              --with-xmlrpc \
               --with-zlib"
 
     # Build the mysql configuration string
@@ -656,16 +553,16 @@ sub_setupini() {
         sudo cp "${SOURCE}/php.ini-development" "/opt/php/${VERSION}/lib/php.ini"
     fi
 
-    sudo cp /etc/php5/mods-available/custom.ini "/opt/php/${VERSION}/etc/conf.d/99-custom.ini"
-
-    sudo chown vagrant:vagrant "/opt/php/${VERSION}/lib/php.ini"
-    sudo chown -R vagrant:vagrant "/opt/php/${VERSION}/etc/conf.d"
-
     # The default extensions directory should be <install-dir>/lib/php/extensions/ <debug-or-not>-<zts-or-not>-ZEND_MODULE_API_NO
     # according to the docs at http://be2.php.net/dl but for most builds this isn't the case.
     # So let's make sure we properly set the extension_dir directive :
     EXTENSION=$(sub_getextensionnumber $VERSION)
-    echo "extension_dir=/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/" >> "/opt/php/${VERSION}/etc/conf.d/99-custom.ini"
+    echo "extension_dir=/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/" | sudo tee "/opt/php/${VERSION}/etc/conf.d/99-custom.ini"
+
+    cat /home/vagrant/php.ini-template | sudo tee -a "/opt/php/${VERSION}/etc/conf.d/99-custom.ini"
+
+    sudo chown vagrant:vagrant "/opt/php/${VERSION}/lib/php.ini"
+    sudo chown -R vagrant:vagrant "/opt/php/${VERSION}/etc/conf.d"
 
     # Configure the MySQL socket
     echo "mysql.default_socket=/var/run/mysqld/mysqld.sock" > "/opt/php/${VERSION}/etc/conf.d/mysql.ini"
@@ -763,7 +660,7 @@ sub_cleanuprepo() {
     git checkout master --quiet
     git fetch origin --quiet &> /dev/null
     git fetch origin --tags --quiet &> /dev/null
-    git rebase origin/master --quiet
+#    git rebase origin/master --quiet
 }
 
 # Find the PHP Extension number
@@ -827,6 +724,26 @@ sub_getcurrent() {
     fi
 }
 
+sub_configurefpm() {
+  VERSION="$1"
+
+  CONTENTS="[global]
+pid = /run/php/${VERSION}-fpm.pid
+
+[www]
+user = www-data
+group = www-data
+listen = /run/php/${VERSION}-fpm.sock
+listen.owner = www-data
+listen.group = www-data
+pm = ondemand
+pm.max_children = 5
+pm.process_idle_timeout = 10s;
+pm.max_requests = 250"
+
+  echo "$CONTENTS" | sudo tee --append  "/opt/php/${VERSION}/etc/php-fpm.conf" > /dev/null
+
+}
 # Check if a value exists in an array
 in_array() {
     local needle=$1

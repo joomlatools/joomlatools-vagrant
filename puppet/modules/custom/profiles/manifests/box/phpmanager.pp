@@ -48,7 +48,8 @@ class profiles::box::phpmanager::install {
   }
 
   exec { 'make-phpmanager-executable':
-    command => 'chmod +x /home/vagrant/phpmanager/phpmanager;',
+    command => 'chmod +x /home/vagrant/phpmanager/phpmanager',
+    unless  => 'test -x /home/vagrant/phpmanager/phpmanager',
     require => File['/home/vagrant/phpmanager']
   }
 
@@ -67,7 +68,7 @@ class profiles::box::phpmanager::install {
 
 class profiles::box::phpmanager::buildtools {
   package { ['autoconf2.13', 're2c', 'apache2-dev', 'bison', 'g++-4.4', 'gcc-4.4']: ensure  => 'installed' }
-  package { ['libcurl4-openssl-dev', 'libmysqlclient-dev', 'libmcrypt-dev', 'libbz2-dev', 'libjpeg-dev', 'libpng12-dev', 'libfreetype6-dev', 'libicu-dev', 'libxml2-dev', 'libxslt1-dev', 'libssl-dev']: ensure => 'installed' }
+  package { ['libcurl4-openssl-dev', 'libmariadbclient-dev', 'libmcrypt-dev', 'libbz2-dev', 'libjpeg-dev', 'libpng12-dev', 'libfreetype6-dev', 'libicu-dev', 'libxml2-dev', 'libxslt1-dev', 'libssl-dev']: ensure => 'installed' }
 
   puppi::netinstall { 'bison-2.2':
     url => 'http://ftp.gnu.org/gnu/bison/bison-2.2.tar.gz',
@@ -87,7 +88,7 @@ class profiles::box::phpmanager::buildtools {
 
   puppi::netinstall { 'flex-2.5.4a':
     path => ["${phpmanager::installation_path}/bison-2.2/bin:/bin:/sbin:/usr/bin:/usr/sbin"],
-    url => 'ftp://ftp.gnome.org/mirror/temp/sf2015/f/fl/flex/flex/2.5.4.a/flex-2.5.4a.tar.gz',
+    url => 'https://ftp.gnu.org/old-gnu/gnu-0.2/src/flex-2.5.4.tar.gz',
     extracted_dir => 'flex-2.5.4',
     destination_dir => $phpmanager::source_path,
     postextract_command => "${phpmanager::source_path}/flex-2.5.4/configure --prefix=${phpmanager::installation_path}/flex-2.5.4 && make && sudo make install",
