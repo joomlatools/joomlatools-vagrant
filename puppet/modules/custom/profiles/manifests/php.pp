@@ -53,4 +53,12 @@ class profiles::php {
     config => hiera('php::settings', {})
   }
 
+  # Disable Xdebug by default
+  file { "/etc/php/${version}/mods-available/xdebug.ini":
+      ensure  => file,
+      content => '; zend_extension=xdebug.so',
+      require => Php::Config['xdebug'],
+      notify  => Service['php-fpm']
+  }
+
 }
