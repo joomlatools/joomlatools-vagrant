@@ -101,8 +101,24 @@ EOF
             $file  = array_shift($files);
             $path  = dirname($file) . DIRECTORY_SEPARATOR . '99-custom.ini';
 
-            if (!file_exists($path)) {
-                touch($path);
+            // Special case: oru default PHP installation
+            // separates INI files per SAPI (cli/fpm).
+            // If we're on the default PHP version, make sure use the INI file
+            // in the mods-available directory
+            $isDefault = false;
+            if (preg_match('#^/etc/php/\d\.\d/cli/conf.d/#', $path))
+            {
+                $isDefault = true;
+                $path      = str_replace('cli/conf.d/99-', 'mods-available/', $path);
+            }
+
+            if (!file_exists($path))
+            {
+                `echo "; priority=99" | sudo tee $path`;
+
+                if ($isDefault) {
+                    `sudo phpenmod -s ALL custom`;
+                }
             }
 
             return $path;
