@@ -14,6 +14,11 @@ describe '## PHP' do
           end
         }
 
+        describe service('php-fpm') do
+          it { should be_enabled }
+          it { should be_running.under('upstart') }
+        end
+
         describe '### PHP config parameters' do
             context php_config('sendmail_path') do
               its(:value) { should match /\/home\/vagrant\/.rvm\/gems\/ruby-2.2.6\/bin\/catchmail -fnoreply@example.com/ }
