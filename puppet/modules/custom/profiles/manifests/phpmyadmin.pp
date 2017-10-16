@@ -37,14 +37,11 @@ class profiles::phpmyadmin {
   # On some machines the phpmyadmin user might be already installed.
   # We have to drop and re-add this user because of new privileges and password.
   exec{ 'creating-phpmyadmin-controluser':
-    command => "echo \"CREATE USER 'phpmyadmin'@'localhost'\
-      IDENTIFIED BY 'phpmyadmin';\
+    command => "echo \"CREATE USER 'phpmyadmin'@'localhost' IDENTIFIED BY 'phpmyadmin';\
       GRANT ALL ON *.* TO 'phpmyadmin'@'localhost';FLUSH PRIVILEGES;\"\
       | mysql -u root -p'${mysql_root_password}'",
     path    => ['/usr/local/bin', '/usr/bin', '/bin'],
-    unless  => "mysql -u root -p'${mysql_root_password}'\
-      -e 'select * from mysql.user WHERE User=\"phpmyadmin\"' \
-      | grep 'phpmyadmin'",
+    unless  => "mysql -u root -p'${mysql_root_password}' -e 'select * from mysql.user WHERE User=\"phpmyadmin\"' | grep 'phpmyadmin'",
     require => Service['mysql']
   }
 

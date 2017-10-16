@@ -30,9 +30,11 @@ sub vcl_recv {
         set req.http.X-Forwarded-Port = 80;
 
         # Check if we've still enabled Varnish, if not, passthrough every request
+        set req.http.backend = "default";
         if (! std.healthy(req.backend_hint))
         {
             set req.backend_hint = alternative;
+            set req.http.backend = "alternative";
             return (pass);
         }
 
@@ -93,6 +95,13 @@ sub vcl_recv {
 }
 
 sub vcl_backend_response {
+        if(bereq.http.backend == "alternative")
+        {
+            set beresp.uncacheable = true;
+
+            return(deliver);
+        }
+
         # Unset the "etag" header (suggested)
         unset beresp.http.etag;
 
