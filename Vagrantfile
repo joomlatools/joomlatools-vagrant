@@ -75,9 +75,7 @@ Vagrant.configure("2") do |config|
     puppet.module_path = ['puppet/modules/common', 'puppet/modules/custom']
     puppet.options = ['--verbose']
     puppet.facter = {
-        'fqdn'                     => "#{config.vm.hostname}.box",
-        'pma_mysql_root_password'  => 'root',
-        'pma_controluser_password' => 'awesome'
+        'fqdn' => "#{config.vm.hostname}.box"
     }
     puppet.hiera_config_path = "puppet/hiera-vagrant.yaml"
   end
