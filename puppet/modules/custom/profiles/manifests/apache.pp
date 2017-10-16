@@ -3,6 +3,8 @@ class profiles::apache {
   include ::openssl
   include ::apache
 
+  apt::ppa { 'ppa:ondrej/apache2': }
+
   file { ['/etc/apache2',  '/etc/apache2/ssl']:
     ensure => 'directory',
   }
