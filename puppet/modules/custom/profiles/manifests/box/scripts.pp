@@ -21,7 +21,8 @@ class profiles::box::scripts {
 
   exec { 'add-console':
     command => 'composer global require joomlatools/console:* --no-interaction',
-    unless  => '[ -d /home/vagrant/.composer/vendor/joomlatools/console ]',
+    path    => ['/usr/bin' , '/bin', '/usr/local/bin'],
+    unless  => 'test -d /home/vagrant/.composer/vendor/joomlatools/console',
     require => [File['/home/vagrant/scripts'], Anchor['php::end']],
     user    => vagrant,
     environment => 'COMPOSER_HOME=/home/vagrant/.composer'
@@ -29,7 +30,8 @@ class profiles::box::scripts {
 
   exec { 'add-console-joomlatools-plugin':
     command => 'composer --working-dir=/home/vagrant/.composer/vendor/joomlatools/console/plugins require joomlatools/console-joomlatools --no-interaction',
-    unless  => '[ -d /home/vagrant/.composer/vendor/joomlatools/console/plugins/vendor/joomlatools/console-joomlatools ]',
+    path    => ['/usr/bin' , '/bin', '/usr/local/bin'],
+    unless  => 'test -d /home/vagrant/.composer/vendor/joomlatools/console/plugins/vendor/joomlatools/console-joomlatools',
     require => Exec['add-console'],
     user    => vagrant,
     environment => 'COMPOSER_HOME=/home/vagrant/.composer'

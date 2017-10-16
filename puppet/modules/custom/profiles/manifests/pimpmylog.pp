@@ -11,8 +11,8 @@ class profiles::pimpmylog {
     exec { 'install-pimpmylog':
         command => 'composer require potsky/pimp-my-log:1.7.* --no-interaction',
         cwd     => '/usr/share/pimpmylog',
-        unless  => '[ -d /usr/share/pimpmylog/vendor ]',
-        path    => '/usr/bin',
+        unless  => 'test -d /usr/share/pimpmylog/vendor',
+        path    => ['/usr/local/bin', '/usr/bin'],
         user    => vagrant,
         environment => 'COMPOSER_HOME=/home/vagrant/.composer',
         require => [File['/usr/share/pimpmylog'], Anchor['php::end']]
@@ -21,6 +21,7 @@ class profiles::pimpmylog {
     exec { 'make-apache-logrotate-world-readable':
         command => 'sed -i \'s/apache2\/\*.log/apache2\/*log/g\' /etc/logrotate.d/apache2 && sed -i \'s/create [0-9]\+ root adm/create 644 root adm/g\' /etc/logrotate.d/apache2',
         unless  => 'grep "create 644 root adm" /etc/logrotate.d/apache2',
+        require => Package['apache'],
         notify  => Service['apache']
     }
 

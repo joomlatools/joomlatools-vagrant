@@ -6,6 +6,8 @@ class profiles::phpmyadmin {
 
   include ::phpmyadmin
 
+  Service['mysql'] ~> Exec['creating-phpmyadmin-controluser']
+
   apache::vhost { 'phpmyadmin':
     server_name   => 'phpmyadmin',
     serveraliases => 'phpmyadmin.joomla.box',
