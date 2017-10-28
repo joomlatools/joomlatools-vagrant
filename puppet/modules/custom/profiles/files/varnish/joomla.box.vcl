@@ -102,9 +102,6 @@ sub vcl_backend_response {
             return(deliver);
         }
 
-        # Unset the "etag" header (suggested)
-        unset beresp.http.etag;
-
         # This is Joomla! specific: fix stupid "no-cache" header sent by Joomla! even
         # when caching is on - make sure to replace 300 with the number of seconds that
         # you want the browser to cache content
