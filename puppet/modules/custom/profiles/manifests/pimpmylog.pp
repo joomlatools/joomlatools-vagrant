@@ -26,10 +26,11 @@ class profiles::pimpmylog {
     }
 
     exec { 'make-apache-logs-world-readable':
-        command => 'find /var/log/apache2 -type f -exec chmod 644 {} \;',
+        command     => 'find /var/log/apache2 -exec chmod 644 {} \; && chmod +x /var/log/apache2',
         refreshonly => true,
-        subscribe => Exec['install-pimpmylog'],
-        notify  => Service['apache']
+        subscribe   => Exec['install-pimpmylog'],
+        notify      => Service['apache'],
+        require     => Package['apache']
     }
 
     exec { 'make-mysql-logs-world-readable':

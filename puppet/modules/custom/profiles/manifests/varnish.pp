@@ -43,8 +43,8 @@ class profiles::varnish {
 
   file_line { 'apache-listen-port-80':
     path    => '/etc/apache2/ports.conf',
-    line    => 'Listen 8080',
-    match   => '^Listen (80){1,2}$',
+    line    => 'Listen 80',
+    match   => '^Listen 80$',
     require => Package['apache'],
     notify  => Service['apache']
   }

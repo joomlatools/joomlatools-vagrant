@@ -8,7 +8,7 @@ import std;
 
 backend default {
     .host = "127.0.0.1";
-    .port = "8080";
+    .port = "80";
     .probe = {
       .url = "/varnish-enabled";
       .interval = 1s;
@@ -18,7 +18,7 @@ backend default {
 
 backend alternative {
     .host = "127.0.0.1";
-    .port = "8080";
+    .port = "80";
 }
 
 sub vcl_recv {
@@ -27,7 +27,7 @@ sub vcl_recv {
         set req.http.X-Forwarded-For = client.ip;
 
         set req.http.X-Forwarded-By = server.ip;
-        set req.http.X-Forwarded-Port = 80;
+        set req.http.X-Forwarded-Port = 8080;
 
         # Check if we've still enabled Varnish, if not, passthrough every request
         set req.http.backend = "default";

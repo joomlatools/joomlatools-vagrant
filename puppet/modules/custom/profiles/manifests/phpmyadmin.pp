@@ -49,7 +49,7 @@ class profiles::phpmyadmin {
     server_name   => 'phpmyadmin',
     serveraliases => 'phpmyadmin.joomla.box',
     docroot       => '/usr/share/phpmyadmin',
-    port          => 8080,
+    port          => 80,
     priority      => '10'
   }
 

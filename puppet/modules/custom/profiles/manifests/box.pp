@@ -11,7 +11,7 @@ class profiles::box {
   apache::vhost { 'joomla.box':
     server_admin  => 'webmaster@localhost',
     serveraliases => 'localhost',
-    port          => 8080,
+    port          => 80,
     priority      => '00',
     docroot       => '/var/www',
     directory     => '/var/www',
