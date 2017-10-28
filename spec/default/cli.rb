@@ -16,9 +16,9 @@ describe '## Command Line Tools' do
       it { should have_login_shell '/bin/bash' }
     end
 
-    describe command('phpmetrics -V') do
+    describe command('phpmetrics --version') do
       its(:exit_status) { should eq 0 }
-      its(:stdout) { should match'PhpMetrics, by Jean' }
+      its(:stdout) { should match'PhpMetrics v' }
     end
 
     describe command('git ftp --version') do

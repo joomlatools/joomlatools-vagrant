@@ -7,7 +7,11 @@ describe '## MySQL' do
 
     describe service('mysql'), :if => os[:family] == 'ubuntu' do
       it { should be_enabled }
-      it { should be_running }
+
+      describe command('sudo service mysql status') do
+         its(:exit_status) { should eq 0 }
+         its(:stdout) { should match /\/var\/run\/mysqld\/mysqld.sock/ }
+      end
     end
 
     describe port(3306) do
