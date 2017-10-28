@@ -71,11 +71,6 @@ sub vcl_recv {
             return (pass);
         }
 
-        # Don't cache ajax requests
-        if(req.http.X-Requested-With == "XMLHttpRequest" || req.url ~ "nocache") {
-            return (pass);
-        }
-
         # Properly handle different encoding types
         if (req.http.Accept-Encoding) {
           if (req.url ~ "\.(jpg|jpeg|png|gif|gz|tgz|bz2|tbz|mp3|ogg|swf)$") {
