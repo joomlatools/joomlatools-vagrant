@@ -35,11 +35,11 @@ for VHOST in $TEMP_DIR/vhost-1-*.conf.gz; do
   gunzip $VHOST
   VHOST="${VHOST/.gz/}"
 
-  # Make sure VirtualHosts are listening on port 8080 instead of 80
-  # (we changed the port since adding Varnish support)
-  if grep -Fxq "<VirtualHost *:80>" $VHOST
+  # Make sure VirtualHosts are listening on port 80 instead of 8080
+  # (we changed the Apache port back to 80, see https://github.com/joomlatools/joomlatools-vagrant/issues/85)
+  if grep -Fxq "<VirtualHost *:8080>" $VHOST
   then
-      sed -i'.bak' 's/<VirtualHost \*:80>/<VirtualHost \*:8080>/g' $VHOST
+      sed -i'.bak' 's/<VirtualHost \*:8080>/<VirtualHost \*:80>/g' $VHOST
   fi
 
   sudo mv $VHOST "/etc/apache2/sites-available/1-${SITENAME}.conf" || { echo "Failed to install $SITENAME! Aborting." 1>&2; exit 1; }

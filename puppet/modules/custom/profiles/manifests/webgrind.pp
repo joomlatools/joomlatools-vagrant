@@ -24,7 +24,7 @@ class profiles::webgrind {
     server_name   => 'webgrind',
     serveraliases => 'webgrind.joomla.box',
     docroot       => '/usr/share/webgrind-1.2',
-    port          => 8080,
+    port          => 80,
     priority      => '10'
   }
 

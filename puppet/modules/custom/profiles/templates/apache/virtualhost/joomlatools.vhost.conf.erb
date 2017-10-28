@@ -22,7 +22,7 @@
 <% end -%>
 
     ErrorLog  <%= scope.lookupvar('apache::log_dir') %>/<%= @name %>-error_log
-    CustomLog <%= scope.lookupvar('apache::log_dir') %>/<%= @name %>-access_log combined
+    CustomLog <%= scope.lookupvar('apache::log_dir') %>/<%= @name %>-access_log combined env=!dontlog
 
     Alias /apc /home/vagrant/scripts/apc-dashboard.php
     Alias /phpinfo /home/vagrant/scripts/phpinfo.php
@@ -30,6 +30,8 @@
     Alias /dashboard /home/vagrant/scripts/dashboard
     Alias /pimpmylog /usr/share/pimpmylog/vendor/potsky/pimp-my-log
     Alias /varnish-enabled /home/vagrant/scripts/varnish-enabled
+
+    SetEnvIf Request_URI "^/varnish-enabled" dontlog
 
     Redirect permanent /terminal http://joomla.box:3000
     Redirect permanent /mailcatcher http://joomla.box:1080

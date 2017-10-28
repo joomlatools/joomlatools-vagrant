@@ -8,7 +8,7 @@ import std;
 
 backend default {
     .host = "127.0.0.1";
-    .port = "8080";
+    .port = "80";
     .probe = {
       .url = "/varnish-enabled";
       .interval = 1s;
@@ -18,7 +18,7 @@ backend default {
 
 backend alternative {
     .host = "127.0.0.1";
-    .port = "8080";
+    .port = "80";
 }
 
 sub vcl_recv {
@@ -27,12 +27,14 @@ sub vcl_recv {
         set req.http.X-Forwarded-For = client.ip;
 
         set req.http.X-Forwarded-By = server.ip;
-        set req.http.X-Forwarded-Port = 80;
+        set req.http.X-Forwarded-Port = 8080;
 
         # Check if we've still enabled Varnish, if not, passthrough every request
+        set req.http.backend = "default";
         if (! std.healthy(req.backend_hint))
         {
             set req.backend_hint = alternative;
+            set req.http.backend = "alternative";
             return (pass);
         }
 
@@ -69,11 +71,6 @@ sub vcl_recv {
             return (pass);
         }
 
-        # Don't cache ajax requests
-        if(req.http.X-Requested-With == "XMLHttpRequest" || req.url ~ "nocache") {
-            return (pass);
-        }
-
         # Properly handle different encoding types
         if (req.http.Accept-Encoding) {
           if (req.url ~ "\.(jpg|jpeg|png|gif|gz|tgz|bz2|tbz|mp3|ogg|swf)$") {
@@ -93,8 +90,12 @@ sub vcl_recv {
 }
 
 sub vcl_backend_response {
-        # Unset the "etag" header (suggested)
-        unset beresp.http.etag;
+        if(bereq.http.backend == "alternative")
+        {
+            set beresp.uncacheable = true;
+
+            return(deliver);
+        }
 
         # This is Joomla! specific: fix stupid "no-cache" header sent by Joomla! even
         # when caching is on - make sure to replace 300 with the number of seconds that

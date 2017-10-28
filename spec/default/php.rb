@@ -39,11 +39,11 @@ describe '## PHP' do
     end
 
     describe '### PHP tools' do
-        describe package('phpmyadmin'), :if => os[:family] == 'ubuntu' do
-          it { should be_installed }
+        describe file('/usr/share/phpmyadmin/config.inc.php'), :if => os[:family] == 'ubuntu' do
+          it { should exist }
         end
 
-        describe command('/usr/bin/composer --version') do
+        describe command('/usr/local/bin/composer --version') do
           its(:exit_status) { should eq 0 }
           its(:stdout) { should match /Composer version/ }
         end

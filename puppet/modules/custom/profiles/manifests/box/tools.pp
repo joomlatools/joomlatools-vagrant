@@ -61,8 +61,9 @@ class profiles::box::tools {
 
   exec {'install-phpmetrics':
     command => 'composer require halleck45/phpmetrics --no-interaction',
+    path    => ['/usr/bin' , '/bin', '/usr/local/bin'],
     cwd     => '/usr/share/phpmetrics',
-    unless  => '[ -d /usr/share/phpmetrics/vendor/halleck45 ]',
+    unless  => 'test -d /usr/share/phpmetrics/vendor/halleck45',
     user    => vagrant,
     environment => 'COMPOSER_HOME=/home/vagrant/.composer',
     require => [File['/usr/share/phpmetrics'], Anchor['php::end']]

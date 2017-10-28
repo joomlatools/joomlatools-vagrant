@@ -1,10 +1,13 @@
 class profiles::varnish {
 
+  File_line['apache-listen-port-80']
+    ~> Service['apache']
+    ~> Service['varnish']
+
   apt::source { 'varnish':
-    location   => "http://repo.varnish-cache.org/ubuntu",
-    repos      => "varnish-4.0",
+    location   => "https://packagecloud.io/varnishcache/varnish41/ubuntu/",
     key        => 'C4DEFFEB',
-    key_source => 'http://repo.varnish-cache.org/debian/GPG-key.txt',
+    key_source => 'https://packagecloud.io/varnishcache/varnish41/gpgkey',
   }
 
   package { 'varnish':
@@ -40,8 +43,8 @@ class profiles::varnish {
 
   file_line { 'apache-listen-port-80':
     path    => '/etc/apache2/ports.conf',
-    line    => 'Listen 8080',
-    match   => '^Listen (80){1,2}$',
+    line    => 'Listen 80',
+    match   => '^Listen 80$',
     require => Package['apache'],
     notify  => Service['apache']
   }

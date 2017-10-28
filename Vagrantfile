@@ -2,7 +2,7 @@ require "yaml"
 require "json"
 
 # Check for required plugins and install if missing
-required_plugins = %w( vagrant-triggers )
+required_plugins = %w( vagrant-triggers vagrant-puppet-install )
 required_plugins.each do |plugin|
     exec "vagrant plugin install #{plugin} && vagrant #{ARGV.join(" ")}" unless Vagrant.has_plugin? plugin || ARGV[0] == 'plugin'
 end
@@ -62,10 +62,12 @@ Vagrant.configure("2") do |config|
 
     json = mapping.to_json.gsub(/"/, '\\\\\\\\\"')
     paths = 'SetEnv BOX_SHARED_PATHS \"' + json + '\"'
-    shell_cmd = '[ -d /etc/apache2/conf.d ] && { echo "' + paths + '" > /etc/apache2/conf-available/shared_paths.conf && service apache2 restart; } || echo "Apache2 is not installed yet"'
+    shell_cmd = '[ -d /etc/apache2/conf-available ] && { echo "' + paths + '" > /etc/apache2/conf-available/shared_paths.conf && service apache2 restart; } || echo "Apache2 is not installed yet"'
 
     config.vm.provision :shell, :inline => shell_cmd, :run => "always"
   end
+
+  config.puppet_install.puppet_version = "3.8.6"
 
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "puppet/manifests"
@@ -73,9 +75,7 @@ Vagrant.configure("2") do |config|
     puppet.module_path = ['puppet/modules/common', 'puppet/modules/custom']
     puppet.options = ['--verbose']
     puppet.facter = {
-        'fqdn'                     => "#{config.vm.hostname}.box",
-        'pma_mysql_root_password'  => 'root',
-        'pma_controluser_password' => 'awesome'
+        'fqdn' => "#{config.vm.hostname}.box"
     }
     puppet.hiera_config_path = "puppet/hiera-vagrant.yaml"
   end
