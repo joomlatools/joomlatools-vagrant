@@ -2,7 +2,7 @@ require "yaml"
 require "json"
 
 # Check for required plugins and install if missing
-required_plugins = %w( vagrant-triggers )
+required_plugins = %w( vagrant-triggers vagrant-puppet-install )
 required_plugins.each do |plugin|
     exec "vagrant plugin install #{plugin} && vagrant #{ARGV.join(" ")}" unless Vagrant.has_plugin? plugin || ARGV[0] == 'plugin'
 end
@@ -44,6 +44,9 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--name", "joomlatools-box-build"]
   end
 
+  # Install librarian-puppet and run it to install puppet modules prior to Puppet provisioning.
+  config.vm.provision :shell, :path => "shell/librarian-puppet.sh"
+
   if CONF.has_key?('synced_folders')
     CONF['synced_folders'].each { |target, source|
       if source
@@ -59,19 +62,22 @@ Vagrant.configure("2") do |config|
 
     json = mapping.to_json.gsub(/"/, '\\\\\\\\\"')
     paths = 'SetEnv BOX_SHARED_PATHS \"' + json + '\"'
-    shell_cmd = '[ -d /etc/apache2/conf.d ] && { echo "' + paths + '" > /etc/apache2/conf-available/shared_paths.conf && service apache2 restart; } || echo "Apache2 is not installed yet"'
+    shell_cmd = '[ -d /etc/apache2/conf-available ] && { echo "' + paths + '" > /etc/apache2/conf-available/shared_paths.conf && service apache2 restart; } || echo "Apache2 is not installed yet"'
 
     config.vm.provision :shell, :inline => shell_cmd, :run => "always"
   end
 
+  config.puppet_install.puppet_version = "3.8.6"
+
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path = "puppet/manifests"
-    puppet.module_path = "puppet/modules"
+    puppet.manifest_file = ""
+    puppet.module_path = ['puppet/modules/common', 'puppet/modules/custom']
     puppet.options = ['--verbose']
     puppet.facter = {
-        "pma_mysql_root_password"  => "root",
-        "pma_controluser_password" => "awesome"
+        'fqdn' => "#{config.vm.hostname}.box"
     }
+    puppet.hiera_config_path = "puppet/hiera-vagrant.yaml"
   end
 
   config.trigger.before :destroy do

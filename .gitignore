@@ -1,8 +1,9 @@
 /Projects/*
-.vagrant/*
-www/*
-!www/logs/tail
-!www/index.php
-config.custom.yaml
+/www/*
+/.vagrant/*
 /packer_cache
+/puppet/.librarian
+
+/config.custom.yaml
+
 /node_modules
