@@ -45,7 +45,7 @@ $navigation['mailcatcher']['status'] = 'active';
 $navigation['apc-dashboard']['title'] = 'APC Dashboard';
 $navigation['apc-dashboard']['source'] = '/apc';
 $navigation['apc-dashboard']['type'] = 'iframe';
-$navigation['apc-dashboard']['status'] = function_exists('apc_cache_info') && @apc_cache_info('opcode') ? 'active' : 'disabled';
+$navigation['apc-dashboard']['status'] = (extension_loaded('apc') || extension_loaded('apcu')) && ini_get('apc.enabled') ? 'active' : 'disabled';
 
 $navigation['webgrind']['title'] = 'Webgrind';
 $navigation['webgrind']['source'] = 'http://webgrind.joomla.box';
