@@ -39,7 +39,7 @@ $navigation['phpmyadmin']['status'] = 'active';
 
 $navigation['mailcatcher']['title'] = 'MailCatcher';
 $navigation['mailcatcher']['source'] = '/mailcatcher';
-$navigation['mailcatcher']['type'] = 'iframe';
+$navigation['mailcatcher']['type'] = 'page';
 $navigation['mailcatcher']['status'] = 'active';
 
 $navigation['apc-dashboard']['title'] = 'APC Dashboard';

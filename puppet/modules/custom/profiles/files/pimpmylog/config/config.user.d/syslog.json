@@ -3,7 +3,7 @@
     "display": "syslog",
     "tags": ["System Logs"],
     "path": "/var/log/syslog",
-    "refresh": 5,
+    "refresh": 10,
     "max": 50,
     "notify": false,
     "format": {

@@ -1,5 +1,3 @@
-<?php include_once 'data/navigation.php' ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,6 +23,7 @@
 <div class="container">
     <div class="sidebar">
         <ul>
+            <?php include_once 'data/navigation.php' ?>
             <?php foreach ($navigation as $key => $item) : ?>
                 <?php if ($item['type'] == 'separator') : ?>
                     <li role="presentation" class="dropdown-header"><?php echo $item['title'] ?></li>
@@ -32,10 +31,14 @@
                     <li class="disabled">
                         <a href="#"><?php echo $item['title'] ?></a>
                     </li>
-                <?php else : ?>
+                <?php elseif(in_array($item['type'], array('iframe', 'include'))) : ?>
                     <li<?php echo $key == 'dashboard' ? ' class="active"' : '' ?><?php echo $item['status'] == 'disabled' ? ' class="disabled"' : '' ?>>
                         <a href="#<?php echo $key ?>" aria-controls="<?php echo $key ?>" role="tab"
                            data-toggle="tab"><?php echo $item['title'] ?></a>
+                    </li>
+                <?php else: ?>
+                    <li<?php echo $item['status'] == 'disabled' ? ' class="disabled"' : '' ?>>
+                        <a href="<?php echo $item['source'] ?>" aria-controls="<?php echo $key ?>"><?php echo $item['title'] ?></a>
                     </li>
                 <?php endif; ?>
             <?php endforeach ?>
