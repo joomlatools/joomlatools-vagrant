@@ -11,7 +11,6 @@
     <title>Joomlatools Vagrant</title>
 
     <link href="assets/css/dashboard.css" rel="stylesheet">
-    <script src="assets/js/tabs.js"></script>
 </head>
 
 <body>
@@ -75,5 +74,16 @@
 ================================================== -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="assets/js/bootstrap.js"></script>
+<script>
+    $('a[data-toggle="tab"]').click(function (e) {
+        var href = $(e.target).attr("href");
+
+        if (jQuery.inArray(href, ['#phpinfo', '#webgrind', '#apc-dashboard']) !== -1)
+        {
+            var selector = href + ' iframe';
+            $(selector).attr('src', function(i, val) { return val; });
+        }
+    });
+</script>
 </body>
 </html>
