@@ -68,13 +68,7 @@ EOF
             exit();
         }
 
-        $files = \Helper\Ini::findIniFiles(array('custom.ini', '99-custom.ini'), false);
-
-        foreach($files as $file) {
-            \Helper\Ini::update($file, 'xdebug.profiler_enable', $value);
-        }
-
-        $this->getApplication()->find('server:restart')->run(new ArrayInput(array('command' => 'server:restart')), new NullOutput());
+        $this->getApplication()->find('php:ini')->run(new ArrayInput(array('command' => 'php:ini', 'key' => 'xdebug.profiler_enable', 'value' => $value)), new NullOutput());
 
         $output_dir  = \Helper\Ini::getPHPConfig('xdebug.profiler_output_dir');
 

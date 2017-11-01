@@ -101,7 +101,7 @@ EOF
             $file  = array_shift($files);
             $path  = dirname($file) . DIRECTORY_SEPARATOR . '99-custom.ini';
 
-            // Special case: oru default PHP installation
+            // Special case: our default PHP installation
             // separates INI files per SAPI (cli/fpm).
             // If we're on the default PHP version, make sure use the INI file
             // in the mods-available directory
