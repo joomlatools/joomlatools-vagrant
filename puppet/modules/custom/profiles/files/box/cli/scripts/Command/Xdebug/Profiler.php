@@ -62,20 +62,18 @@ EOF
         $value   = $action == 'start' ? 1 : 0;
         $word    = $action == 'start' ? 'started' : 'stopped';
 
-        if ($current == $value)
+        if ($current != $value)
         {
-            $output->writeln("Profiler has already been $word");
-            exit();
+            $this->getApplication()->find('php:ini')->run(new ArrayInput(array('command' => 'php:ini', 'key' => 'xdebug.profiler_enable_trigger', 'value' => $value)), new NullOutput());
+
+            $output_dir  = \Helper\Ini::getPHPConfig('xdebug.profiler_output_dir');
+
+            $output->writeln("XDebug profiler has been $word");
+
+            if ($action == 'start') {
+                $output->writeln("Profiling information will be written to <info>$output_dir</info>");
+            }
         }
-
-        $this->getApplication()->find('php:ini')->run(new ArrayInput(array('command' => 'php:ini', 'key' => 'xdebug.profiler_enable_trigger', 'value' => $value)), new NullOutput());
-
-        $output_dir  = \Helper\Ini::getPHPConfig('xdebug.profiler_output_dir');
-
-        $output->writeln("XDebug profiler has been $word");
-
-        if ($action == 'start') {
-            $output->writeln("Profiling information will be written to <info>$output_dir</info>");
-        }
+        else $output->writeln("Profiler has already been $word");
     }
 }
