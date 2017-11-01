@@ -14,20 +14,20 @@ $navigation['phpinfo']['source'] = '/phpinfo';
 $navigation['phpinfo']['type'] = 'iframe';
 $navigation['phpinfo']['status'] = 'active';
 
-$navigation['pimpmylog']['title'] = 'Logs';
-$navigation['pimpmylog']['source'] = '/pimpmylog';
-$navigation['pimpmylog']['type'] = 'page';
-$navigation['pimpmylog']['status'] = 'active';
+$navigation['terminal']['title'] = 'Terminal';
+$navigation['terminal']['source'] = '/terminal';
+$navigation['terminal']['type'] = 'iframe';
+$navigation['terminal']['status'] = 'active';
 
 $navigation['filebrowser']['title'] = 'Files';
 $navigation['filebrowser']['source'] = '/filebrowser';
 $navigation['filebrowser']['type'] = 'iframe';
 $navigation['filebrowser']['status'] = 'active';
 
-$navigation['terminal']['title'] = 'Terminal';
-$navigation['terminal']['source'] = '/terminal';
-$navigation['terminal']['type'] = 'iframe';
-$navigation['terminal']['status'] = 'active';
+$navigation['pimpmylog']['title'] = 'Logs';
+$navigation['pimpmylog']['source'] = '/pimpmylog';
+$navigation['pimpmylog']['type'] = 'page';
+$navigation['pimpmylog']['status'] = 'active';
 
 $navigation['tools']['title'] = 'Tools';
 $navigation['tools']['type'] = 'separator';
