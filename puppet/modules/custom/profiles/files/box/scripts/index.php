@@ -78,7 +78,7 @@
     $('a[data-toggle="tab"]').click(function (e) {
         var href = $(e.target).attr("href");
 
-        if (jQuery.inArray(href, ['#phpinfo', '#webgrind', '#apc-dashboard']) !== -1)
+        if (jQuery.inArray(href, ['#phpinfo', '#webgrind', '#apc-dashboard', '#dashboard']) !== -1)
         {
             var selector = href + ' iframe';
             $(selector).attr('src', function(i, val) { return val; });

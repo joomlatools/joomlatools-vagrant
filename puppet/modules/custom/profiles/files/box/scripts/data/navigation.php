@@ -2,8 +2,8 @@
 $navigation = array();
 
 $navigation['dashboard']['title'] = 'Sites';
-$navigation['dashboard']['source'] = 'sites.php';
-$navigation['dashboard']['type'] = 'include';
+$navigation['dashboard']['source'] = '/sites.php';
+$navigation['dashboard']['type'] = 'iframe';
 $navigation['dashboard']['status'] = 'active';
 
 $navigation['system']['title'] = 'System';

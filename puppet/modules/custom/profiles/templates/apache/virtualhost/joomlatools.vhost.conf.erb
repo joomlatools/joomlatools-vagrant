@@ -28,6 +28,7 @@
     Alias /phpinfo /home/vagrant/scripts/phpinfo.php
 
     Alias /index.php /home/vagrant/scripts/index.php
+    Alias /sites.php /home/vagrant/scripts/sites.php
     Alias /assets /home/vagrant/scripts/assets
 
     Alias /pimpmylog /usr/share/pimpmylog/vendor/potsky/pimp-my-log
@@ -100,6 +101,7 @@
         CustomLog <%= scope.lookupvar('apache::log_dir') %>/<%= @name %>-access_log common
 
         Alias /index.php /home/vagrant/scripts/index.php
+        Alias /sites.php /home/vagrant/scripts/sites.php
         Alias /assets /home/vagrant/scripts/assets
 
         Alias /apc /home/vagrant/scripts/apc-dashboard.php
