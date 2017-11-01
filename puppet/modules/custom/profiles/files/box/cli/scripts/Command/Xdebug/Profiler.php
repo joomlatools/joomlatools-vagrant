@@ -58,7 +58,7 @@ EOF
             $this->getApplication()->find('xdebug:enable')->run(new ArrayInput(array('command' => 'xdebug:enable')), new NullOutput());
         }
 
-        $current = \Helper\Ini::getPHPConfig('xdebug.profiler_enable');
+        $current = \Helper\Ini::getPHPConfig('xdebug.profiler_enable_trigger');
         $value   = $action == 'start' ? 1 : 0;
         $word    = $action == 'start' ? 'started' : 'stopped';
 
@@ -68,7 +68,7 @@ EOF
             exit();
         }
 
-        $this->getApplication()->find('php:ini')->run(new ArrayInput(array('command' => 'php:ini', 'key' => 'xdebug.profiler_enable', 'value' => $value)), new NullOutput());
+        $this->getApplication()->find('php:ini')->run(new ArrayInput(array('command' => 'php:ini', 'key' => 'xdebug.profiler_enable_trigger', 'value' => $value)), new NullOutput());
 
         $output_dir  = \Helper\Ini::getPHPConfig('xdebug.profiler_output_dir');
 

@@ -36,6 +36,7 @@ php::settings:
   xdebug/xdebug.show_local_vars: 1
   xdebug/xdebug.profiler_enable: 0
   xdebug/xdebug.profiler_enable_trigger: 0
+  xdebug/xdebug.profiler_enable_trigger_value: JOOMLATOOLS
   xdebug/xdebug.max_nesting_level: 1000
   xdebug/xdebug.profiler_output_dir: /var/www/
 
