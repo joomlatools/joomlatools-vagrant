@@ -2,7 +2,8 @@
   "globals": {
     "USER_CONFIGURATION_DIR": "config.user.d",
     "SORT_LOG_FILES" : "default-asc",
-    "REFRESH": 20
+    "REFRESH": 20,
+    "NOTIFICATION": false
   },
   "badges": {
     "severity": {

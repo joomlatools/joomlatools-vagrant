@@ -37,7 +37,12 @@
                     </li>
                 <?php else: ?>
                     <li<?php echo $item['status'] == 'disabled' ? ' class="disabled"' : '' ?>>
-                        <a href="<?php echo $item['source'] ?>" aria-controls="<?php echo $key ?>"><?php echo $item['title'] ?></a>
+                        <a href="<?php echo $item['source'] ?>" aria-controls="<?php echo $key ?>">
+                            <?php echo $item['title'] ?>
+                            <?php if ($item['type'] == 'page'): ?>
+                                <span class="glyphicon glyphicon-new-window" style="font-size: 0.95rem;"></span>
+                            <?php endif; ?>
+                        </a>
                     </li>
                 <?php endif; ?>
             <?php endforeach ?>

@@ -16,7 +16,7 @@ $navigation['phpinfo']['status'] = 'active';
 
 $navigation['pimpmylog']['title'] = 'Logs';
 $navigation['pimpmylog']['source'] = '/pimpmylog';
-$navigation['pimpmylog']['type'] = 'iframe';
+$navigation['pimpmylog']['type'] = 'page';
 $navigation['pimpmylog']['status'] = 'active';
 
 $navigation['filebrowser']['title'] = 'Files';

@@ -1,21 +1,36 @@
 class profiles::pimpmylog {
 
     file { '/usr/share/pimpmylog':
-        ensure => present,
+        ensure => directory,
         owner  => vagrant,
         group  => vagrant,
-        source => 'puppet:///modules/profiles/pimpmylog/config',
-        recurse => true
     }
 
     exec { 'install-pimpmylog':
-        command => 'composer require potsky/pimp-my-log:1.7.* --no-interaction',
+        command => 'composer create-project potsky/pimp-my-log:1.7.* /usr/share/pimpmylog/ --no-interaction',
         cwd     => '/usr/share/pimpmylog',
         unless  => 'test -d /usr/share/pimpmylog/vendor',
         path    => ['/usr/local/bin', '/usr/bin'],
         user    => vagrant,
         environment => 'COMPOSER_HOME=/home/vagrant/.composer',
         require => [File['/usr/share/pimpmylog'], Anchor['php::end']]
+    }
+
+    file { '/usr/share/pimpmylog/config.user.json':
+        ensure => file,
+        owner  => vagrant,
+        group  => vagrant,
+        source => 'puppet:///modules/profiles/pimpmylog/config/config.user.json',
+        require => Exec['install-pimpmylog']
+    }
+
+    file { '/usr/share/pimpmylog/config.user.d':
+        ensure  => file,
+        owner   => vagrant,
+        group   => vagrant,
+        source  => 'puppet:///modules/profiles/pimpmylog/config/config.user.d',
+        recurse => true,
+        require => Exec['install-pimpmylog']
     }
 
     exec { 'make-apache-logrotate-world-readable':
