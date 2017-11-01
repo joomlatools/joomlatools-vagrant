@@ -3,6 +3,8 @@ class profiles::php {
   include ::php
   include ::php::dev
 
+  include ::profiles::php::composer
+
   $version = hiera('php::globals::php_version', '7.1')
 
   file { '/opt/php/php-fpm.sock':
