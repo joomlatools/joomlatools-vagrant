@@ -16,7 +16,7 @@ describe '## Joomlatools' do
             its(:stdout) { should match /sites_serverspectest/ }
           end
 
-          describe command('curl -s http://joomla.box/dashboard/') do
+          describe command('curl -s http://joomla.box/sites.php') do
             its(:stdout) { should match /serverspectest/ }
           end
         end

@@ -43,10 +43,10 @@ describe '## Miscellaneous' do
 
      describe '### PimpMyLog' do
         describe file('/etc/apache2/sites-available/00-joomla.box.conf') do
-          its(:content) { should match /Alias \/pimpmylog \/usr\/share\/pimpmylog\/vendor\/potsky\/pimp-my-log/ }
+          its(:content) { should match /Alias \/pimpmylog \/usr\/share\/pimpmylog\// }
         end
 
-        describe file("/usr/share/pimpmylog/vendor/potsky/pimp-my-log/index.php") do
+        describe file("/usr/share/pimpmylog/index.php") do
             it { should exist }
             its(:content) { should match /pimpmylog/ }
         end
