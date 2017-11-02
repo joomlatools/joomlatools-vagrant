@@ -35,7 +35,7 @@
         "<enter><wait>"
       ],
       "boot_wait": "10s",
-      "disk_size": 8000,
+      "disk_size": 25000,
       "guest_os_type": "Ubuntu_64",
       "guest_additions_url": "{{user `guest_additions_url`}}",
       "guest_additions_sha256": "{{user `guest_additions_sha256`}}",
