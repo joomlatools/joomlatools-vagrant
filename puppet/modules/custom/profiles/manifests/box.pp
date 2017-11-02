@@ -8,6 +8,11 @@ class profiles::box {
   include ::profiles::box::cli
   include ::profiles::box::phpmanager
 
+  apache::dotconf { 'joomla.box':
+    enable  => false,
+    content => template('profiles/apache/virtualhost/joomla.box.include.conf.erb'),
+  }
+
   apache::vhost { 'joomla.box':
     server_admin  => 'webmaster@localhost',
     serveraliases => 'localhost',
@@ -17,7 +22,8 @@ class profiles::box {
     directory     => '/var/www',
     directory_allow_override   => 'All',
     directory_options => 'Indexes FollowSymLinks MultiViews',
-    template     => 'profiles/apache/virtualhost/joomlatools.vhost.conf.erb',
+    template      => 'profiles/apache/virtualhost/joomla.box.vhost.conf.erb',
+    require       => Apache::Dotconf['joomla.box']
   }
 
 }

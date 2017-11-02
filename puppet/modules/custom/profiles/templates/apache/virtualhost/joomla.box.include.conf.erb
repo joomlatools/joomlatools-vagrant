@@ -1,0 +1,31 @@
+Alias /apc /home/vagrant/scripts/apc-dashboard.php
+Alias /phpinfo /home/vagrant/scripts/phpinfo.php
+
+Alias /index.php /home/vagrant/scripts/index.php
+Alias /sites.php /home/vagrant/scripts/sites.php
+Alias /assets /home/vagrant/scripts/assets
+
+Alias /pimpmylog /usr/share/pimpmylog/
+Alias /varnish-enabled /home/vagrant/scripts/varnish-enabled
+
+SetEnvIf Request_URI "^/varnish-enabled" dontlog
+SetEnvIf Request_URI "^/(pimpmylog|assets)/" dontlog
+SetEnvIf Request_URI "^/(sites\.php|index\.php|pimpmylog|terminal|apc|filebrowser|phpinfo)$" dontlog
+
+Redirect permanent /terminal http://joomla.box:3000
+Redirect permanent /mailcatcher http://joomla.box:1080
+Redirect permanent /filebrowser http://joomla.box:8001/fs/var/www
+
+# When upgrading from 1.4 to 1.5,
+# the browser might still be redirecting
+# joomla.box to joomla.box/dashboard/
+# Make sure we redirect to the new dashboard
+# location if /var/www/dashboard does not exist:
+RewriteEngine on
+RewriteCond %{REQUEST_URI} ^/dashboard
+RewriteCond %{DOCUMENT_ROOT}/dashboard !-d
+RewriteRule ^ /index.php [L,R=302]
+
+<Directory /home/vagrant/scripts>
+    Require all granted
+</Directory>

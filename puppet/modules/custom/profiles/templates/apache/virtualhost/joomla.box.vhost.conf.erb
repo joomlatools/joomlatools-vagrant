@@ -24,27 +24,7 @@
     ErrorLog  <%= scope.lookupvar('apache::log_dir') %>/<%= @name %>-error_log
     CustomLog <%= scope.lookupvar('apache::log_dir') %>/<%= @name %>-access_log combined env=!dontlog
 
-    Alias /apc /home/vagrant/scripts/apc-dashboard.php
-    Alias /phpinfo /home/vagrant/scripts/phpinfo.php
-
-    Alias /index.php /home/vagrant/scripts/index.php
-    Alias /sites.php /home/vagrant/scripts/sites.php
-    Alias /assets /home/vagrant/scripts/assets
-
-    Alias /pimpmylog /usr/share/pimpmylog/
-    Alias /varnish-enabled /home/vagrant/scripts/varnish-enabled
-
-    SetEnvIf Request_URI "^/varnish-enabled" dontlog
-    SetEnvIf Request_URI "^/(pimpmylog|assets)/" dontlog
-    SetEnvIf Request_URI "^/(sites\.php|pimpmylog|terminal|apc|filebrowser|phpinfo)$" dontlog
-
-    Redirect permanent /terminal http://joomla.box:3000
-    Redirect permanent /mailcatcher http://joomla.box:1080
-    Redirect permanent /filebrowser http://joomla.box:8001/fs/var/www
-
-    <Directory /home/vagrant/scripts>
-        Require all granted
-    </Directory>
+    Include conf-available/joomla.box.conf
 
 <% if @bool_passenger -%>
     PassengerHighPerformance <%= @bool_passenger_high_performance ? "On" : "Off" %>
@@ -102,25 +82,7 @@
         ErrorLog  <%= scope.lookupvar('apache::log_dir') %>/<%= @name %>-error_log
         CustomLog <%= scope.lookupvar('apache::log_dir') %>/<%= @name %>-access_log common env=!dontlog
 
-        Alias /index.php /home/vagrant/scripts/index.php
-        Alias /sites.php /home/vagrant/scripts/sites.php
-        Alias /assets /home/vagrant/scripts/assets
-
-        Alias /apc /home/vagrant/scripts/apc-dashboard.php
-        Alias /phpinfo /home/vagrant/scripts/phpinfo.php
-
-        Alias /pimpmylog /usr/share/pimpmylog/
-
-        SetEnvIf Request_URI "^/(pimpmylog|assets)/" dontlog
-        SetEnvIf Request_URI "^/(sites\.php|pimpmylog|terminal|apc|filebrowser|phpinfo)$" dontlog
-
-        Redirect permanent /terminal http://joomla.box:3000
-        Redirect permanent /mailcatcher http://joomla.box:1080
-        Redirect permanent /filebrowser http://joomla.box:8001/fs/var/www
-
-        <Directory /home/vagrant/scripts>
-            Require all granted
-        </Directory>
+        Include conf-available/joomla.box.conf
 
     <% if @bool_passenger -%>
         PassengerHighPerformance <%= @bool_passenger_high_performance ? "On" : "Off" %>
