@@ -30,7 +30,7 @@ class Webgrind_Config extends Webgrind_MasterConfig {
      */
     static $graphImageType = 'svg';
 
-    static $defaultTimezone = 'Europe/Brussels';
+    static $defaultTimezone = 'UTC';
     static $dateFormat = 'Y-m-d H:i:s';
     static $defaultCostformat = 'percent'; // 'percent', 'usec' or 'msec'
     static $defaultFunctionPercentage = 90;
@@ -77,6 +77,17 @@ class Webgrind_Config extends Webgrind_MasterConfig {
     );
     //static $proxyFunctions = array(); // do not skip any functions
 
+    /**
+     * Specify which fields display, and the order to display them. Uncomment
+     * entries to enable, move entries to change order.
+     */
+    static $tableFields = array(
+        'Invocation Count',
+        'Total Self Cost',
+        //'Average Self Cost',
+        'Total Inclusive Cost',
+        //'Average Inclusive Cost',
+    );
 
     #########################
     # BELOW NOT FOR EDITING #
@@ -116,5 +127,33 @@ class Webgrind_Config extends Webgrind_MasterConfig {
             return Webgrind_Config::xdebugOutputDir();
         }
         return realpath(sys_get_temp_dir()).'/';
+    }
+
+    /**
+     * Binary version of the preprocessor (for faster preprocessing)
+     *
+     * If the proper tools are installed and the bin dir is writeable for php,
+     * automatically compile it (when necessary).
+     * Automatic compilation disabled if `bin/make-failed` exists.
+     * Run `make` in the webgrind root directory to manually compile.
+     */
+    static function getBinaryPreprocessor() {
+        $localBin = __DIR__.'/bin/';
+        $makeFailed = $localBin.'make-failed';
+        if (is_writable($localBin) && !file_exists($makeFailed)) {
+            $make = '/usr/bin/make';
+            if (is_executable($make)) {
+                $cwd = getcwd();
+                chdir(__DIR__);
+                exec($make, $output, $retval);
+                chdir($cwd);
+                if ($retval != 0) {
+                    touch($makeFailed);
+                }
+            } else {
+                touch($makeFailed);
+            }
+        }
+        return $localBin.'preprocessor';
     }
 }

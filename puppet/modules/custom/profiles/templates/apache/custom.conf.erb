@@ -3,3 +3,18 @@ EnableSendfile Off
 <Directory "/var/www">
     AllowOverride All
 </Directory>
+
+# We always set the XDEBUG_PROFILE cookie
+# here, which is used to prevent generating
+# cachegrind files from CLI when you start profiling
+# using the `box xdebug:profiler start` command.
+#
+# We need to set it globally for all websites because
+# otherwise we can't profile virtual hosts created
+# using the `joomla site:create` command.
+#
+# This can be improved by making sure we generate
+# separate .ini files for each SAPI so we can enable
+# the profiler only for the FPM SAPI.
+# See: https://github.com/joomlatools/joomlatools-vagrant/issues/44
+RequestHeader edit Cookie ^(.*)$ "XDEBUG_PROFILE=JOOMLATOOLS; $1" "expr=%{REQUEST_URI} !~ m#^/(phpinfo|apc|dashboard|phpmyadmin|pimpmylog|webgrind|sites\.php$|index\.php$|$)# && %{SERVER_NAME} !~ m#(phpmyadmin|webgrind)#"

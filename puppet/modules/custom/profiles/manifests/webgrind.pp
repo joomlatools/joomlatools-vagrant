@@ -4,28 +4,42 @@ class profiles::webgrind {
     ensure => installed
   }
 
-  archive { '/tmp/webgrind-1.2.tar.gz':
-    ensure           => present,
-    source           => 'https://github.com/alpha0010/webgrind/archive/1.2.tar.gz',
-    extract          => true,
-    extract_path     => '/usr/share',
-    checksum         => 'c725c3815f0d7d867bbe29aa3c4461148b720e58',
-    checksum_type    => 'sha1',
-    cleanup          => true,
-    creates          => '/usr/share/webgrind-1.2',
+  file { '/usr/share/webgrind':
+    ensure => directory,
+    owner  => vagrant,
+    group  => vagrant
+  }
+
+  exec { 'install-webgrind':
+    command => 'composer create-project jokkedk/webgrind:^1.5.0 /usr/share/webgrind --no-interaction',
+    cwd     => '/usr/share/webgrind',
+    unless  => 'test -d /usr/share/webgrind/vendor',
+    path    => ['/usr/local/bin', '/usr/bin'],
+    user    => vagrant,
+    environment => 'COMPOSER_HOME=/home/vagrant/.composer',
+    require => [File['/usr/share/webgrind'], Anchor['php::end']]
+  }
+
+  file { '/usr/share/webgrind/config.php':
+    ensure => file,
+    owner  => vagrant,
+    group  => vagrant,
+    source => 'puppet:///modules/profiles/webgrind/config.php',
+    require => Exec['install-webgrind']
   }
   ->
-  file { '/usr/share/webgrind-1.2/config.php':
-    ensure => file,
-    source => 'puppet:///modules/profiles/webgrind/config.php'
+  file { '/usr/share/webgrind/bin':
+    ensure => directory,
+    owner  => www-data,
+    group  => www-data
   }
 
   apache::vhost { 'webgrind':
     server_name   => 'webgrind',
     serveraliases => 'webgrind.joomla.box',
-    docroot       => '/usr/share/webgrind-1.2',
+    docroot       => '/usr/share/webgrind',
     port          => 80,
-    priority      => '10'
+    priority      => 10
   }
 
 }

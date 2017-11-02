@@ -14,7 +14,7 @@ class System
 
     public static function getPHPCommand()
     {
-        $bin = '/usr/bin/php -d xdebug.profiler_enable=Off ';
+        $bin = '/usr/bin/php';
 
         return $bin;
     }
