@@ -55,7 +55,7 @@ describe '## PHP' do
             end
         end
 
-        describe file('/usr/share/webgrind-1.2/config.php') do
+        describe file('/usr/share/webgrind/config.php') do
             it { should exist }
             its(:content) { should match /Webgrind_Config/ }
         end
@@ -63,10 +63,10 @@ describe '## PHP' do
         describe file('/etc/apache2/sites-available/10-webgrind.conf') do
           it { should exist }
           its(:content) { should match /ServerAlias webgrind.joomla.box/ }
-          its(:content) { should match /DocumentRoot \/usr\/share\/webgrind-1.2/ }
+          its(:content) { should match /DocumentRoot \/usr\/share\/webgrind/ }
         end
 
-        describe file('/etc/apache2/sites-available/00-joomla.box.conf') do
+        describe file('/etc/apache2/conf-available/joomla.box.conf') do
           its(:content) { should match /Alias \/apc \/home\/vagrant\/scripts\/apc-dashboard.php/ }
           its(:content) { should match /Alias \/phpinfo \/home\/vagrant\/scripts\/phpinfo.php/ }
         end
