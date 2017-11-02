@@ -17,4 +17,4 @@ EnableSendfile Off
 # separate .ini files for each SAPI so we can enable
 # the profiler only for the FPM SAPI.
 # See: https://github.com/joomlatools/joomlatools-vagrant/issues/44
-RequestHeader edit Cookie ^(.*)$ "XDEBUG_PROFILE=JOOMLATOOLS; $1" "expr=%{REQUEST_URI} !~ m#^/(phpinfo|apc|dashboard|phpmyadmin|pimpmylog|webgrind|sites\.php$|index\.php$|$)#"
+RequestHeader edit Cookie ^(.*)$ "XDEBUG_PROFILE=JOOMLATOOLS; $1" "expr=%{REQUEST_URI} !~ m#^/(phpinfo|apc|dashboard|phpmyadmin|pimpmylog|webgrind|sites\.php$|index\.php$|$)# && %{SERVER_NAME} !~ m#(phpmyadmin|webgrind)#"

@@ -36,10 +36,11 @@
                            data-toggle="tab"><?php echo $item['title'] ?></a>
                     </li>
                 <?php else: ?>
+                    <?php $isPage = ($item['type'] == 'page'); ?>
                     <li<?php echo $item['status'] == 'disabled' ? ' class="disabled"' : '' ?>>
-                        <a href="<?php echo $item['source'] ?>" aria-controls="<?php echo $key ?>">
+                        <a href="<?php echo $item['source'] ?>" aria-controls="<?php echo $key ?>" <?php if ($isPage): ?>target="_blank"<?php endif; ?>>
                             <?php echo $item['title'] ?>
-                            <?php if ($item['type'] == 'page'): ?>
+                            <?php if ($isPage): ?>
                                 <span class="glyphicon glyphicon-new-window" style="font-size: 0.95rem;"></span>
                             <?php endif; ?>
                         </a>
