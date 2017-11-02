@@ -1,6 +1,6 @@
 {
   "variables": {
-    "guest_additions_url": "http://download.virtualbox.org/virtualbox/5.0.16/VBoxGuestAdditions_5.0.16.iso",
+    "guest_additions_url": "http://download.virtualbox.org/virtualbox/5.1.30/VBoxGuestAdditions_5.1.30.iso",
     "guest_additions_sha256": "8190f1e4031f8195971c2a97d2d3b1cf2d86fc83219f750d05cee9255c7dad85"
   },
   "push": {
