@@ -27,19 +27,20 @@
     Alias /apc /home/vagrant/scripts/apc-dashboard.php
     Alias /phpinfo /home/vagrant/scripts/phpinfo.php
 
-    Alias /dashboard /home/vagrant/scripts/dashboard
-    Alias /pimpmylog /usr/share/pimpmylog/vendor/potsky/pimp-my-log
+    Alias /index.php /home/vagrant/scripts/index.php
+    Alias /sites.php /home/vagrant/scripts/sites.php
+    Alias /assets /home/vagrant/scripts/assets
+
+    Alias /pimpmylog /usr/share/pimpmylog/
     Alias /varnish-enabled /home/vagrant/scripts/varnish-enabled
 
     SetEnvIf Request_URI "^/varnish-enabled" dontlog
+    SetEnvIf Request_URI "^/(pimpmylog|assets)/" dontlog
+    SetEnvIf Request_URI "^/(sites\.php|pimpmylog|terminal|apc|filebrowser|phpinfo)$" dontlog
 
     Redirect permanent /terminal http://joomla.box:3000
     Redirect permanent /mailcatcher http://joomla.box:1080
     Redirect permanent /filebrowser http://joomla.box:8001/fs/var/www
-
-    RewriteEngine on
-    RewriteCond %{REQUEST_URI} ^/$
-    RewriteRule (.*) /dashboard/ [R=301]
 
     <Directory /home/vagrant/scripts>
             Require all granted
@@ -99,16 +100,23 @@
         SSLCertificateKeyFile <%= scope.lookupvar('apache::config_dir') %>/ssl/server.key
 
         ErrorLog  <%= scope.lookupvar('apache::log_dir') %>/<%= @name %>-error_log
-        CustomLog <%= scope.lookupvar('apache::log_dir') %>/<%= @name %>-access_log common
+        CustomLog <%= scope.lookupvar('apache::log_dir') %>/<%= @name %>-access_log common env=!dontlog
+
+        Alias /index.php /home/vagrant/scripts/index.php
+        Alias /sites.php /home/vagrant/scripts/sites.php
+        Alias /assets /home/vagrant/scripts/assets
 
         Alias /apc /home/vagrant/scripts/apc-dashboard.php
         Alias /phpinfo /home/vagrant/scripts/phpinfo.php
 
-        Alias /dashboard /home/vagrant/scripts/dashboard
+        Alias /pimpmylog /usr/share/pimpmylog/
 
-        RewriteEngine on
-        RewriteCond %{REQUEST_URI} ^/$
-        RewriteRule (.*) /dashboard/ [R=301]
+        SetEnvIf Request_URI "^/(pimpmylog|assets)/" dontlog
+        SetEnvIf Request_URI "^/(sites\.php|pimpmylog|terminal|apc|filebrowser|phpinfo)$" dontlog
+
+        Redirect permanent /terminal http://joomla.box:3000
+        Redirect permanent /mailcatcher http://joomla.box:1080
+        Redirect permanent /filebrowser http://joomla.box:8001/fs/var/www
 
         <Directory /home/vagrant/scripts>
                 Require all granted
