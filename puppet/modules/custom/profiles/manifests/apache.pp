@@ -55,9 +55,10 @@ class profiles::apache {
     require => File['/etc/apache2/conf-available/shared_paths.conf']
   }
 
-  exec { 'set-env-for-debugging':
-    command => "echo \"\nSetEnv JOOMLATOOLS_BOX ${::box_version}\" >> /etc/apache2/apache2.conf",
-    unless  => 'grep JOOMLATOOLS_BOX /etc/apache2/apache2.conf',
+  file_line { 'set-env-for-debugging':
+    path    => '/etc/apache2/apache2.conf',
+    line    => "SetEnv JOOMLATOOLS_BOX ${::box_version}",
+    match   => '^SetEnv JOOMLATOOLS_BOX [\d\.]+$',
     require => Package['apache'],
     notify  => Service['apache']
   }
