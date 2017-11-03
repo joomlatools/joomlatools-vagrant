@@ -199,10 +199,6 @@ command_install() {
         export PATH=/opt/bison-2.4/bin:$PATH
     fi
 
-    if [[ "$SHORT" -le 5301 ]] && [[ "$SHORT" -ge 5300 ]]; then
-        export PATH=/opt/openssl-0.9.7g/bin:$PATH
-    fi
-
     # Use g++ 4.4 to compile
     export CC=gcc-4.4
     export CXX=g++-4.4
@@ -490,60 +486,21 @@ sub_getoptions() {
               --with-xmlrpc \
               --with-zlib"
 
-    # Build the mysql configuration string
-    MYSQL=""
-    if [[ "$SHORT" -lt 5213 ]] ; then
-        if [[ ! -d "/opt/mysql-5.1.73-linux-x86_64-glibc23/" ]] ; then
-            echo "Downloading MySQL 5.1.73 dependencies .."
-            wget -O /tmp/mysql-5.1.73.tar.gz --no-check-certificate http://mirrors.ukfast.co.uk/sites/ftp.mysql.com/Downloads/MySQL-5.1/mysql-5.1.73-linux-x86_64-glibc23.tar.gz
-            sudo tar -xf /tmp/mysql-5.1.73.tar.gz -C /opt/
-            sudo chown -R root:root /opt/mysql-5.1.73-linux-x86_64-glibc23
-            sudo ln -s /opt/mysql-5.1.73-linux-x86_64-glibc23/lib /opt/mysql-5.1.73-linux-x86_64-glibc23/lib/x86_64-linux-gnu
-            rm /tmp/mysql-5.1.73.tar.gz
-        fi
-
-        CFG="/opt/mysql-5.1.73-linux-x86_64-glibc23/bin/mysql_config"
-	    MYSQL="--with-mysql=/opt/mysql-5.1.73-linux-x86_64-glibc23 --with-mysqli=${CFG} --with-pdo-mysql=${CFG}"
-
-        if [[ "$SHORT" -lt 5208 ]] ; then
-            # http://bugs.mysql.com/bug.php?id=29994
-            sed -i.bak 's/gptr/char\*/g' "${SOURCE}/ext/mysqli/mysqli_api.c"
-        fi
-    elif [[ "$SHORT" -lt 5300 ]] ; then
-        CFG=$(which mysql_config)
-        MYSQL="--with-mysql --with-mysqli=${CFG} --with-pdo-mysql=${CFG}"
-    else
-        MYSQL="--with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-mysql-sock=/var/run/mysqld/mysqld.sock"
-    fi
-    OPTIONS="$OPTIONS $MYSQL"
+    # Configure MySQL
+    OPTIONS="$OPTIONS --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-mysql-sock=/var/run/mysqld/mysqld.sock"
 
     # Use an older libxml2 that works with all versions
     OPTIONS="$OPTIONS --with-libxml-dir=/opt/libxml2-2.7.8 --with-xsl=/opt/libxslt-1.1.26"
 
     # Can we build with OpenSSL ?
     OPENSSL=""
-    if [[ "$SHORT" -le 5301 ]] ; then
-        OPENSSL="--with-openssl=/opt/openssl-0.9.7g"
-        patch -p1 < /home/vagrant/phpmanager/patches/openssl.ssl2.patch &> /dev/null
-    elif [[ "$SHORT" -le 5306 ]] ; then
+    if [[ "$SHORT" -le 5306 ]] ; then
         OPENSSL="--with-openssl=/opt/openssl-1.0.1f"
         patch -p1 < /home/vagrant/phpmanager/patches/openssl.ssl2.patch &> /dev/null
     else
         OPENSSL="--with-openssl=/opt/openssl-1.0.2g"
     fi
     OPTIONS="$OPTIONS $OPENSSL"
-
-    # PHP 5.20 and older requires older curl headers, so point to the correct source files
-    CURL="--with-curl"
-    if [[ "$SHORT" -le 5200 ]] ; then
-        CURL="${CURL}=/usr/local/src/curl-7.15.3"
-    fi
-    OPTIONS="$OPTIONS $CURL"
-
-    # Add some legacy options
-    if [[ "$SHORT" -lt 5300 ]] ; then
-        OPTIONS="$OPTIONS --enable-spl --with-mime-magic"
-    fi
 
     # Enable opcache for newer versions
     if [[ "$SHORT" -ge 5500 ]] ; then
@@ -708,7 +665,7 @@ sub_checksource() {
         echo -e "\033[33mOlder versions of PHP require extra dependencies.\e[0m"
         echo -e "Please wait while we set up all build dependencies. This can take a couple of minutes .. \n"
 
-        CMD="wget -nv https://goo.gl/a9L6hj -O /tmp/install-phpmanager-dependencies.sh"
+        CMD="wget -nv https://developer.joomlatools.com/vagrant/phpmanager/dependencies -O /tmp/install-phpmanager-dependencies.sh"
         sub_execute "$CMD" "download" "/tmp/install-phpmanager-dependencies.log" "Downloading install script"
 
         chmod +x /tmp/install-phpmanager-dependencies.sh
