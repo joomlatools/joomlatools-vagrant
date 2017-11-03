@@ -722,6 +722,7 @@ sub_configurefpm() {
 
   CONTENTS="[global]
 pid = /run/php/${VERSION}-fpm.pid
+daemonize = no
 
 [www]
 user = www-data

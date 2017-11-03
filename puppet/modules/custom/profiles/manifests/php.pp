@@ -40,6 +40,16 @@ class profiles::php {
     source => 'puppet:///modules/profiles/php/php-fpm.conf'
   }
 
+  ini_setting { 'php-fpm-no-daemonize':
+    ensure  => present,
+    value   => 'no',
+    path    => "/etc/php/${version}/fpm/php-fpm.conf",
+    section => 'global',
+    setting => 'daemonize',
+    require => Anchor['php::end'],
+    notify  => Service['php-fpm']
+  }
+
   service { 'php-fpm':
     ensure     => running,
     provider   => 'upstart',
