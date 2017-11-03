@@ -113,7 +113,7 @@ echo "" > $LOGFILE
 mkdir -p $DESTINATION_DIR $WORK_DIR
 
 # Install all packages that are available via the repositories
-CMD="apt-get -q -y install autoconf2.13 re2c apache2-dev bison g++-4.4 gcc-4.4 libcurl4-openssl-dev libmariadbclient-dev libmcrypt-dev libbz2-dev libjpeg-dev libpng12-dev libfreetype6-dev libicu-dev libxml2-dev libxslt1-dev libssl-dev"
+CMD="sudo apt-get -q -y install autoconf2.13 re2c apache2-dev bison g++-4.4 gcc-4.4 libcurl4-openssl-dev libmariadbclient-dev libmcrypt-dev libbz2-dev libjpeg-dev libpng12-dev libfreetype6-dev libicu-dev libxml2-dev libxslt1-dev libssl-dev"
 sub_execute "$CMD" "apt-get" "${LOGFILE}" "Install dependencies from Ubuntu repositories"
 
 # Download external packages

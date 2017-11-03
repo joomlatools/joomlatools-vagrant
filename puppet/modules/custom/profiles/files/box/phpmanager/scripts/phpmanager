@@ -696,7 +696,7 @@ sub_checksource() {
     if [[ ! -d "$SOURCE/.git" ]] ; then
         echo -e "\033[33mCould not find PHP source!\e[0m"
         echo "Looks like this is the first time you run this script and/or the PHP source is missing."
-        echo "Please wait while we clone the PHP Git repo and install the required dependencies. Depending on your internet connection this could take a while .. \n"
+        echo -e "Please wait while we clone the PHP Git repo and install the required dependencies. Depending on your internet connection this could take a while .. \n"
 
         git clone "git://git.php.net/php-src.git" "$SOURCE"
 
@@ -704,9 +704,20 @@ sub_checksource() {
         echo ""
     fi
 
+    if [[ ! -d "/opt/flex-2.5.4/bin" ]] ; then
+        echo -e "\033[33mOlder versions of PHP require extra dependencies.\e[0m"
+        echo -e "Please wait while we set up all build dependencies. This can take a couple of minutes .. \n"
+
+        CMD="wget -nv https://goo.gl/a9L6hj -O /tmp/install-phpmanager-dependencies.sh"
+        sub_execute "$CMD" "download" "/tmp/install-phpmanager-dependencies.log" "Downloading install script"
+
+        chmod +x /tmp/install-phpmanager-dependencies.sh
+        /tmp/install-phpmanager-dependencies.sh
+    fi
+
     if [[ ! -d "$SOURCE_XDEBUG/.git" ]] ; then
         echo -e "\033[33mCould not find Xdebug source!\e[0m"
-        echo "Please wait while we clone the Xdebug source. Depending on your internet connection this could take a while .. \n"
+        echo -e "Please wait while we clone the Xdebug source. Depending on your internet connection this could take a while .. \n"
 
         git clone "https://github.com/xdebug/xdebug.git" "$SOURCE_XDEBUG"
 
