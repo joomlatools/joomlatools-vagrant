@@ -108,10 +108,15 @@ sub_build() {
 }
 
 ## Start of script
-echo "" > $LOGFILE
 
+echo "" > $LOGFILE
 mkdir -p $DESTINATION_DIR $WORK_DIR
 
+# Install all packages that are available via the repositories
+CMD="apt-get -q -y install autoconf2.13 re2c apache2-dev bison g++-4.4 gcc-4.4 libcurl4-openssl-dev libmariadbclient-dev libmcrypt-dev libbz2-dev libjpeg-dev libpng12-dev libfreetype6-dev libicu-dev libxml2-dev libxslt1-dev libssl-dev"
+sub_execute "$CMD" "apt-get" "${LOGFILE}" "Install dependencies from Ubuntu repositories"
+
+# Download external packages
 URLS=(
   'http://ftp.gnu.org/gnu/bison/bison-2.2.tar.gz'
   'http://ftp.gnu.org/gnu/bison/bison-2.4.tar.gz'
@@ -129,6 +134,7 @@ do
     sub_download $URL
 done
 
+# Build the downloaded dependencies
 sub_build "bison-2.2"
 sub_build "bison-2.4"
 sub_build "libxml2-2.7.8"
@@ -141,6 +147,10 @@ sub_build "openssl-1.0.2g" "-fPIC no-gost"
 PATH="${PATH}:${INSTALL_DIR}/bison-2.2/bin"
 sub_build "flex-2.5.4"
 
+# Set-up symlinks
 sudo ln -s /opt/openssl-0.9.7g/lib /opt/openssl-0.9.7g/lib/x86_64-linux-gnu
 sudo ln -s /opt/openssl-1.0.1f/lib /opt/openssl-1.0.1f/lib/x86_64-linux-gnu
 sudo ln -s /opt/openssl-1.0.2g/lib /opt/openssl-1.0.2g/lib/x86_64-linux-gnu
+
+sudo mkdir /usr/include/freetype2/freetype
+ln -s /usr/include/freetype2/freetype.h /usr/include/freetype2/freetype/freetype.h

@@ -6,7 +6,6 @@ class profiles::box::phpmanager {
   $installation_path = '/opt'
 
   include ::profiles::box::phpmanager::install
-  include ::profiles::box::phpmanager::buildtools
 }
 
 class profiles::box::phpmanager::install {
@@ -64,16 +63,4 @@ class profiles::box::phpmanager::install {
     owner   => "root",
     group   => "root",
   }
-}
-
-class profiles::box::phpmanager::buildtools {
-  package { ['autoconf2.13', 're2c', 'apache2-dev', 'bison', 'g++-4.4', 'gcc-4.4']: ensure  => 'installed' }
-  package { ['libcurl4-openssl-dev', 'libmariadbclient-dev', 'libmcrypt-dev', 'libbz2-dev', 'libjpeg-dev', 'libpng12-dev', 'libfreetype6-dev', 'libicu-dev', 'libxml2-dev', 'libxslt1-dev', 'libssl-dev']: ensure => 'installed' }
-
-  exec { 'symlink-freetype.h':
-    command => 'mkdir /usr/include/freetype2/freetype && ln -s /usr/include/freetype2/freetype.h /usr/include/freetype2/freetype/freetype.h',
-    unless  => 'bash -c "test -f /usr/include/freetype2/freetype/freetype.h"',
-    require => Package['libfreetype6-dev']
-  }
-
 }
