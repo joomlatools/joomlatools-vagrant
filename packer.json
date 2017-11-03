@@ -1,7 +1,8 @@
 {
   "variables": {
     "guest_additions_url": "http://download.virtualbox.org/virtualbox/5.1.30/VBoxGuestAdditions_5.1.30.iso",
-    "guest_additions_sha256": "8190f1e4031f8195971c2a97d2d3b1cf2d86fc83219f750d05cee9255c7dad85"
+    "guest_additions_sha256": "631ca8e8d513acf43a75de56a71a31aaffb5624864c57d10346ba657d991ec1e",
+    "version": "1.5.0"
   },
   "push": {
     "name": "joomlatools/box",
@@ -40,9 +41,9 @@
       "guest_additions_url": "{{user `guest_additions_url`}}",
       "guest_additions_sha256": "{{user `guest_additions_sha256`}}",
       "http_directory": "packer/http",
-      "iso_checksum": "2ac1f3e0de626e54d05065d6f549fa3a",
-      "iso_checksum_type": "md5",
-      "iso_url": "http://releases.ubuntu.com/14.04/ubuntu-14.04.4-server-amd64.iso",
+      "iso_checksum": "07e4bb5569814eab41fafac882ba127893e3ff0bdb7ec931c9b2d040e3e94e7a",
+      "iso_checksum_type": "sha256",
+      "iso_url": "http://old-releases.ubuntu.com/releases/14.04.4/ubuntu-14.04.4-server-amd64.iso",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
       "ssh_port": 22,
@@ -67,11 +68,11 @@
     },
     {
       "type": "puppet-masterless",
-      "manifest_file": "puppet/manifests/default.pp",
-      "module_paths": ["puppet/modules"],
+      "manifest_file": "puppet/manifests",
+      "module_paths": ["puppet/modules/common", "puppet/modules/custom"],
+      "hiera_config_path": "puppet/hiera-vagrant.yaml",
       "facter": {
-        "pma_mysql_root_password": "root",
-        "pma_controluser_password": "awesome"
+        "fqdn": "joomlatools.box"
       }
     },
     {
@@ -84,20 +85,11 @@
     }
   ],
   "post-processors": [
-        [{
-            "type": "vagrant",
-            "vagrantfile_template": "Vagrantfile.pkg",
-            "keep_input_artifact": false
-        },
-        {
-            "type": "atlas",
-            "only": ["virtualbox-iso"],
-            "artifact": "joomlatools/box",
-            "artifact_type": "vagrant.box",
-            "metadata": {
-                "provider": "virtualbox",
-                "version": "1.5.0"
-            }
-        }]
+    [{
+        "type": "vagrant",
+        "output": "joomlatools-{{user `version`}}.box",
+        "vagrantfile_template": "Vagrantfile.pkg",
+        "keep_input_artifact": false
+    }]
   ]
 }

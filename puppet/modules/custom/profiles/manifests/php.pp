@@ -59,8 +59,7 @@ class profiles::php {
   file { "/etc/php/${version}/mods-available/xdebug.ini":
       ensure  => file,
       content => '; zend_extension=xdebug.so',
-      require => Php::Config['xdebug'],
-      notify  => Service['php-fpm']
+      require => Anchor['php::end']
   }
 
 }

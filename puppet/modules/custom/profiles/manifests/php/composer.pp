@@ -9,7 +9,7 @@ class profiles::php::composer (
     creates => '/home/vagrant/.composer/vendor/pyrech/composer-changelogs',
     user    => vagrant,
     environment => 'COMPOSER_HOME=/home/vagrant/.composer',
-    require => File['/usr/local/bin/composer']
+    require => Anchor['php::end']
   }
 
   exec { "composer-plugin-prestissimo":
@@ -18,7 +18,7 @@ class profiles::php::composer (
     creates => '/home/vagrant/.composer/vendor/hirak/prestissimo',
     user    => vagrant,
     environment => 'COMPOSER_HOME=/home/vagrant/.composer',
-    require => File['/usr/local/bin/composer']
+    require => Anchor['php::end']
   }
 
 }
