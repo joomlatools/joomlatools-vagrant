@@ -121,7 +121,6 @@ URLS=(
   'http://ftp.gnu.org/gnu/bison/bison-2.2.tar.gz'
   'http://ftp.gnu.org/gnu/bison/bison-2.4.tar.gz'
   'https://ftp.gnu.org/old-gnu/gnu-0.2/src/flex-2.5.4.tar.gz'
-  'ftp://ftp.openssl.org/source/old/1.0.1/openssl-1.0.1f.tar.gz'
   'https://www.openssl.org/source/openssl-1.0.2g.tar.gz'
   'ftp://xmlsoft.org/libxml2/libxml2-2.7.8.tar.gz'
   'ftp://xmlsoft.org/libxslt/libxslt-1.1.26.tar.gz'
@@ -138,15 +137,12 @@ sub_build "bison-2.4"
 sub_build "libxml2-2.7.8"
 sub_build "libxslt-1.1.26" "--with-libxml-prefix=/opt/libxml2-2.7.8/ --with-libxml-libs-prefix=/opt/libxml2-2.7.8/ --with-libxml-include-prefix=/opt/libxml2-2.7.8/"
 
-sub_build "openssl-1.0.1f" "-fPIC no-gost"
 sub_build "openssl-1.0.2g" "-fPIC no-gost"
 
 PATH="${PATH}:${INSTALL_DIR}/bison-2.2/bin"
 sub_build "flex-2.5.4"
 
 # Set-up symlinks
-sudo ln -fs /opt/openssl-0.9.7g/lib /opt/openssl-0.9.7g/lib/x86_64-linux-gnu
-sudo ln -fs /opt/openssl-1.0.1f/lib /opt/openssl-1.0.1f/lib/x86_64-linux-gnu
 sudo ln -fs /opt/openssl-1.0.2g/lib /opt/openssl-1.0.2g/lib/x86_64-linux-gnu
 
 sudo mkdir /usr/include/freetype2/freetype

@@ -106,8 +106,8 @@ command_use() {
     if [[ ! -d "/opt/php/$VERSION" ]] || [[ "${VERSION}" == "master" ]] ; then
         SHORT=$(sub_getshortversion $VERSION)
 
-        if [[ "$SHORT" -lt 5304 ]] ; then
-            echo "PHP versions older than 5.3.4 are no longer supported."
+        if [[ "$SHORT" -lt 5309 ]] ; then
+            echo "PHP versions older than 5.3.9 are no longer supported."
             exit 1
         fi
 
@@ -166,8 +166,8 @@ command_install() {
 
     SHORT=$(sub_getshortversion $VERSION)
 
-    if [[ "$SHORT" -lt 5304 ]] ; then
-        echo "PHP versions older than 5.3.4 are no longer supported."
+    if [[ "$SHORT" -lt 5309 ]] ; then
+        echo "PHP versions older than 5.3.9 are no longer supported."
         exit 1
     fi
 
@@ -481,6 +481,7 @@ sub_getoptions() {
               --with-iconv \
               --with-libdir=lib/x86_64-linux-gnu \
               --with-mcrypt \
+              --with-openssl=/opt/openssl-1.0.2g \
               --with-pcre-regex \
               --with-readline \
               --with-xmlrpc \
@@ -491,16 +492,6 @@ sub_getoptions() {
 
     # Use an older libxml2 that works with all versions
     OPTIONS="$OPTIONS --with-libxml-dir=/opt/libxml2-2.7.8 --with-xsl=/opt/libxslt-1.1.26"
-
-    # Can we build with OpenSSL ?
-    OPENSSL=""
-    if [[ "$SHORT" -le 5306 ]] ; then
-        OPENSSL="--with-openssl=/opt/openssl-1.0.1f"
-        patch -p1 < /home/vagrant/phpmanager/patches/openssl.ssl2.patch &> /dev/null
-    else
-        OPENSSL="--with-openssl=/opt/openssl-1.0.2g"
-    fi
-    OPTIONS="$OPTIONS $OPENSSL"
 
     # Enable opcache for newer versions
     if [[ "$SHORT" -ge 5500 ]] ; then
@@ -554,13 +545,13 @@ sub_getversions() {
     TAGS=()
     eval "$(git for-each-ref --shell --format='TAGS+=(%(refname))' refs/tags/)"
     for TAG in "${TAGS[@]}"; do
-        # Only list PHP versions greater than or equal to 5.3.4
+        # Only list PHP versions greater than or equal to 5.3.9
         PATTERN="refs/tags/php-([5-9]\.[0-9]+)"
         if [[ $TAG =~ $PATTERN ]] ; then
             TAG=${TAG/refs\/tags\//}
             SHORT=$(sub_getshortversion "${TAG[@]/php-/}")
 
-            if [[ $SHORT -ge 5304 ]]; then
+            if [[ $SHORT -ge 5309 ]]; then
                 AVAILABLE_PHP_VERSIONS+=($TAG)
             fi
         fi;
@@ -718,13 +709,6 @@ sub_getcurrent() {
 sub_configurefpm() {
   VERSION="$1"
 
-  SHORT=$(sub_getshortversion $VERSION)
-  if [[ "$SHORT" -ge 5309 ]]; then
-    PROCESSMANAGER=ondemand
-  else
-    PROCESSMANAGER=static
-  fi
-
   CONTENTS="[global]
 pid = /run/php/${VERSION}-fpm.pid
 daemonize = no
@@ -735,13 +719,10 @@ group = www-data
 listen = /run/php/${VERSION}-fpm.sock
 listen.owner = www-data
 listen.group = www-data
-pm = ${PROCESSMANAGER}
+pm = ondemand
 pm.max_children = 5
-pm.max_requests = 250"
-
-  if [[ $PROCESSMANAGER == "ondemand" ]]; then
-    CONTENTS="${CONTENTS}\npm.process_idle_timeout = 10s\n"
-  fi
+pm.max_requests = 250
+pm.process_idle_timeout = 10s"
 
   echo -e "$CONTENTS" | sudo tee --append  "/opt/php/${VERSION}/etc/php-fpm.conf" > /dev/null
 
