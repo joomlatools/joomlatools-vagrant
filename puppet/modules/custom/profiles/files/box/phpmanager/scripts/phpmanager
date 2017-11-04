@@ -30,6 +30,9 @@ SOURCE_XDEBUG=/usr/local/src/xdebug
 EXTRA_CONFIGURE_ARGUMENTS=""
 SHOW_CONFIGURE=false
 
+BUILD_APC=true
+BUILD_XDEBUG=true
+
 # Load a custom CFG if present
 LOADED_CUSTOM_CONFIG=false
 if [[ -r ~/phpmanager.cfg ]] ; then
@@ -242,18 +245,6 @@ command_install() {
     # Update the PECL channel
     sudo /opt/php/${VERSION}/bin/pecl channel-update pecl.php.net
 
-    # Build Xdebug
-    sub_xdebug "$VERSION" "$LOGFILE"
-
-    # Build APC or APCu+Opcache
-    if [[ "$SHORT" -lt 7000 ]] ; then
-        if [[ "$SHORT" -lt 5500 ]] ; then
-            sub_apc "$VERSION" "$LOGFILE"
-        else
-            sub_apcu "$VERSION" "$LOGFILE"
-        fi
-    fi
-
     # Register as alternative
     for BINARY in "${BINARIES[@]}"
     do
@@ -264,6 +255,20 @@ command_install() {
     do
         sudo /usr/bin/update-alternatives --install "/usr/sbin/${SBINARY}" "${SBINARY}" "/opt/php/$VERSION/sbin/$SBINARY" 20
     done
+
+    # Build Xdebug
+    if [ "$BUILD_XDEBUG" == true ] ; then
+        sub_xdebug "$VERSION" "$LOGFILE"
+    fi
+
+    # Build APC
+    if [ "$BUILD_APC" == true ] ; then
+        if [[ "$SHORT" -lt 5500 ]] ; then
+            sub_apc "$VERSION" "$LOGFILE"
+        else
+            sub_apcu "$VERSION" "$LOGFILE"
+        fi
+    fi
 
     echo -e "\n${VERSION} has been built and can be found at /opt/php/${VERSION} -- happy coding!"
 
@@ -374,16 +379,14 @@ sub_xdebug() {
     sub_cleanuprepo
 
     SHORT=$(sub_getshortversion $VERSION)
-    if [[ "$SHORT" -ge 5400 ]] && [[ "$SHORT" -lt 5500 ]]; then
+    if [[ "$SHORT" -lt 5400 ]]; then
+        TAG="XDEBUG_2_2_7" # Support for PHP versions older than 5.4.0 has been dropped in 2.3.0
+    elif [[ "$SHORT" -ge 5400 ]] && [[ "$SHORT" -lt 5500 ]]; then
         TAG="XDEBUG_2_4_1"
-    elif [[ "$SHORT" -ge 5500 ]] && [[ "$SHORT" -lt 7000 ]]; then
+    elif [[ "$SHORT" -ge 5500 ]] && [[ "$SHORT" -lt 7200 ]]; then
         TAG="XDEBUG_2_5_5"
-    elif [[ "$SHORT" -ge 7000 ]]; then
-        # Find the tag of the latest tagged commit in all branches
-        TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
     else
-        # Support for PHP versions older than 5.4.0 has been dropped in 2.3.0
-        TAG="XDEBUG_2_2_7"
+        TAG="master"
     fi
 
     git checkout $TAG &> /dev/null
@@ -429,7 +432,7 @@ sub_apc() {
         echo -e "\033[92mfinished\033[0m"
         sudo echo "extension=\"apc.so\"" > "/opt/php/${VERSION}/etc/conf.d/apc.ini"
     else
-        echo "\033[31mFailed\e[0m"
+        echo -e "\033[31mFailed\e[0m"
     fi
 }
 
@@ -440,8 +443,13 @@ sub_apcu() {
 
     echo -n "Building APCu .. "
 
+    APC="APCu"
+    if [[ $SHORT -lt 7000 ]]; then
+        APC="APCu-4.0.7"
+    fi
+
     # @FIXME we can't get this command passed as an argument to sub_execute()
-    printf "\n" | sudo "/opt/php/${VERSION}/bin/pecl" install APCu-4.0.7  >> "$LOGFILE" 2>&1
+    printf "\n" | sudo "/opt/php/${VERSION}/bin/pecl" install $APC  >> "$LOGFILE" 2>&1
 
     EXTENSION=$(sub_getextensionnumber $VERSION)
 
@@ -453,7 +461,7 @@ sub_apcu() {
 
         sudo echo "zend_extension=\"opcache.so\"" > "/opt/php/${VERSION}/etc/conf.d/opcache.ini"
     else
-        echo "\033[31mFailed\e[0m"
+        echo -e "\033[31mFailed\e[0m"
     fi
 }
 
