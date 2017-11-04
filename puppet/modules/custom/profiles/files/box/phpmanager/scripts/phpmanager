@@ -554,10 +554,15 @@ sub_getversions() {
     TAGS=()
     eval "$(git for-each-ref --shell --format='TAGS+=(%(refname))' refs/tags/)"
     for TAG in "${TAGS[@]}"; do
-        # Only list PHP versions greater than or equal to 5.2
-        PATTERN="refs/tags/php-([5-9]\.[2-9]+|7\.[0-9]+)"
+        # Only list PHP versions greater than or equal to 5.3.4
+        PATTERN="refs/tags/php-([5-9]\.[0-9]+)"
         if [[ $TAG =~ $PATTERN ]] ; then
-            AVAILABLE_PHP_VERSIONS+=(${TAG/refs\/tags\//})
+            TAG=${TAG/refs\/tags\//}
+            SHORT=$(sub_getshortversion "${TAG[@]/php-/}")
+
+            if [[ $SHORT -ge 5304 ]]; then
+                AVAILABLE_PHP_VERSIONS+=($TAG)
+            fi
         fi;
     done
 
