@@ -42,7 +42,6 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--memory", 1024]
     v.customize ["modifyvm", :id, "--name", "joomlatools-box-build"]
     v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-    v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
   end
 
   # Install librarian-puppet and run it to install puppet modules prior to Puppet provisioning.

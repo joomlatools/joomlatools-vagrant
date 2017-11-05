@@ -67,10 +67,15 @@
       ]
     },
     {
+      "type": "file",
+      "source": "puppet/hiera",
+      "destination": "/tmp/"
+    },
+    {
       "type": "puppet-masterless",
       "manifest_file": "puppet/manifests",
       "module_paths": ["puppet/modules/common", "puppet/modules/custom"],
-      "hiera_config_path": "puppet/hiera-vagrant.yaml",
+      "hiera_config_path": "puppet/hiera-packer.yaml",
       "facter": {
         "fqdn": "joomlatools.box"
       }

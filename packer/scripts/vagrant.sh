@@ -1,3 +1,7 @@
+#!/bin/bash
+
+set -e
+
 date > /etc/vagrant_box_build_time
 
 mkdir /home/vagrant/.ssh

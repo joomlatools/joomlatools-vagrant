@@ -42,6 +42,8 @@ class profiles::apache {
   exec { 'disable-default-vhost':
     command => 'a2dissite 000-default',
     onlyif  => 'test -L /etc/apache2/sites-enabled/000-default.conf',
+    require => Package['apache'],
+    notify  => Service['apache']
   }
 
   file { '/etc/apache2/conf-available/shared_paths.conf':

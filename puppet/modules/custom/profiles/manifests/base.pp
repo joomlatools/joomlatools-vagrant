@@ -54,7 +54,7 @@ class profiles::base {
     }
 
     profiles::system::hostname { 'joomlatools':
-      ip => '127.0.1.1'
+      ip => '127.0.0.1'
     }
 
     host { 'joomla.box':

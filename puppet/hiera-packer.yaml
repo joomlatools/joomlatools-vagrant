@@ -1,0 +1,10 @@
+---
+:backends:
+  - yaml
+
+:hierarchy:
+  - "php"
+  - "common"
+
+:yaml:
+  :datadir: '/tmp/hiera'

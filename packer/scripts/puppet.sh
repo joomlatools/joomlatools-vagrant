@@ -1,4 +1,8 @@
-sudo apt-get install -y python-software-properties
+#!/bin/bash
+
+set -e
+
+sudo apt-get install -y software-properties-common python-software-properties
 
 cd /tmp
 wget http://apt.puppetlabs.com/puppetlabs-release-trusty.deb

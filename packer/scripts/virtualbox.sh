@@ -9,5 +9,5 @@ mount -t iso9660 -o loop /home/vagrant/VBoxGuestAdditions.iso /tmp/isomount
 /tmp/isomount/VBoxLinuxAdditions.run
 
 # Cleanup
-umount isomount
-rm -rf isomount /home/vagrant/VBoxGuestAdditions.iso
+umount /tmp/isomount
+rm -rf /tmp/isomount /home/vagrant/VBoxGuestAdditions.iso

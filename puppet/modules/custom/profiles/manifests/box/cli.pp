@@ -14,7 +14,7 @@ class profiles::box::cli {
     path    => ['/usr/local/bin', '/usr/bin'],
     user    => vagrant,
     environment => 'COMPOSER_HOME=/home/vagrant/.composer',
-    require => [Class['::php::composer'], File['/home/vagrant/box']]
+    require => [Anchor['php::end'], File['/home/vagrant/box']]
   }
 
   exec { 'make-box-executable':

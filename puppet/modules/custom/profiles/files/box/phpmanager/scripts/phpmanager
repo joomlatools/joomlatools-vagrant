@@ -405,7 +405,7 @@ sub_xdebug() {
         sudo cp "${SOURCE_XDEBUG}/modules/xdebug.so" "$LIB"
 
         # Note: the zend_extension directive requires the FULL path!
-        echo "zend_extension=\"${LIB}\"" | sudo tee "${INI}"
+        echo "zend_extension=\"${LIB}\"" | sudo tee "${INI}" > /dev/null
     else
         echo -e "\033[31mERROR: Failed to build Xdebug!\e[0m"
     fi

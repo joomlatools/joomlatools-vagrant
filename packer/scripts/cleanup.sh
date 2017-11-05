@@ -1,3 +1,5 @@
+#!/bin/bash
+
 echo "removing puppet"
 sudo apt-get purge --auto-remove puppet
 

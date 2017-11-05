@@ -40,7 +40,6 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--name", "joomlatools-box"]
     v.customize ["modifyvm", :id, "--memory", 1024]
     v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-    v.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
   end
 
   if CONF.has_key?('synced_folders')
