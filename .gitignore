@@ -2,6 +2,7 @@
 /www/*
 /.vagrant/*
 /packer_cache
+/output-virtualbox-iso
 /puppet/.librarian
 
 /config.custom.yaml
