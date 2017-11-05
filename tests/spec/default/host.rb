@@ -10,8 +10,8 @@ describe '## System' do
         it { should be_resolvable.by('hosts') }
     end
 
-    describe command('hostname -f') do
-        its(:stdout) { should eq "joomlatools\n" }
+    describe command("php -r 'echo php_uname(\'n\');'") do
+        its(:stdout) { should eq "joomlatools" }
     end
 
     describe fstab do

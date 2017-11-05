@@ -98,9 +98,9 @@ If you want to make changes to the box's infrastructure, you can do so by buildi
 
 1. Install dependencies with [bundler](http://bundler.io/):
 
-   ```
-   bundle install
-   ```
+    ```
+    bundle install
+    ```
 
 1. Go to the repository folder and build the box:
 
@@ -125,6 +125,19 @@ We use [Packer](https://www.packer.io/) to automatically build the box. To start
     git clone https://github.com/joomlatools/joomlatools-vagrant.git
     ```
 
+1. Install dependencies with [bundler](http://bundler.io/):
+
+    ```
+    bundle install
+    ```
+   
+1. Download the required Puppet modules using `librarian-puppet:`
+
+   ```
+   cd puppet
+   librarian-puppet install --path modules/common/
+   ```
+   
 1. Install [Packer](https://www.packer.io/)
 1. Now edit the `packer.json` file. Look for the current version and increase the version number.
 The version number is defined in the variables section and can be found at the top of the file. It looks like this:
@@ -140,10 +153,11 @@ The version number is defined in the variables section and can be found at the t
 
 ### Run ServerSpec tests
 
+1. Go to the `tests` directory: `cd tests/`
 1. Install `serverspec` with `bundle install`
-2. Run the tests: `rake spec`
+2. Run the tests: `bundle exec rake spec`
 
-Note: to run _on_ the box, run `BACKEND=exec rake spec`
+Note: to run _on_ the box, run `BACKEND=exec bundle exec rake spec`
 
 ## Reporting issues
 

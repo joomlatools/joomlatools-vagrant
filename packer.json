@@ -87,6 +87,15 @@
         "packer/scripts/cleanup.sh",
         "packer/scripts/zerodisk.sh"
       ]
+    },
+    {
+      "type": "file",
+      "source": "tests",
+      "destination": "/tmp"
+    },
+    {
+      "type": "shell",
+      "script": "packer/scripts/serverspec.sh"
     }
   ],
   "post-processors": [
