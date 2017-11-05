@@ -7,6 +7,21 @@ in 1.x versions.
 To get the diff for a specific change, go to https://github.com/joomlatools/joomlatools-vagrant/commit/xxx where xxx is the change hash.
 To view the diff between two versions, go to https://github.com/joomlatools/joomlatools-vagrant/compare/v1.0.0...v1.0.1
 
+* 1.5.0 (2017-11-06)
+  * Improved - Use PHP-FPM instead of mod_php [#28](https://github.com/joomlatools/joomlatools-vagrant/issues/28)
+  * Improved - New joomla.box dashboard design [#13](https://github.com/joomlatools/joomlatools-vagrant/issues/13)
+  * Improved - Initial refactoring of Puppet code to roles & profile workflow [#45](https://github.com/joomlatools/joomlatools-vagrant/issues/45)
+  * Improved - Upgrade to Webgrind 1.5 [#74](https://github.com/joomlatools/joomlatools-vagrant/issues/74)
+  * Improved - Move Varnish to port :8080 and improve VCL [#85](https://github.com/joomlatools/joomlatools-vagrant/issues/85)
+  * Improved - Query site list from joomlatools/console [#86](https://github.com/joomlatools/joomlatools-vagrant/issues/86)
+  * Fixed - Increase disk size [#71](https://github.com/joomlatools/joomlatools-vagrant/issues/71)
+  * Fixed - Set the `nolock` mount option [#75](https://github.com/joomlatools/joomlatools-vagrant/pull/75)
+  * Fixed - Install missing `zip` command [#82](https://github.com/joomlatools/joomlatools-vagrant/issues/82)
+  * Fixed - Make sure Xdebug works for custom PHP 7.x versions [#90](https://github.com/joomlatools/joomlatools-vagrant/issues/90)
+  * Added - Install default PHP from the (ondrej/php)[https://launchpad.net/~ondrej/+archive/ubuntu/php] repository [#69](https://github.com/joomlatools/joomlatools-vagrant/issues/69)
+  * Added - Add Toggle command to Box script [#84](https://github.com/joomlatools/joomlatools-vagrant/issues/84)
+  * Removed - Remove Z-Ray and HHVM [#96](https://github.com/joomlatools/joomlatools-vagrant/issues/96)  
+  
 * 1.4.4 (2016-04-07)
   * Added - Installed the Composer plugin [hirak/prestissimo](https://github.com/hirak/prestissimo) [#14](https://github.com/joomlatools/joomlatools-vagrant/issues/14)
   * Fixed - Configure PHP's OpenSSL to find the CA bundles [#22](https://github.com/joomlatools/joomlatools-vagrant/issues/22) 
