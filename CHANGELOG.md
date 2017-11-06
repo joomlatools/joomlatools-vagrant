@@ -18,7 +18,7 @@ To view the diff between two versions, go to https://github.com/joomlatools/joom
   * Fixed - Set the `nolock` mount option [#75](https://github.com/joomlatools/joomlatools-vagrant/pull/75)
   * Fixed - Install missing `zip` command [#82](https://github.com/joomlatools/joomlatools-vagrant/issues/82)
   * Fixed - Make sure Xdebug works for custom PHP 7.x versions [#90](https://github.com/joomlatools/joomlatools-vagrant/issues/90)
-  * Added - Install default PHP from the (ondrej/php)[https://launchpad.net/~ondrej/+archive/ubuntu/php] repository [#69](https://github.com/joomlatools/joomlatools-vagrant/issues/69)
+  * Added - Install default PHP from the [ondrej/php](https://launchpad.net/~ondrej/+archive/ubuntu/php) repository [#69](https://github.com/joomlatools/joomlatools-vagrant/issues/69)
   * Added - Add Toggle command to Box script [#84](https://github.com/joomlatools/joomlatools-vagrant/issues/84)
   * Added - Run Nginx on port 81 [#106](https://github.com/joomlatools/joomlatools-vagrant/issues/106)
   * Removed - Remove Z-Ray and HHVM [#96](https://github.com/joomlatools/joomlatools-vagrant/issues/96)  
