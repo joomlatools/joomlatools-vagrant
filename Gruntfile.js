@@ -5,7 +5,7 @@ module.exports = function(grunt) {
 
     // Customise the browser used by BrowserSync, example: `grunt --canary`
     var browser = 'default';
-    if(grunt.option('canary')){ browser = 'Google Chrome Canary'; };
+    if(grunt.option('canary')){ browser = 'Google Chrome Canary'; }
 
     grunt.initConfig({
 
@@ -22,7 +22,7 @@ module.exports = function(grunt) {
         sass: {
             dist: {
                 files: {
-                    'puppet/modules/scripts/files/scripts/assets/css/dashboard.css': 'puppet/modules/scripts/files/scripts/assets/css/dashboard.scss',
+                    'puppet/modules/custom/profiles/files/box/scripts/assets/css/dashboard.css': 'puppet/modules/custom/profiles/files/box/scripts/assets/css/dashboard.scss'
                 }
             }
         },
@@ -35,15 +35,15 @@ module.exports = function(grunt) {
             files: {
                 expand: true,
                 flatten: true,
-                src: 'puppet/modules/scripts/files/scripts/assets/css/*.css',
-                dest: 'puppet/modules/scripts/files/scripts/assets/css/'
+                src: 'puppet/modules/custom/profiles/files/box/scripts/assets/css/*.css',
+                dest: 'puppet/modules/custom/profiles/files/box/scripts/assets/css/'
             }
         },
 
         browserSync: {
             dev: {
                 bsFiles: {
-                    src : 'puppet/modules/scripts/files/scripts/assets/css/*.css'
+                    src : 'puppet/modules/custom/profiles/files/box/scripts/assets/css/*.css'
                 },
                 options: {
                     proxy: "joomla.box/joomlatools-vagrant/puppet/modules/scripts/files/scripts/",
@@ -58,7 +58,10 @@ module.exports = function(grunt) {
         // Watch
         watch: {
             css: {
-                files: 'puppet/modules/scripts/files/scripts/assets/**/*.*',
+                files: [
+                    'puppet/modules/custom/profiles/files/box/scripts/assets/css/*.*',
+                    'puppet/modules/custom/profiles/files/box/scripts/assets/css/**/*.*'
+                ],
                 tasks: ['sass', 'autoprefixer'],
                 options: {
                     interrupt: false,

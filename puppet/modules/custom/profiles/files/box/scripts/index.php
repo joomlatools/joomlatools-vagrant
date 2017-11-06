@@ -66,96 +66,37 @@
             <?php endforeach ?>
         </div>
 
+        <!-- Embedded terminal -->
         <div class="terminal">
             <iframe src="http://joomla.box:3000"></iframe>
+            <script>
+                var terminal = document.querySelector(".terminal");
+                var resizer = document.createElement("div");
+                resizer.className = "resizer";
+                terminal.appendChild(resizer);
+                resizer.addEventListener("mousedown", initDrag, false);
+                var startY, startHeight;
+
+                function initDrag(e) {
+                    startY = e.clientY;
+                    startHeight = parseInt(document.defaultView.getComputedStyle(terminal).height, 10);
+                    document.documentElement.addEventListener("mousemove", doDrag, false);
+                    document.documentElement.addEventListener("mouseup", stopDrag, false);
+                }
+
+                function doDrag(e) {
+                    document.body.classList.add("is-unresponsive");
+                    terminal.style.height = startHeight - e.clientY + startY + "px";
+                }
+
+                function stopDrag(e) {
+                    document.documentElement.removeEventListener("mousemove", doDrag, false);
+                    document.documentElement.removeEventListener("mouseup", stopDrag, false);
+                    document.body.classList.remove("is-unresponsive");
+                }
+            </script>
         </div>
 
-        <style type="text/css">
-            .main {
-                flex-direction: column;
-            }
-            .terminal {
-                position: relative;
-                background: black;
-                padding: 25px 0 16px 16px;
-
-                z-index: 99;
-                height: 33vh;
-                width: 100%;
-                min-height: 100px;
-                max-height: 80vh;
-                align-self: flex-end;
-
-                display: none;
-            }
-
-
-            @media (min-height: 768px) {
-                .terminal {
-                    display: block;
-                }
-
-                a[href="#terminal"] {
-                    display: none !important;
-                }
-            }
-
-            .terminal iframe {
-                border: none;
-                width: 100%;
-                height: 100%;
-            }
-
-            .resizer {
-                width: 100%;
-                height: 15px;
-                background: #fafafa;
-                border-top: 1px solid #e7e8e7;
-                border-bottom: 1px solid #e7e8e7;
-                position: absolute;
-                right: 0;
-                top: 0;
-                left: 0;
-                cursor: row-resize;
-            }
-
-            .is-unresponsive {
-                pointer-events: none;
-                user-select: none;
-            }
-
-            .is-unresponsive *:not(.resizer) {
-                pointer-events: none;
-                user-select: none;
-            }
-        </style>
-
-        <script>
-            var terminal = document.querySelector(".terminal");
-            var resizer = document.createElement("div");
-            resizer.className = "resizer";
-            terminal.appendChild(resizer);
-            resizer.addEventListener("mousedown", initDrag, false);
-            var startY, startHeight;
-
-            function initDrag(e) {
-                startY = e.clientY;
-                startHeight = parseInt(document.defaultView.getComputedStyle(terminal).height, 10);
-                document.documentElement.addEventListener("mousemove", doDrag, false);
-                document.documentElement.addEventListener("mouseup", stopDrag, false);
-            }
-
-            function doDrag(e) {
-                document.body.classList.add("is-unresponsive");
-                terminal.style.height = startHeight - e.clientY + startY + "px";
-            }
-
-            function stopDrag(e) {
-                document.documentElement.removeEventListener("mousemove", doDrag, false);
-                document.documentElement.removeEventListener("mouseup", stopDrag, false);
-                document.body.classList.remove("is-unresponsive");
-            }
-        </script>
     </div>
 </div>
 
