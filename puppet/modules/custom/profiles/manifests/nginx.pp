@@ -30,6 +30,16 @@ class profiles::nginx {
         ensure => present
     }
 
+    file { '/etc/nginx/php.conf':
+      ensure  => file,
+      owner   => vagrant,
+      group   => vagrant,
+      mode    => '0644',
+      source  => 'puppet:///modules/profiles/nginx/php.conf',
+      notify  => Service['nginx'],
+      require => Package['nginx']
+    }
+
     file { '/etc/nginx/sites-available/joomla.box.conf':
       ensure  => file,
       owner   => vagrant,
