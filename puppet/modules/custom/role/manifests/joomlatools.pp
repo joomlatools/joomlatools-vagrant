@@ -1,6 +1,7 @@
 class role::joomlatools inherits role {
 
   include ::profiles::apache
+  include ::profiles::nginx
   include ::profiles::varnish
 
   include ::profiles::mysql
