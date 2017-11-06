@@ -21,6 +21,7 @@ To view the diff between two versions, go to https://github.com/joomlatools/joom
   * Added - Install default PHP from the [ondrej/php](https://launchpad.net/~ondrej/+archive/ubuntu/php) repository [#69](https://github.com/joomlatools/joomlatools-vagrant/issues/69)
   * Added - Add Toggle command to Box script [#84](https://github.com/joomlatools/joomlatools-vagrant/issues/84)
   * Added - Run Nginx on port 81 [#106](https://github.com/joomlatools/joomlatools-vagrant/issues/106)
+  * Added - Add Terminal window to dashboard on larger screens [#108](https://github.com/joomlatools/joomlatools-vagrant/issues/108)
   * Removed - Remove Z-Ray and HHVM [#96](https://github.com/joomlatools/joomlatools-vagrant/issues/96)  
   
 * 1.4.4 (2016-04-07)
