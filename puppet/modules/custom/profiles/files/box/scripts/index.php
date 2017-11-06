@@ -65,6 +65,38 @@
                 <?php endif; ?>
             <?php endforeach ?>
         </div>
+
+        <!-- Embedded terminal -->
+        <div class="terminal">
+            <iframe src="http://joomla.box:3000"></iframe>
+            <script>
+                var terminal = document.querySelector(".terminal");
+                var resizer = document.createElement("div");
+                resizer.className = "resizer";
+                terminal.appendChild(resizer);
+                resizer.addEventListener("mousedown", initDrag, false);
+                var startY, startHeight;
+
+                function initDrag(e) {
+                    startY = e.clientY;
+                    startHeight = parseInt(document.defaultView.getComputedStyle(terminal).height, 10);
+                    document.documentElement.addEventListener("mousemove", doDrag, false);
+                    document.documentElement.addEventListener("mouseup", stopDrag, false);
+                }
+
+                function doDrag(e) {
+                    document.body.classList.add("is-unresponsive");
+                    terminal.style.height = startHeight - e.clientY + startY + "px";
+                }
+
+                function stopDrag(e) {
+                    document.documentElement.removeEventListener("mousemove", doDrag, false);
+                    document.documentElement.removeEventListener("mouseup", stopDrag, false);
+                    document.body.classList.remove("is-unresponsive");
+                }
+            </script>
+        </div>
+
     </div>
 </div>
 

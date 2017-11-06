@@ -89,6 +89,7 @@ iframe {
 
 .main {
   display: flex;
+  flex-direction: column;
   flex-grow: 1;
 
   .tab-content {
@@ -128,4 +129,82 @@ iframe {
 
 .table tbody tr td {
   vertical-align: middle;
+}
+
+
+/**
+ * Embedded terminal
+ *
+ * 1. relative position to be able to position the resize bar and always place on top for when resizing
+ * 2. Making some room for the terminal and resize bar
+ * 3. Initial 33vh (viewport height) height
+ * 4. Minimum of 100px height so it's always visible
+ * 5. Maximum of 80vh height
+ * 6. Align terminal to the flex-end (align to bottom)
+ * 7. Don't display on small screens by default
+ */
+
+.terminal {
+  position: relative; /* 1 */
+  z-index: 99; /* 1 */
+  padding: 25px 0 16px 16px; /* 2 */
+  background: #0f0f0f;
+  width: 100%;
+  height: 33vh; /* 3 */
+  min-height: 100px;  /* 4 */
+  max-height: 80vh; /* 5 */
+  align-self: flex-end; /* 6 */
+  display: none;  /* 7 */
+}
+
+
+/* Switch visibility between terminal menu item and embedded terminal */
+
+@media (min-height: 768px) {
+  .terminal {
+    display: block;
+  }
+
+  a[href="#terminal"] {
+    display: none !important;
+  }
+}
+
+
+/**
+ * iframe resizer
+ *
+ * 1. Position to the top and cover entire parent width
+ * 2. 15px height to match OSX scrollbars height
+ * 3. Match OSX scrollbar styling
+ * 4. Vertical resize cursor styling
+ */
+
+.resizer {
+  position: absolute; /* 1 */
+  right: 0; /* 1 */
+  top: 0; /* 1 */
+  left: 0; /* 1 */
+  height: 15px; /* 2 */
+  background: #fafafa; /* 3 */
+  border-top: 1px solid #e7e8e7; /* 3 */
+  border-bottom: 1px solid #e7e8e7; /* 3 */
+  cursor: row-resize; /* 4 */
+}
+
+
+/**
+ * Is unresponsive
+ *
+ * Add this class when resizing to make sure no other elements will be selected
+ * Also stops cursor from losing focus when hovering other iframes for example
+ * Don't only do this for the `<body>` element but do it for all elements except the resizer div
+ */
+
+.is-unresponsive {
+  &,
+  *:not(.resizer) {
+    pointer-events: none;
+    user-select: none;
+  }
 }
