@@ -146,7 +146,7 @@ sub_build "flex-2.5.4"
 sudo ln -fs /opt/openssl-1.0.2g/lib /opt/openssl-1.0.2g/lib/x86_64-linux-gnu
 
 sudo mkdir /usr/include/freetype2/freetype
-ln -fs /usr/include/freetype2/freetype.h /usr/include/freetype2/freetype/freetype.h
+sudo ln -fs /usr/include/freetype2/freetype.h /usr/include/freetype2/freetype/freetype.h
 
 # Install a default CA bundle into OpenSSL to verify the peer certificates
 sudo wget -nv http://curl.haxx.se/ca/cacert.pem -O /opt/openssl-1.0.2g/ssl/cert.pem
