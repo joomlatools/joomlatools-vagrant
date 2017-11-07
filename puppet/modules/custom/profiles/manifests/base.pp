@@ -40,14 +40,6 @@ class profiles::base {
       unless  => 'grep "LC_ALL=" /etc/default/locale',
     }
 
-    gnupg_key { 'gpg-rvm-signature':
-      ensure     => present,
-      key_id     => 'D39DC0E3',
-      user       => 'vagrant',
-      key_server => 'hkp://keys.gnupg.net',
-      key_type   => public
-    }
-
     swap_file::files { 'default':
       ensure   => present,
       swapfilesize => '512 MB'
