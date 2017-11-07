@@ -10,7 +10,7 @@ describe '## System' do
         it { should be_resolvable.by('hosts') }
     end
 
-    describe command("php -r 'echo php_uname(\'n\');'") do
+    describe command("php -r 'echo php_uname(\"n\");'") do
         its(:stdout) { should eq "joomlatools" }
     end
 
