@@ -19,7 +19,7 @@ fi
 # Now install the Puppet modules
 if [ "$(gem search -i librarian-puppet)" = "false" ]; then
   apt-get -q -y install ruby-json ruby1.9.1-dev build-essential
-  gem install librarian-puppet
+  gem install librarian-puppet --no-ri --no-rdoc
   cd $PUPPET_DIR && librarian-puppet install --path modules/common/
 else
   cd $PUPPET_DIR && librarian-puppet update

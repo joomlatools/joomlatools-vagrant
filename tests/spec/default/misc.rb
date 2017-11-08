@@ -16,7 +16,7 @@ describe '## Miscellaneous' do
           its(:exit_status) { should eq 0}
         end
 
-        describe file('/etc/apache2/sites-available/00-joomla.box.conf') do
+        describe file('/etc/apache2/conf-available/joomla.box.conf') do
           it { should exist }
           its(:content) { should match /Redirect permanent \/filebrowser http:\/\/joomla.box:8001\/fs\/var\/www/ }
         end
@@ -36,13 +36,13 @@ describe '## Miscellaneous' do
           its(:exit_status) { should eq 0}
         end
 
-        describe file('/etc/apache2/sites-available/00-joomla.box.conf') do
+        describe file('/etc/apache2/conf-available/joomla.box.conf') do
           its(:content) { should match /Redirect permanent \/terminal http:\/\/joomla.box:3000/ }
         end
      end
 
      describe '### PimpMyLog' do
-        describe file('/etc/apache2/sites-available/00-joomla.box.conf') do
+        describe file('/etc/apache2/conf-available/joomla.box.conf') do
           its(:content) { should match /Alias \/pimpmylog \/usr\/share\/pimpmylog\// }
         end
 

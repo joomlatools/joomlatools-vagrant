@@ -10,7 +10,9 @@ if [ -f /home/vagrant/scripts/updater/UPDATE_AVAILABLE ]; then
     read -r -p "${1:-Do you want to update now? [y/N]} " response
     case $response in
         [yY][eE][sS]|[yY])
+            echo "Updating Composer .."
             sudo composer self-update
+            echo "Updating joomlatools/console .."
             composer global require joomlatools/console:$VERSION
             rm -f /home/vagrant/scripts/updater/UPDATE_AVAILABLE
             ;;

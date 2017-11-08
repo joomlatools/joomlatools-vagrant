@@ -1,5 +1,13 @@
 class profiles::rvm {
 
+  gnupg_key { 'gpg-rvm-signature':
+    ensure     => present,
+    key_id     => 'D39DC0E3',
+    user       => 'vagrant',
+    key_source => 'https://rvm.io/mpapis.asc',
+    key_type   => public,
+  }
+
   single_user_rvm::install { 'vagrant':
     version => latest,
     require => Gnupg_key['gpg-rvm-signature']

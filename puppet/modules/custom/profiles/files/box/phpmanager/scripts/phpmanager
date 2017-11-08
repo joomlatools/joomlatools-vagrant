@@ -30,6 +30,9 @@ SOURCE_XDEBUG=/usr/local/src/xdebug
 EXTRA_CONFIGURE_ARGUMENTS=""
 SHOW_CONFIGURE=false
 
+BUILD_APC=true
+BUILD_XDEBUG=true
+
 # Load a custom CFG if present
 LOADED_CUSTOM_CONFIG=false
 if [[ -r ~/phpmanager.cfg ]] ; then
@@ -104,6 +107,13 @@ command_use() {
     fi
 
     if [[ ! -d "/opt/php/$VERSION" ]] || [[ "${VERSION}" == "master" ]] ; then
+        SHORT=$(sub_getshortversion $VERSION)
+
+        if [[ "$SHORT" -lt 5309 ]] ; then
+            echo "PHP versions older than 5.3.9 are no longer supported."
+            exit 1
+        fi
+
         if [[ "${VERSION}" == "master" ]] ; then
             echo -e "\033[33mRebuilding master ..\e[0m"
         else
@@ -122,6 +132,8 @@ command_use() {
         command_install $VERSION
     fi
 
+    sudo service php-fpm stop > /dev/null 2>&1
+
     # Install the binaries
     for BINARY in "${BINARIES[@]}"
     do
@@ -135,7 +147,8 @@ command_use() {
 
     sudo rm -f /opt/php/php-fpm.sock
     sudo ln -s "/run/php/${VERSION}-fpm.sock" /opt/php/php-fpm.sock
-    sudo service php-fpm restart
+
+    sudo service php-fpm start > /dev/null 2>&1
 
     echo -e "Installed binaries. PHP version is now:\n"
     php -v
@@ -152,6 +165,13 @@ command_install() {
 
     if [[ "${VERSION:0:4}" != "php-" ]] && [[ "${VERSION}" != "master" ]]; then
         VERSION="php-${VERSION}"
+    fi
+
+    SHORT=$(sub_getshortversion $VERSION)
+
+    if [[ "$SHORT" -lt 5309 ]] ; then
+        echo "PHP versions older than 5.3.9 are no longer supported."
+        exit 1
     fi
 
     LOGFILE="/tmp/phpmanager-build-${VERSION}.log"
@@ -176,15 +196,10 @@ command_install() {
     git checkout $VERSION  &> /dev/null
 
     # Setup the PATH to include legacy build tools if needed
-    SHORT=$(sub_getshortversion $VERSION)
     if [[ "$SHORT" -lt 5419 ]] ; then
         export PATH=/opt/bison-2.2/bin:/opt/flex-2.5.4/bin:$PATH
     else
         export PATH=/opt/bison-2.4/bin:$PATH
-    fi
-
-    if [[ "$SHORT" -le 5301 ]] && [[ "$SHORT" -ge 5300 ]]; then
-        export PATH=/opt/openssl-0.9.7g/bin:$PATH
     fi
 
     # Use g++ 4.4 to compile
@@ -230,18 +245,6 @@ command_install() {
     # Update the PECL channel
     sudo /opt/php/${VERSION}/bin/pecl channel-update pecl.php.net
 
-    # Build Xdebug
-    sub_xdebug "$VERSION" "$LOGFILE"
-
-    # Build APC or APCu+Opcache
-    if [[ "$SHORT" -lt 7000 ]] ; then
-        if [[ "$SHORT" -lt 5500 ]] ; then
-            sub_apc "$VERSION" "$LOGFILE"
-        else
-            sub_apcu "$VERSION" "$LOGFILE"
-        fi
-    fi
-
     # Register as alternative
     for BINARY in "${BINARIES[@]}"
     do
@@ -252,6 +255,20 @@ command_install() {
     do
         sudo /usr/bin/update-alternatives --install "/usr/sbin/${SBINARY}" "${SBINARY}" "/opt/php/$VERSION/sbin/$SBINARY" 20
     done
+
+    # Build Xdebug
+    if [ "$BUILD_XDEBUG" == true ] ; then
+        sub_xdebug "$VERSION" "$LOGFILE"
+    fi
+
+    # Build APC
+    if [ "$BUILD_APC" == true ] ; then
+        if [[ "$SHORT" -lt 5500 ]] ; then
+            sub_apc "$VERSION" "$LOGFILE"
+        else
+            sub_apcu "$VERSION" "$LOGFILE"
+        fi
+    fi
 
     echo -e "\n${VERSION} has been built and can be found at /opt/php/${VERSION} -- happy coding!"
 
@@ -270,6 +287,8 @@ command_restore() {
         exit 0
     fi
 
+    sudo service php-fpm stop > /dev/null 2>&1
+
     for BINARY in "${BINARIES[@]}"
     do
         sudo /usr/bin/update-alternatives --auto "${BINARY}" &> /dev/null
@@ -282,7 +301,7 @@ command_restore() {
 
     sudo rm -f /opt/php/php-fpm.sock
     sudo ln -s "/run/php/php7.1-fpm.sock" /opt/php/php-fpm.sock
-    sudo service php-fpm restart
+    sudo service php-fpm start > /dev/null 2>&1
 
     echo -e "Restored PHP, version is now: \n"
     php -v
@@ -360,16 +379,14 @@ sub_xdebug() {
     sub_cleanuprepo
 
     SHORT=$(sub_getshortversion $VERSION)
-    if [[ "$SHORT" -ge 5400 ]] && [[ "$SHORT" -lt 5500 ]]; then
+    if [[ "$SHORT" -lt 5400 ]]; then
+        TAG="XDEBUG_2_2_7" # Support for PHP versions older than 5.4.0 has been dropped in 2.3.0
+    elif [[ "$SHORT" -ge 5400 ]] && [[ "$SHORT" -lt 5500 ]]; then
         TAG="XDEBUG_2_4_1"
-    elif [[ "$SHORT" -ge 5500 ]] && [[ "$SHORT" -lt 7000 ]]; then
+    elif [[ "$SHORT" -ge 5500 ]] && [[ "$SHORT" -lt 7200 ]]; then
         TAG="XDEBUG_2_5_5"
-    elif [[ "$SHORT" -ge 7000 ]]; then
-        # Find the tag of the latest tagged commit in all branches
-        TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
     else
-        # Support for PHP versions older than 5.4.0 has been dropped in 2.3.0
-        TAG="XDEBUG_2_2_7"
+        TAG="master"
     fi
 
     git checkout $TAG &> /dev/null
@@ -388,7 +405,7 @@ sub_xdebug() {
         sudo cp "${SOURCE_XDEBUG}/modules/xdebug.so" "$LIB"
 
         # Note: the zend_extension directive requires the FULL path!
-        echo "zend_extension=\"${LIB}\"" | sudo tee "${INI}"
+        echo "zend_extension=\"${LIB}\"" | sudo tee "${INI}" > /dev/null
     else
         echo -e "\033[31mERROR: Failed to build Xdebug!\e[0m"
     fi
@@ -415,7 +432,7 @@ sub_apc() {
         echo -e "\033[92mfinished\033[0m"
         sudo echo "extension=\"apc.so\"" > "/opt/php/${VERSION}/etc/conf.d/apc.ini"
     else
-        echo "\033[31mFailed\e[0m"
+        echo -e "\033[31mFailed\e[0m"
     fi
 }
 
@@ -426,8 +443,13 @@ sub_apcu() {
 
     echo -n "Building APCu .. "
 
+    APC="APCu"
+    if [[ $SHORT -lt 7000 ]]; then
+        APC="APCu-4.0.7"
+    fi
+
     # @FIXME we can't get this command passed as an argument to sub_execute()
-    printf "\n" | sudo "/opt/php/${VERSION}/bin/pecl" install APCu-4.0.7  >> "$LOGFILE" 2>&1
+    printf "\n" | sudo "/opt/php/${VERSION}/bin/pecl" install $APC  >> "$LOGFILE" 2>&1
 
     EXTENSION=$(sub_getextensionnumber $VERSION)
 
@@ -439,7 +461,7 @@ sub_apcu() {
 
         sudo echo "zend_extension=\"opcache.so\"" > "/opt/php/${VERSION}/etc/conf.d/opcache.ini"
     else
-        echo "\033[31mFailed\e[0m"
+        echo -e "\033[31mFailed\e[0m"
     fi
 }
 
@@ -467,65 +489,17 @@ sub_getoptions() {
               --with-iconv \
               --with-libdir=lib/x86_64-linux-gnu \
               --with-mcrypt \
+              --with-openssl=/opt/openssl-1.0.2g \
               --with-pcre-regex \
               --with-readline \
               --with-xmlrpc \
               --with-zlib"
 
-    # Build the mysql configuration string
-    MYSQL=""
-    if [[ "$SHORT" -lt 5213 ]] ; then
-        if [[ ! -d "/opt/mysql-5.1.73-linux-x86_64-glibc23/" ]] ; then
-            echo "Downloading MySQL 5.1.73 dependencies .."
-            wget -O /tmp/mysql-5.1.73.tar.gz --no-check-certificate https://downloads.skysql.com/archives/mysql-5.1/mysql-5.1.73-linux-x86_64-glibc23.tar.gz
-            sudo tar -xf /tmp/mysql-5.1.73.tar.gz -C /opt/
-            sudo chown -R root:root /opt/mysql-5.1.73-linux-x86_64-glibc23
-            sudo ln -s /opt/mysql-5.1.73-linux-x86_64-glibc23/lib /opt/mysql-5.1.73-linux-x86_64-glibc23/lib/x86_64-linux-gnu
-            rm /tmp/mysql-5.1.73.tar.gz
-        fi
-
-        CFG="/opt/mysql-5.1.73-linux-x86_64-glibc23/bin/mysql_config"
-	    MYSQL="--with-mysql=/opt/mysql-5.1.73-linux-x86_64-glibc23 --with-mysqli=${CFG} --with-pdo-mysql=${CFG}"
-
-        if [[ "$SHORT" -lt 5208 ]] ; then
-            # http://bugs.mysql.com/bug.php?id=29994
-            sed -i.bak 's/gptr/char\*/g' "${SOURCE}/ext/mysqli/mysqli_api.c"
-        fi
-    elif [[ "$SHORT" -lt 5300 ]] ; then
-        CFG=$(which mysql_config)
-        MYSQL="--with-mysql --with-mysqli=${CFG} --with-pdo-mysql=${CFG}"
-    else
-        MYSQL="--with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-mysql-sock=/var/run/mysqld/mysqld.sock"
-    fi
-    OPTIONS="$OPTIONS $MYSQL"
+    # Configure MySQL
+    OPTIONS="$OPTIONS --with-mysql=mysqlnd --with-mysqli=mysqlnd --with-pdo-mysql=mysqlnd --with-mysql-sock=/var/run/mysqld/mysqld.sock"
 
     # Use an older libxml2 that works with all versions
     OPTIONS="$OPTIONS --with-libxml-dir=/opt/libxml2-2.7.8 --with-xsl=/opt/libxslt-1.1.26"
-
-    # Can we build with OpenSSL ?
-    OPENSSL=""
-    if [[ "$SHORT" -le 5301 ]] ; then
-        OPENSSL="--with-openssl=/opt/openssl-0.9.7g"
-        patch -p1 < /home/vagrant/phpmanager/patches/openssl.ssl2.patch &> /dev/null
-    elif [[ "$SHORT" -le 5306 ]] ; then
-        OPENSSL="--with-openssl=/opt/openssl-1.0.1f"
-        patch -p1 < /home/vagrant/phpmanager/patches/openssl.ssl2.patch &> /dev/null
-    else
-        OPENSSL="--with-openssl=/opt/openssl-1.0.2g"
-    fi
-    OPTIONS="$OPTIONS $OPENSSL"
-
-    # PHP 5.20 and older requires older curl headers, so point to the correct source files
-    CURL="--with-curl"
-    if [[ "$SHORT" -le 5200 ]] ; then
-        CURL="${CURL}=/usr/local/src/curl-7.15.3"
-    fi
-    OPTIONS="$OPTIONS $CURL"
-
-    # Add some legacy options
-    if [[ "$SHORT" -lt 5300 ]] ; then
-        OPTIONS="$OPTIONS --enable-spl --with-mime-magic"
-    fi
 
     # Enable opcache for newer versions
     if [[ "$SHORT" -ge 5500 ]] ; then
@@ -557,9 +531,9 @@ sub_setupini() {
     # according to the docs at http://be2.php.net/dl but for most builds this isn't the case.
     # So let's make sure we properly set the extension_dir directive :
     EXTENSION=$(sub_getextensionnumber $VERSION)
-    echo "extension_dir=/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/" | sudo tee "/opt/php/${VERSION}/etc/conf.d/99-custom.ini"
+    echo "extension_dir=/opt/php/${VERSION}/lib/php/extensions/no-debug-non-zts-${EXTENSION}/" | sudo tee "/opt/php/${VERSION}/etc/conf.d/99-custom.ini" > /dev/null
 
-    cat /home/vagrant/php.ini-template | sudo tee -a "/opt/php/${VERSION}/etc/conf.d/99-custom.ini"
+    cat /home/vagrant/php.ini-template | sudo tee -a "/opt/php/${VERSION}/etc/conf.d/99-custom.ini" > /dev/null
 
     sudo chown vagrant:vagrant "/opt/php/${VERSION}/lib/php.ini"
     sudo chown -R vagrant:vagrant "/opt/php/${VERSION}/etc/conf.d"
@@ -579,10 +553,15 @@ sub_getversions() {
     TAGS=()
     eval "$(git for-each-ref --shell --format='TAGS+=(%(refname))' refs/tags/)"
     for TAG in "${TAGS[@]}"; do
-        # Only list PHP versions greater than or equal to 5.2
-        PATTERN="refs/tags/php-([5-9]\.[2-9]+|7\.[0-9]+)"
+        # Only list PHP versions greater than or equal to 5.3.9
+        PATTERN="refs/tags/php-([5-9]\.[0-9]+)"
         if [[ $TAG =~ $PATTERN ]] ; then
-            AVAILABLE_PHP_VERSIONS+=(${TAG/refs\/tags\//})
+            TAG=${TAG/refs\/tags\//}
+            SHORT=$(sub_getshortversion "${TAG[@]/php-/}")
+
+            if [[ $SHORT -ge 5309 ]]; then
+                AVAILABLE_PHP_VERSIONS+=($TAG)
+            fi
         fi;
     done
 
@@ -673,12 +652,12 @@ sub_getextensionnumber() {
     echo $EXTENSION
 }
 
-# Make sure the PHP source is available
+# Make sure the PHP source and dependencies are available
 sub_checksource() {
     if [[ ! -d "$SOURCE/.git" ]] ; then
         echo -e "\033[33mCould not find PHP source!\e[0m"
         echo "Looks like this is the first time you run this script and/or the PHP source is missing."
-        echo "Please wait while we clone the PHP Git repo. Depending on your internet connection this could take a while .. "
+        echo -e "Please wait while we clone the PHP Git repo and install the required dependencies. Depending on your internet connection this could take a while .. \n"
 
         git clone "git://git.php.net/php-src.git" "$SOURCE"
 
@@ -686,9 +665,20 @@ sub_checksource() {
         echo ""
     fi
 
+    if [[ ! -d "/opt/flex-2.5.4/bin" ]] ; then
+        echo -e "\033[33mOlder versions of PHP require extra dependencies.\e[0m"
+        echo -e "Please wait while we set up all build dependencies. This can take a couple of minutes .. \n"
+
+        CMD="wget -nv https://developer.joomlatools.com/vagrant/phpmanager/dependencies -O /tmp/install-phpmanager-dependencies.sh"
+        sub_execute "$CMD" "download" "/tmp/install-phpmanager-dependencies.log" "Downloading install script"
+
+        chmod +x /tmp/install-phpmanager-dependencies.sh
+        /tmp/install-phpmanager-dependencies.sh
+    fi
+
     if [[ ! -d "$SOURCE_XDEBUG/.git" ]] ; then
         echo -e "\033[33mCould not find Xdebug source!\e[0m"
-        echo "Please wait while we clone the Xdebug source. Depending on your internet connection this could take a while .. "
+        echo -e "Please wait while we clone the Xdebug source. Depending on your internet connection this could take a while .. \n"
 
         git clone "https://github.com/xdebug/xdebug.git" "$SOURCE_XDEBUG"
 
@@ -729,6 +719,7 @@ sub_configurefpm() {
 
   CONTENTS="[global]
 pid = /run/php/${VERSION}-fpm.pid
+daemonize = no
 
 [www]
 user = www-data
@@ -738,10 +729,10 @@ listen.owner = www-data
 listen.group = www-data
 pm = ondemand
 pm.max_children = 5
-pm.process_idle_timeout = 10s;
-pm.max_requests = 250"
+pm.max_requests = 250
+pm.process_idle_timeout = 10s"
 
-  echo "$CONTENTS" | sudo tee --append  "/opt/php/${VERSION}/etc/php-fpm.conf" > /dev/null
+  echo -e "$CONTENTS" | sudo tee --append  "/opt/php/${VERSION}/etc/php-fpm.conf" > /dev/null
 
 }
 # Check if a value exists in an array
