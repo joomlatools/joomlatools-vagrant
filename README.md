@@ -67,12 +67,11 @@ One of the great features of Vagrant is [Vagrant Share](https://docs.vagrantup.c
 1. Create your (free) [account](https://dashboard.ngrok.com/user/signup) on ngrok.
 1. [Download](https://ngrok.com/download) and install ngrok.
 1. Set up the authentication token on your machine as described in the [ngrok documentation](https://ngrok.com/docs/2#authtoken).
-1. Add the following line in your _Vagrantfile_: `config.vm.network "forwarded_port", guest: 80, host: 8080, auto_correct: true`
 
 Now you're ready to start sharing access. Run this command and share the resulting Ngrok HTTP URL:
 
 ```
-vagrant share
+vagrant share --http 80
 ```
 
 For more options and background please refer to the [Vagrant docs](https://docs.vagrantup.com/v2/share/index.html).
