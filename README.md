@@ -4,6 +4,11 @@
 
 [Joomlatools Vagrant] automates the setup of a Joomla development environment. It is capable of running a full featured LAMP stack with a single command so that you can start working on your Joomla projects quickly.
 
+## Requirements
+
+* [Vagrant](http://www.vagrantup.com/) 2.0 and up
+* [VirtualBox](http://www.virtualbox.org/) 5.1 and up
+
 ## Installation
 
 1. Install [VirtualBox](http://www.virtualbox.org/)
@@ -29,7 +34,7 @@
 
 There will be two new folders created called `www` and `Projects`. These folders act as shared folders between your host computer and the box.
 
-## Getting started
+## Usage
 
 1. Once you have installed the box as described above, SSH into the box:
 
@@ -162,7 +167,7 @@ Note: to run _on_ the box, run `BACKEND=exec bundle exec rake spec`
 
 The box is a very complex piece of technology, based on many different open source tools and libraries many of which are far beyond our capabilities and understanding.
 
-We therefore deliberately keep the Issues section on this specific Github repo closed as we want to encourage people to submit code to add features or fix bugs by opening up Pull Requests instead of report bug or problems through Issues.
+We therefore deliberately keep the Issues section on this specific Github repo closed for such questions as we want to encourage people to submit code to add features or fix bugs by opening up Pull Requests instead of report bug or problems through Issues.
 
 If you do have a problem running the box please use either our [forum](https://groups.google.com/forum/#!forum/joomlatools-dev) or [chat room](http://gitter.im/joomlatools/dev) to get in touch with us and we are most happy to try and help you.
 
@@ -177,7 +182,7 @@ See the list of [contributors](https://github.com/joomlatools/joomlatools-vagran
 
 ## License
 
-Joomlatools Box is free and open-source software licensed under the [MPLv2 license](LICENSE.txt).
+Joomlatools Vagrant box is free and open-source software licensed under the [MPLv2 license](LICENSE.txt).
 
 ## Community
 
