@@ -24,7 +24,7 @@ $docroot = function($site) {
   <link href="assets/css/dashboard.css" rel="stylesheet">
 </head>
 
-<body>
+<body style="overflow: scroll">
   <table class="table table-striped table-dashboard">
     <thead>
       <tr>
