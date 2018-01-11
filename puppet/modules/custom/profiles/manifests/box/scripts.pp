@@ -28,11 +28,17 @@ class profiles::box::scripts {
     environment => 'COMPOSER_HOME=/home/vagrant/.composer'
   }
 
+  file { '/home/vagrant/.joomlatools/plugins':
+    ensure => directory,
+    owner  => vagrant,
+    group  => vagrant
+  }
+
   exec { 'add-console-joomlatools-plugin':
-    command => 'composer --working-dir=/home/vagrant/.composer/vendor/joomlatools/console/plugins require joomlatools/console-joomlatools --no-interaction',
+    command => 'composer --working-dir=/home/vagrant/.joomlatools/plugins require joomlatools/console-joomlatools --no-interaction',
     path    => ['/usr/bin' , '/bin', '/usr/local/bin'],
-    unless  => 'test -d /home/vagrant/.composer/vendor/joomlatools/console/plugins/vendor/joomlatools/console-joomlatools',
-    require => Exec['add-console'],
+    unless  => 'test -d /home/vagrant/.joomlatools/plugins/vendor/joomlatools/console-joomlatools',
+    require => [Exec['add-console'], File['/home/vagrant/.joomlatools/plugins']],
     user    => vagrant,
     environment => 'COMPOSER_HOME=/home/vagrant/.composer'
   }
