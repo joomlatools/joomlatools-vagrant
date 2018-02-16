@@ -14,8 +14,7 @@ Please go ahead.
 
   * OS: _____
   * Joomla version: _____
-  * Joomlatools Console version: _____
-  * Are you working on the Joomlatools Vagrant box: yes/no
+  * Joomlatools Vagrant version: _____
 
 ### Step 3: Describe the problem:
 
