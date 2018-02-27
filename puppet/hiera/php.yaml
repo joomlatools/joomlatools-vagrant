@@ -28,7 +28,7 @@ php::settings:
   openssl/openssl.cafile: /etc/ssl/certs/ca-certificates.crt
   openssl/openssl.capath: /usr/lib/ssl/
   xdebug/xdebug.remote_autostart: 0
-  xdebug/xdebug.remote_connect_back: 1
+  xdebug/xdebug.remote_connect_back: 0
   xdebug/xdebug.remote_enable: 1
   xdebug/xdebug.remote_handler: "dbgp"
   xdebug/xdebug.remote_port: 9000
