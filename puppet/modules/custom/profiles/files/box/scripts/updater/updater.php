@@ -1,13 +1,24 @@
 #!/usr/bin/env php
 <?php
 if (file_exists('/home/vagrant/scripts/updater/UPDATE_AVAILABLE')) {
-    exit;
+    exit();
 }
+
+if (file_exists('/tmp/joomlatools-updater.lock')) {
+    exit();
+}
+
+touch('/tmp/joomlatools-updater.lock');
+
+$exit = function($code) {
+    unlink('/tmp/joomlatools-updater.lock');
+    exit($code);
+};
 
 exec("/usr/local/bin/composer show --all joomlatools/console 2>&1", $result, $code);
 
 if ($code === 1) {
-    exit(1); // Failed to fetch info from packagist
+    $exit(1); // Failed to fetch info from packagist
 }
 
 $versions = array();
@@ -31,12 +42,12 @@ $versions = array_map('trim', $versions);
 array_filter($versions);
 
 if (!count($versions)) {
-    exit(1); // No available versions found!
+    $exit(1); // No available versions found!
 }
 
 $manifest = json_decode(file_get_contents('/home/vagrant/.composer/composer.lock'));
 if (!$manifest) {
-    exit(1); // No composer.lock file?
+    $exit(1); // No composer.lock file?
 }
 
 $currentVersion = false;
@@ -55,7 +66,7 @@ foreach ($manifest->packages as $package)
 }
 
 if (!$currentVersion) {
-    exit(1); // Could not find current version
+    $exit(1); // Could not find current version
 }
 
 $latest = '0.1';
@@ -74,3 +85,5 @@ foreach ($versions as $version)
 if ($latest != '0.1') {
     file_put_contents('/home/vagrant/scripts/updater/UPDATE_AVAILABLE', $latest);
 }
+
+$exit(0);
