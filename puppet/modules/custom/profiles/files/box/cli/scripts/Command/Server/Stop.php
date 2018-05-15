@@ -11,7 +11,7 @@ class Stop extends Command
     protected function configure()
     {
         $this->setName('server:stop')
-             ->setDescription('Stop Apache and MySQL');
+             ->setDescription('Stop all running web services. These include: Apache, MySQL, Varnish, PHP-FPM and Nginx.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -20,6 +20,7 @@ class Stop extends Command
         `sudo service apache2 stop 2>&1 1> /dev/null`;
         `sudo service mysql stop 2>&1 1> /dev/null`;
         `sudo service php-fpm stop 2>&1 1> /dev/null`;
+        `sudo service nginx stop 2>&1 1> /dev/null`;
 
         $output->writeln("Server has been stopped");
     }

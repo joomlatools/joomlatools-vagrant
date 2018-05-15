@@ -9,6 +9,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Restart extends Command
 {
+    private static $__services = array('apache', 'varnish', 'mysql', 'php', 'nginx');
+
     protected function configure()
     {
         $this->setName('server:restart')
@@ -16,8 +18,8 @@ class Restart extends Command
              ->addArgument(
                  'service',
                  InputArgument::IS_ARRAY,
-                 'Service to restart. Valid values: apache, php, varnish or mysql. Leave empty to restart all services at once.',
-                array('apache', 'varnish', 'mysql', 'php')
+                 'Service to restart. Valid values: apache, php, varnish, nginx or mysql. Leave empty to restart all services at once.',
+                 self::$__services
              );
     }
 
@@ -26,7 +28,14 @@ class Restart extends Command
         $services = $input->getArgument('service');
 
         if (!count($services)) {
-            $services = array('apache2', 'varnish', 'mysql', 'php');
+            $services = self::$__services;
+        }
+
+        foreach ($services as $key => $service)
+        {
+            if (!in_array($service, self::$__services)) {
+                unset($services[$key]);
+            }
         }
 
         if (($key = array_search('apache', $services)) !== false) {

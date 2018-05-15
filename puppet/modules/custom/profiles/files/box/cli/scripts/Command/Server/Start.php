@@ -10,7 +10,7 @@ class Start extends Command
     protected function configure()
     {
         $this->setName('server:start')
-             ->setDescription('Start Apache and MySQL');
+             ->setDescription('Start all running web services. These include: Apache, MySQL, Varnish, PHP-FPM and Nginx.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -19,6 +19,7 @@ class Start extends Command
         `sudo service apache2 start 2>&1 1> /dev/null`;
         `sudo service mysql start 2>&1 1> /dev/null`;
         `sudo service php-fpm start 2>&1 1> /dev/null`;
+        `sudo service nginx start 2>&1 1> /dev/null`;
 
         $output->writeln('Server has been started');
     }
