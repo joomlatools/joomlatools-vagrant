@@ -13,7 +13,7 @@ if [ -f /home/vagrant/scripts/updater/UPDATE_AVAILABLE ]; then
             echo "Updating Composer .."
             sudo composer self-update
             echo "Updating joomlatools/console .."
-            composer global require joomlatools/console:$VERSION
+            composer global require joomlatools/console:$VERSION --update-with-dependencies
             rm -f /home/vagrant/scripts/updater/UPDATE_AVAILABLE
             ;;
         *)
