@@ -2,7 +2,7 @@ require "yaml"
 require "json"
 
 # Check for required plugins and install if missing
-required_plugins = %w( vagrant-puppet-install )
+required_plugins = %w( vagrant-triggers vagrant-puppet-install )
 required_plugins.each do |plugin|
     exec "vagrant plugin install #{plugin} && vagrant #{ARGV.join(" ")}" unless Vagrant.has_plugin? plugin || ARGV[0] == 'plugin'
 end
@@ -78,5 +78,33 @@ Vagrant.configure("2") do |config|
         'fqdn' => "#{config.vm.hostname}.box"
     }
     puppet.hiera_config_path = "puppet/hiera-vagrant.yaml"
+  end
+
+  config.trigger.before :destroy do
+    while true
+        print "Do you want to backup your virtual hosts and databases first? [y/N] "
+        case STDIN.gets.strip
+            when 'Y', 'y', 'yes'
+                run_remote "/bin/bash /home/vagrant/triggers/backup.sh"
+                break
+            when /\A[nN]o?\Z/ #n or no
+                break
+        end
+    end
+  end
+
+  config.trigger.after :up do
+    if File.exist?('./joomla-box-backup.tar')
+        while true
+            print "Backup archive found. Do you want to restore the backup file? [y/N] "
+            case STDIN.gets.strip
+                when 'Y', 'y', 'yes'
+                    run_remote "/bin/bash /home/vagrant/triggers/restore.sh"
+                    break
+                when /\A[nN]o?\Z/ #n or no
+                    break
+            end
+        end
+    end
   end
 end
