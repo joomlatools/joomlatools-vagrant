@@ -12,7 +12,6 @@ class profiles::nginx {
     }
 
     file { ['/etc/nginx/sites-available/conf.d', '/etc/nginx/sites-available', '/etc/nginx/sites-enabled']:
-        purge   => true,
         recurse => true,
         require => Package['nginx'],
         notify  => Service['nginx'],

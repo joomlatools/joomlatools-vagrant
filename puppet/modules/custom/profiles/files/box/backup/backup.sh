@@ -22,25 +22,32 @@ tar -cvf $TMP_ARCHIVE --files-from /dev/null
 mkdir -p "$TEMP_DIR/"
 cd $TEMP_DIR
 
-echo "Backing up your virtual hosts:"
+backup_vhosts() {
+    local APPLICATION=$1
 
-for VHOST in /etc/apache2/sites-available/1-*.conf; do
-  if [ ! -e "$VHOST" ]
-  then
-    echo "No virtual hosts found. Nothing to do."
-    break
-  fi
+    echo "Backing up your ${APPLICATION} virtual hosts:"
 
-  FILENAME=$( basename "$VHOST" )
-  SITENAME=${FILENAME%.*}
-  SITENAME=${SITENAME:2}
+    for VHOST in /etc/${APPLICATION}/sites-available/1-*.conf; do
+      if [ ! -e "$VHOST" ]
+      then
+        echo "No ${APPLICATION} virtual hosts found. Nothing to do."
+        break
+      fi
 
-  echo " * $SITENAME"
+      FILENAME=$( basename "$VHOST" )
+      SITENAME=${FILENAME%.*}
+      SITENAME=${SITENAME:2}
 
-  gzip < $VHOST > "$TEMP_DIR/vhost-$FILENAME.gz"
-  tar --append --file=$TMP_ARCHIVE "vhost-$FILENAME.gz"
-  rm -f "vhost-$FILENAME.gz"
-done
+      echo " * $SITENAME"
+
+      gzip < $VHOST > "$TEMP_DIR/vhost-${APPLICATION}-$FILENAME.gz"
+      tar --append --file=$TMP_ARCHIVE "vhost-${APPLICATION}-$FILENAME.gz"
+      rm -f "vhost-${APPLICATION}-$FILENAME.gz"
+    done
+}
+
+backup_vhosts apache2
+backup_vhosts nginx
 
 echo "Backing up your MySQL databases:"
 
