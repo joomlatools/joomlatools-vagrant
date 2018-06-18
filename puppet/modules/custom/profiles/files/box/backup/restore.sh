@@ -39,7 +39,7 @@ restore_vhosts() {
       gunzip $VHOST
       VHOST="${VHOST/.gz/}"
 
-      if [ ${APPLICATION} -eq "apache2" ]
+      if [ "${APPLICATION}" == "apache2" ]
       then
           # Make sure VirtualHosts are listening on port 80 instead of 8080
           # (we changed the Apache port back to 80, see https://github.com/joomlatools/joomlatools-vagrant/issues/85)
