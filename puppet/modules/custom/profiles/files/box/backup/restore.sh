@@ -18,35 +18,47 @@ fi
 
 tar -xf $ARCHIVE -C $TEMP_DIR
 
-echo "Restoring virtual hosts:"
-for VHOST in $TEMP_DIR/vhost-1-*.conf.gz; do
-  if [ ! -e "$VHOST" ]
-  then
-    echo "No virtual hosts found. Nothing to do."
-    break
-  fi
+restore_vhosts() {
+    local APPLICATION=$1
 
-  FILENAME=$(basename "$VHOST")
-  SITENAME="${FILENAME/vhost-1-/}"
-  SITENAME="${SITENAME/.conf.gz/}"
+    echo "Restoring ${APPLICATION} virtual hosts:"
 
-  echo " * $SITENAME"
+    for VHOST in $TEMP_DIR/vhost-$APPLICATION-1-*.conf.gz; do
+      if [ ! -e "$VHOST" ]
+      then
+        echo "No ${APPLICATION} virtual hosts found. Nothing to do."
+        break
+      fi
 
-  gunzip $VHOST
-  VHOST="${VHOST/.gz/}"
+      FILENAME=$(basename "$VHOST")
+      SITENAME="${FILENAME/vhost-${APPLICATION}-1-/}"
+      SITENAME="${SITENAME/.conf.gz/}"
 
-  # Make sure VirtualHosts are listening on port 80 instead of 8080
-  # (we changed the Apache port back to 80, see https://github.com/joomlatools/joomlatools-vagrant/issues/85)
-  if grep -Fxq "<VirtualHost *:8080>" $VHOST
-  then
-      sed -i'.bak' 's/<VirtualHost \*:8080>/<VirtualHost \*:80>/g' $VHOST
-  fi
+      echo " * $SITENAME"
 
-  sudo mv $VHOST "/etc/apache2/sites-available/1-${SITENAME}.conf" || { echo "Failed to install $SITENAME! Aborting." 1>&2; exit 1; }
-  sudo a2ensite "1-$SITENAME" &> /dev/null || { echo "Failed to enable $SITENAME! Aborting." 1>&2; exit 1; }
-done
+      gunzip $VHOST
+      VHOST="${VHOST/.gz/}"
 
-sudo service apache2 restart
+      if [ ${APPLICATION} -eq "apache2" ]
+      then
+          # Make sure VirtualHosts are listening on port 80 instead of 8080
+          # (we changed the Apache port back to 80, see https://github.com/joomlatools/joomlatools-vagrant/issues/85)
+          if grep -Fxq "<VirtualHost *:8080>" $VHOST
+          then
+              sed -i'.bak' 's/<VirtualHost \*:8080>/<VirtualHost \*:80>/g' $VHOST
+          fi
+      fi
+
+      sudo mv $VHOST "/etc/${APPLICATION}/sites-available/1-${SITENAME}.conf" || { echo "Failed to install ${APPLICATION} ${SITENAME}! Aborting." 1>&2; exit 1; }
+      sudo ln -s "/etc/${APPLICATION}/sites-available/1-${SITENAME}.conf" "/etc/${APPLICATION}/sites-enabled/"
+    done
+
+    sudo service $APPLICATION restart
+}
+
+restore_vhosts apache2
+restore_vhosts nginx
+
 sudo service varnish restart
 
 echo "Restoring databases:"
