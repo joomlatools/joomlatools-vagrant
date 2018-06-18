@@ -23,6 +23,6 @@ class Restore extends Command
             throw new \RuntimeException('Failed to find backup archive ' . $archive);
         }
 
-        passthru("/bin/bash /home/vagrant/triggers/restore.sh $archive");
+        passthru("/bin/bash /home/vagrant/backup/restore.sh $archive");
     }
 }

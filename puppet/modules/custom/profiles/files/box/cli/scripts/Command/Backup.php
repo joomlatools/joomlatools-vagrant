@@ -25,6 +25,6 @@ class Backup extends Command
 
         $output->writeln('Creating backup archive <comment>' . basename($archive) . '</comment>');
 
-        passthru("/bin/bash /home/vagrant/triggers/backup.sh $archive");
+        passthru("/bin/bash /home/vagrant/backup/backup.sh $archive");
     }
 }
