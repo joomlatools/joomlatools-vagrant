@@ -12,6 +12,7 @@ class profiles::nginx {
     }
 
     file { ['/etc/nginx/sites-available/conf.d', '/etc/nginx/sites-available', '/etc/nginx/sites-enabled']:
+        purge   => true, # This is important: we want to make sure the sample vhosts are removed, as they run on port 80 by default!
         recurse => true,
         require => Package['nginx'],
         notify  => Service['nginx'],
