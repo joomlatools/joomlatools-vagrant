@@ -66,6 +66,8 @@ For more details refer to our [FAQ](https://www.joomlatools.com/developer/tools/
 
 ## Sharing access to the box
 
+### HTTP
+
 One of the great features of Vagrant is [Vagrant Share](https://docs.vagrantup.com/v2/share/index.html). Note that Vagrant Share requires [ngrok](https://ngrok.com/) to work. We recommend you follow these set up steps first:
 
 1. Upgrade Vagrant to the latest version.
@@ -80,6 +82,13 @@ vagrant share --http 80
 ```
 
 For more options and background please refer to the [Vagrant docs](https://docs.vagrantup.com/v2/share/index.html).
+
+### SSH
+
+You can also share SSH access. There are two methods:
+
+1. With [tmate](https://tmate.io/): run the `tmate` command on the box and share the resulting ssh connection string. 
+1. Using Vagrant's built-in [SSH sharing](https://www.vagrantup.com/docs/share/ssh.html) feature.
 
 ## Hacking on the box
 

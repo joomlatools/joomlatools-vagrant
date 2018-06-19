@@ -71,4 +71,8 @@ class profiles::base {
       content => "export JOOMLATOOLS_BOX=${::box_version}\n",
     }
 
+    ssh_keygen { 'vagrant':
+      home    => '/home/vagrant',
+    }
+
 }
