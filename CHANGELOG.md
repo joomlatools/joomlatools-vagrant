@@ -7,6 +7,16 @@ in 1.x versions.
 To get the diff for a specific change, go to https://github.com/joomlatools/joomlatools-vagrant/commit/xxx where xxx is the change hash.
 To view the diff between two versions, go to https://github.com/joomlatools/joomlatools-vagrant/compare/v1.0.0...v1.0.1
 
+* 1.5.1 (2018-06-19)
+  * Added - Install php-ldap extension [#123](https://github.com/joomlatools/joomlatools-vagrant/issues/123)
+  * Added - Install `tmate` to share terminal [#120](https://github.com/joomlatools/joomlatools-vagrant/issues/120)
+  * Fixed - Prevent updater from running simultaneously [#121](https://github.com/joomlatools/joomlatools-vagrant/issues/121)
+  * Fixed - Make sure auto-updater updates dependencies too [#126](https://github.com/joomlatools/joomlatools-vagrant/issues/126)
+  * Fixed - Restart Nginx in box command [#118](https://github.com/joomlatools/joomlatools-vagrant/issues/118)
+  * Fixed - Fix scrolling in site list [#113](https://github.com/joomlatools/joomlatools-vagrant/issues/113)
+  * Improved - Update phing/phing to 3.x [#124](https://github.com/joomlatools/joomlatools-vagrant/issues/124)
+  * Removed - `vagrant-triggers` for backup and restore [#125](https://github.com/joomlatools/joomlatools-vagrant/issues/125)
+
 * 1.5.0 (2017-11-06)
   * Improved - Use PHP-FPM instead of mod_php [#28](https://github.com/joomlatools/joomlatools-vagrant/issues/28)
   * Improved - New joomla.box dashboard design [#13](https://github.com/joomlatools/joomlatools-vagrant/issues/13)

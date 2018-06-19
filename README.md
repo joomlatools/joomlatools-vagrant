@@ -83,9 +83,9 @@ vagrant share --http 80
 
 For more options and background please refer to the [Vagrant docs](https://docs.vagrantup.com/v2/share/index.html).
 
-### SSH
+### Terminal
 
-You can also share SSH access. There are two methods:
+You can also share access to the terminal via SSH. There are two methods:
 
 1. With [tmate](https://tmate.io/): run the `tmate` command on the box and share the resulting ssh connection string. 
 1. Using Vagrant's built-in [SSH sharing](https://www.vagrantup.com/docs/share/ssh.html) feature.
