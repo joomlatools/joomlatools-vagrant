@@ -75,14 +75,4 @@ class profiles::base {
       home    => '/home/vagrant',
     }
 
-    # Make sure /var/www can be written to by the vagrant and www-data users.
-    # This is important if /var/www is not mounted through Vagrant,
-    # and when running the ServerSpec tests during the Packer build.
-    file { '/var/www':
-      ensure => directory,
-      owner  => vagrant,
-      group  => www-data,
-      mode   => 'a=rx,ug+w'
-    }
-
 }
