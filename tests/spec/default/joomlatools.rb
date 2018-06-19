@@ -6,7 +6,7 @@ describe '## Joomlatools' do
     describe '### joomlatools-console' do
 
         describe command('joomla -V') do
-          its(:stdout) { should match /Joomla Console tools version \d\.\d+\.\d+/ }
+          its(:stdout) { should match /Joomla Console tools  \d\.\d+\.\d+/ }
         end
 
         describe command('joomla site:create serverspectest') do
