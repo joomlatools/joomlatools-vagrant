@@ -54,6 +54,12 @@ class profiles::box::tools {
     ensure => latest
   }
 
+  apt::ppa { 'ppa:tmate.io/archive': }
+
+  package { 'tmate':
+    ensure => latest
+  }
+
   file { '/usr/share/phpmetrics':
     ensure => directory,
     owner  => vagrant
