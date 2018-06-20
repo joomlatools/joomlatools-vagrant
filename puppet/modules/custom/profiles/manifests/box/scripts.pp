@@ -28,7 +28,7 @@ class profiles::box::scripts {
     environment => 'COMPOSER_HOME=/home/vagrant/.composer'
   }
 
-  file { '/home/vagrant/.joomlatools/plugins':
+  file { ['/home/vagrant/.joomlatools/', '/home/vagrant/.joomlatools/plugins']:
     ensure => directory,
     owner  => vagrant,
     group  => vagrant

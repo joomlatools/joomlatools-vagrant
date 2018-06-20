@@ -13,7 +13,8 @@ gem install bundler --no-ri --no-rdoc
 
 cd /tmp/tests
 
-sudo chown vagrant:vagrant /var/www
+sudo chown vagrant:www-data /var/www
+sudo chmod a=rx,ug+w /var/www
 
 bundle install
 BACKEND=exec bundle exec rake spec
