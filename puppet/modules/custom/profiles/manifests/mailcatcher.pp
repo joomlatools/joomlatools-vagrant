@@ -1,5 +1,7 @@
 class profiles::mailcatcher {
 
+  require ::profiles::rvm
+
   package { ["sqlite3", "libsqlite3-dev"]: }
 
   exec {'install-mailcatcher-gem':
@@ -8,7 +10,7 @@ class profiles::mailcatcher {
         environment => ['HOME=/home/vagrant'],
         creates => '/home/vagrant/.rvm/gems/ruby-2.2.6/bin/mailcatcher',
         timeout => 900,
-        require => [Package['sqlite3'], Package['libsqlite3-dev']]
+        require => [Package['sqlite3'], Package['libsqlite3-dev'], Exec['set-default-ruby-for-vagrant']]
   }
 
   file { '/etc/init/mailcatcher.conf':
