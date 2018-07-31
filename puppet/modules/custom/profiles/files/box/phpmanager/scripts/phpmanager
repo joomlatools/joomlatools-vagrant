@@ -59,8 +59,8 @@ usage() {
 	fi
 	echo " PHP Source directory:                $SOURCE"
 	echo " Target directory:                    $TARGET"
-	if [ ! -z "$CONFIGURE_ARGUMENTS" ] ; then
-	    echo " Additional ./configure arguments:    $CONFIGURE_ARGUMENTS"
+	if [ ! -z "$EXTRA_CONFIGURE_ARGUMENTS" ] ; then
+	    echo " Additional ./configure arguments:    $EXTRA_CONFIGURE_ARGUMENTS"
 	fi
 	exit 1
 }
