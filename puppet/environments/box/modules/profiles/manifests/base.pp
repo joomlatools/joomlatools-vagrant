@@ -1,6 +1,6 @@
 class profiles::base {
 
-    include '::gnupg'
+    # include '::gnupg'
 
     Apt::Ppa <| |>
       -> Package <| title != 'software-properties-common' |>
@@ -8,14 +8,10 @@ class profiles::base {
     Apt::Source <| |>
       -> Package <| title != 'software-properties-common' |>
 
-    Package['libaugeas-ruby']
-      -> Augeas <| |>
-
     package { [
         'build-essential',
         'curl',
         'git-core',
-        'libaugeas-ruby',
         'unzip',
         'vim',
         'zip'
@@ -67,7 +63,7 @@ class profiles::base {
       ensure  => present,
       owner   => 'root',
       group   => 'root',
-      mode    => 644,
+      mode    => '0644',
       content => "export JOOMLATOOLS_BOX=${::box_version}\n",
     }
 

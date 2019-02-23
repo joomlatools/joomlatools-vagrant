@@ -24,7 +24,7 @@ define profiles::system::hostname(
     ensure  => present,
     owner   => 'root',
     group   => 'root',
-    mode    => 644,
+    mode    => '0644',
     content => "${name}\n",
   }
 
@@ -32,7 +32,7 @@ define profiles::system::hostname(
     ensure  => present,
     owner   => 'root',
     group   => 'root',
-    mode    => 644,
+    mode    => '0644',
     content => "${name}\n",
     notify  => Exec['service hostname restart'],
   }
