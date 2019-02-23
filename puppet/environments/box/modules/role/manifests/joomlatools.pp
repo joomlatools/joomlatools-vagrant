@@ -4,12 +4,12 @@ class role::joomlatools inherits role {
   #include ::profiles::nginx
   #include ::profiles::varnish
 
-  #include ::profiles::mysql
+  include ::profiles::mysql
 
   #include ::profiles::php
 
   #include ::profiles::rvm
-  #include ::profiles::nodejs
+  include ::profiles::nodejs
 
   #include ::profiles::phpmyadmin
   #include ::profiles::mailcatcher

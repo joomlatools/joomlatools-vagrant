@@ -14,9 +14,9 @@ class profiles::mysql(
     $mysqld_options = merge($default_mysqld_config, $mysqld_config)
 
     apt::source { 'mariadb':
-        location   => 'http://mariadb.mirror.nucleus.be/repo/10.1/ubuntu',
+        location   => 'http://mariadb.mirror.nucleus.be/repo/10.3/ubuntu',
         repos      => 'main',
-        key        => '199369E5404BD5FC7D2FE43BCBCB082A1BB943DB'
+        key        => 'F1656F24C74CD1D8'
     }
 
     class { '::mysql::server':
