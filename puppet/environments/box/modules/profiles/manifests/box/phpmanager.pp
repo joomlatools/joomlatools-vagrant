@@ -16,28 +16,28 @@ class profiles::box::phpmanager::install {
     group    => vagrant
   }
 
-  file { $phpmanager::source_path:
+  file { $::profiles::box::phpmanager::source_path:
     ensure => "directory",
     owner  => vagrant,
     group  => vagrant,
-    mode   => 755,
+    mode   => '0755',
     require => Package['git']
   }
 
-  file { $phpmanager::php_source_path:
+  file { $::profiles::box::phpmanager::php_source_path:
     ensure => "directory",
     owner  => vagrant,
     group  => vagrant,
-    mode   => 755,
-    require => File["$phpmanager::source_path"]
+    mode   => '0755',
+    require => File["$::profiles::box::phpmanager::source_path"]
   }
 
-  file { $phpmanager::xdebug_source_path:
+  file { $::profiles::box::phpmanager::xdebug_source_path:
     ensure => "directory",
     owner  => vagrant,
     group  => vagrant,
-    mode   => 755,
-    require => File["$phpmanager::source_path"]
+    mode   => '0755',
+    require => File["$::profiles::box::phpmanager::source_path"]
   }
 
   file { '/etc/bash_completion.d/phpmanager':

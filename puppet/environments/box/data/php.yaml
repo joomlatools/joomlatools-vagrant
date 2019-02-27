@@ -46,7 +46,7 @@ php::cli::settings:
 php::fpm::inifile: '/etc/php/7.1/fpm/php.ini'
 php::fpm::config::pool_base_dir: '/etc/php/7.1/fpm/pool.d/'
 php::fpm::config::config_file: '/etc/php/7.1/fpm/php-fpm.conf'
-php::fpm::config::emergency_restart_threshold: '5'
+php::fpm::config::emergency_restart_threshold: 5
 php::fpm::config::emergency_restart_interval: '1m'
 
 php::cli::inifile: '/etc/php/7.1/cli/php.ini'
@@ -83,7 +83,6 @@ php::extensions:
   xdebug:
     zend: true
     package_prefix: php-
-  xml: {}
   yaml:
     package_prefix: php-
   zip: {}

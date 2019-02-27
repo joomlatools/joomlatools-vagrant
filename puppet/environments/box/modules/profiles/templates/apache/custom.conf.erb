@@ -1,8 +1,12 @@
+ServerName joomlatools
+
 EnableSendfile Off
 
 <Directory "/var/www">
     AllowOverride All
 </Directory>
+
+SetEnv JOOMLATOOLS_BOX <%= @box_version %>
 
 # We always set the XDEBUG_PROFILE cookie
 # here, which is used to prevent generating

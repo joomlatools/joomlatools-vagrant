@@ -12,6 +12,3 @@ mod 'puppetlabs/mysql', '7.0.0'
 mod 'puppetlabs-stdlib', '4.25.1'
 mod 'puppet-php', '6.0.2'
 mod 'puppet-ssh_keygen', '3.0.1'
-
-#mod 'golja-gnupg', '1.2.3'
-#mod 'eirc-single_user_rvm', '0.3.0'

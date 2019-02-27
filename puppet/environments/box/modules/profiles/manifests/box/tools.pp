@@ -1,29 +1,33 @@
 class profiles::box::tools {
 
-  Exec <| title == 'set-default-ruby-for-vagrant' |>
-  ->
   exec {'install-capistrano-gem':
     user    => vagrant,
-    command => 'bash -c "source ~/.rvm/scripts/rvm; gem install capistrano"',
+    command => '/usr/bin/gem install --user-install  --no-ri --no-rdoc capistrano',
     environment => ['HOME=/home/vagrant'],
-    unless  => 'test -x /home/vagrant/.rvm/gems/ruby-2.2.6/bin/cap',
+    unless  => 'test -x /home/vagrant/.gem/ruby/2.5.0/bin/cap',
+    path    => ['/usr/bin/', '/bin/', '/home/vagrant/.gem/ruby/2.5.0/bin/'],
     timeout => 900,
+    tag     => ['rubygem']
   }
-  ->
+
   exec {'install-bundler-gem':
     user    => vagrant,
-    command => 'bash -c "source ~/.rvm/scripts/rvm; gem install bundler"',
+    command => 'gem install --user-install  --no-ri --no-rdoc bundler',
     environment => ['HOME=/home/vagrant'],
-    unless  => 'test -x /home/vagrant/.rvm/gems/ruby-2.2.6/bin/bundle',
+    unless  => 'test -x /home/vagrant/.gem/ruby/2.5.0/bin/bundle',
+    path    => ['/usr/bin/', '/bin/', '/home/vagrant/.gem/ruby/2.5.0/bin/'],
     timeout => 900,
+    tag     => ['rubygem']
   }
-  ->
+
   exec {'install-sass-gem':
     user    => vagrant,
-    command => 'bash -c "source ~/.rvm/scripts/rvm; gem install sass compass"',
+    command => '/usr/bin/gem install --user-install  --no-ri --no-rdoc sass compass',
     environment => ['HOME=/home/vagrant'],
-    unless  => 'test -x /home/vagrant/.rvm/gems/ruby-2.2.6/bin/sass',
+    unless  => 'test -x /home/vagrant/.gem/ruby/2.5.0/bin/sass',
+    path    => ['/usr/bin/', '/bin/', '/home/vagrant/.gem/ruby/2.5.0/bin/'],
     timeout => 900,
+    tag     => ['rubygem']
   }
 
   exec { 'npm-install-uglify-js':
@@ -44,17 +48,13 @@ class profiles::box::tools {
     require => Package['nodejs'],
   }
 
-  apt::ppa { 'ppa:resmo/git-ftp': }
-
   package { 'git-ftp':
-    require => Apt::Ppa['ppa:resmo/git-ftp']
+    ensure => latest
   }
 
   package { 'httpie':
     ensure => latest
   }
-
-  apt::ppa { 'ppa:tmate.io/archive': }
 
   package { 'tmate':
     ensure => latest

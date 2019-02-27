@@ -6,9 +6,9 @@ class role::joomlatools inherits role {
 
   include ::profiles::mysql
 
-  #include ::profiles::php
+  include ::profiles::php
 
-  #include ::profiles::rvm
+  include ::profiles::ruby
   include ::profiles::nodejs
 
   #include ::profiles::phpmyadmin
@@ -18,6 +18,6 @@ class role::joomlatools inherits role {
   #include ::profiles::cloudcommander
   #include ::profiles::pimpmylog
 
-  #include ::profiles::box
+  include ::profiles::box
 
 }
