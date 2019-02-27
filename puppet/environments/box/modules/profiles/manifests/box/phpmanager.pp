@@ -21,7 +21,7 @@ class profiles::box::phpmanager::install {
     owner  => vagrant,
     group  => vagrant,
     mode   => 755,
-    require => Package['git-core']
+    require => Package['git']
   }
 
   file { $phpmanager::php_source_path:

@@ -10,7 +10,7 @@ class profiles::php {
   file { '/opt/php/php-fpm.sock':
     ensure => link,
     target => '/run/php/php7.1-fpm.sock',
-    notify => Service['apache']
+    notify => Service['httpd']
   }
 
   apache::dotconf { 'php-fpm':

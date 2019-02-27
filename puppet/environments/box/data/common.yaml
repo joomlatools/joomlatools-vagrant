@@ -2,6 +2,3 @@
 profiles::mysql::root_password: 'root'
 profiles::mysql::mysqld_config:
   default-storage-engine: InnoDB
-
-apache::version: latest
-apache::config_file_default_purge: true

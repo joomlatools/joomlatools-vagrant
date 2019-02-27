@@ -1,14 +1,12 @@
 class profiles::nginx {
 
-    apt::ppa { 'ppa:vshn/nginx': }
-
-    package { ['nginx', 'nginx-extras', 'ngx-pagespeed']:
+    package { ['nginx']:
         ensure => latest
     }
 
     service { 'nginx':
         ensure  => running,
-        require => [Package['nginx'], Package['ngx-pagespeed']]
+        require => Package['nginx']
     }
 
     file { ['/etc/nginx/sites-available/conf.d', '/etc/nginx/sites-available', '/etc/nginx/sites-enabled']:

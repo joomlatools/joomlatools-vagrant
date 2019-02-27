@@ -36,16 +36,16 @@ class profiles::pimpmylog {
     exec { 'make-apache-logrotate-world-readable':
         command => 'sed -i \'s/apache2\/\*.log/apache2\/*log/g\' /etc/logrotate.d/apache2 && sed -i \'s/create [0-9]\+ root adm/create 644 root adm/g\' /etc/logrotate.d/apache2',
         unless  => 'grep "create 644 root adm" /etc/logrotate.d/apache2',
-        require => Package['apache'],
-        notify  => Service['apache']
+        require => Package['httpd'],
+        notify  => Service['httpd']
     }
 
     exec { 'make-apache-logs-world-readable':
         command     => 'find /var/log/apache2 -exec chmod 644 {} \; && chmod +x /var/log/apache2',
         refreshonly => true,
         subscribe   => Exec['install-pimpmylog'],
-        notify      => Service['apache'],
-        require     => Package['apache']
+        notify      => Service['httpd'],
+        require     => Package['httpd']
     }
 
     exec { 'make-mysql-logs-world-readable':
@@ -59,7 +59,7 @@ class profiles::pimpmylog {
         command => 'find /var/log -type d -exec chmod 755 {} \;',
         refreshonly => true,
         subscribe => Exec['install-pimpmylog'],
-        notify  => [Service['apache'], Service['mysql']]
+        notify  => [Service['httpd'], Service['mysql']]
     }
 
     exec { 'make-system-logs-world-readable':

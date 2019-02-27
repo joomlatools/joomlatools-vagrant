@@ -1,12 +1,16 @@
 class profiles::apache {
 
   include ::openssl
-  include ::apache
-
-  apt::ppa { 'ppa:ondrej/apache2': }
 
   file { ['/etc/apache2',  '/etc/apache2/ssl']:
     ensure => 'directory',
+  }
+
+  class { 'apache':
+    package_ensure => latest,
+    default_vhost  => true,
+    purge_configs  => false,
+    mpm_module     => 'prefork'
   }
 
   openssl::certificate::x509 { 'server':
@@ -24,31 +28,23 @@ class profiles::apache {
     path    => ['/usr/bin' , '/bin', '/usr/sbin/'],
     creates => '/etc/apache2/conf-available/fqdn',
     unless  => 'grep "ServerName joomlatools" /etc/apache2/conf-enabled/fqdn.conf',
-    require => Package['apache']
+    require => Package['httpd']
   }
 
-  apache::dotconf { 'custom':
-    content => template('profiles/apache/custom.conf.erb'),
+  apache::custom_config { 'custom':
+    content       => template('profiles/apache/custom.conf.erb'),
+    verify_config => false
   }
 
-  apache::module { 'rewrite': }
-  apache::module { 'ssl': }
-  apache::module { 'proxy_fcgi': }
-  apache::module { 'headers': }
-  apache::module { 'php5':
-    ensure => absent
-  }
-
-  exec { 'disable-default-vhost':
-    command => 'a2dissite 000-default',
-    onlyif  => 'test -L /etc/apache2/sites-enabled/000-default.conf',
-    require => Package['apache'],
-    notify  => Service['apache']
-  }
+  class { 'apache::mod::rewrite': }
+  class { 'apache::mod::ssl': }
+  class { 'Apache::mod::proxy': }
+  class { 'apache::mod::proxy_fcgi': }
+  class { 'apache::mod::headers': }
 
   file { '/etc/apache2/conf-available/shared_paths.conf':
     ensure  => file,
-    require => Package['apache']
+    require => Package['httpd']
   }
 
   exec { 'enable-shared-paths-config':
@@ -61,8 +57,8 @@ class profiles::apache {
     path    => '/etc/apache2/apache2.conf',
     line    => "SetEnv JOOMLATOOLS_BOX ${::box_version}",
     match   => '^SetEnv JOOMLATOOLS_BOX [\d\.]+$',
-    require => Package['apache'],
-    notify  => Service['apache']
+    require => File['/etc/apache2/apache2.conf'],
+    notify  => Service['httpd']
   }
 
 }

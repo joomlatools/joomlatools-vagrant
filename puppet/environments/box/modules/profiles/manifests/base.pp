@@ -11,7 +11,7 @@ class profiles::base {
     package { [
         'build-essential',
         'curl',
-        'git-core',
+        'git',
         'unzip',
         'vim',
         'zip'
