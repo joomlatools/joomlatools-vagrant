@@ -30,6 +30,12 @@ class profiles::box::tools {
     tag     => ['rubygem']
   }
 
+  exec { 'npm-install-yarn':
+    command => 'npm install -g yarn',
+    unless  => 'which yarn',
+    require => Package['nodejs']
+  }
+
   exec { 'npm-install-uglify-js':
     command => 'npm install -g uglify-js@1',
     unless  => 'which uglifyjs',

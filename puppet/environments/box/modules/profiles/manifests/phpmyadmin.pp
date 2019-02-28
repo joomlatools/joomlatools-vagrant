@@ -45,12 +45,10 @@ class profiles::phpmyadmin {
     require => Service['mysql']
   }
 
-  apache::vhost { 'phpmyadmin':
-    server_name   => 'phpmyadmin',
-    serveraliases => 'phpmyadmin.joomla.box',
+  ::apache::vhost { 'phpmyadmin.joomla.box':
     docroot       => '/usr/share/phpmyadmin',
     port          => 80,
-    priority      => '10'
+    priority      => 10
   }
 
 }

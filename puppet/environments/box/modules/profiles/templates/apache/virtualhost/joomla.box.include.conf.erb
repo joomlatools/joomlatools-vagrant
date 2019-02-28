@@ -12,7 +12,7 @@ SetEnvIf Request_URI "^/varnish-enabled" dontlog
 SetEnvIf Request_URI "^/(pimpmylog|assets)/" dontlog
 SetEnvIf Request_URI "^/(sites\.php|index\.php|pimpmylog|terminal|mailcatcher|apc|filebrowser|phpinfo)$" dontlog
 
-Redirect permanent /terminal http://joomla.box:3000
+Redirect permanent /terminal http://joomla.box:3000/wetty/ssh/vagrant
 Redirect permanent /mailcatcher http://joomla.box:1080
 Redirect permanent /filebrowser http://joomla.box:8001/fs/var/www
 

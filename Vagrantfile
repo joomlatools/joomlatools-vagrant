@@ -48,7 +48,7 @@ Vagrant.configure("2") do |config|
   if CONF.has_key?('synced_folders')
     CONF['synced_folders'].each { |target, source|
       if source
-        config.vm.synced_folder source, target, :nfs => CONF['nfs'], :linux__nfs_options => ['rw', 'no_subtree_check', 'all_squash','async'], :mount_options => ["vers=3", "rw", "tcp", "nolock", "noacl", "async"], :create => true
+        config.vm.synced_folder source, target, :nfs => CONF['nfs'], :linux__nfs_options => ['rw', 'no_subtree_check', 'all_squash','async'], :mount_options => ["vers=3", "rw", "tcp", "nolock", "noacl", "async"], :create => true, :map_uid => 0, :map_gid => 0
       end
     }
 

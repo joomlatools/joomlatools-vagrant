@@ -11,10 +11,10 @@ class role::joomlatools inherits role {
   include ::profiles::ruby
   include ::profiles::nodejs
 
-  #include ::profiles::phpmyadmin
+  include ::profiles::phpmyadmin
   #include ::profiles::mailcatcher
   #include ::profiles::webgrind
-  #include ::profiles::wetty
+  include ::profiles::wetty
   #include ::profiles::cloudcommander
   #include ::profiles::pimpmylog
 
