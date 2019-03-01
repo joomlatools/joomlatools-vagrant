@@ -35,13 +35,13 @@ class profiles::pimpmylog {
 
     exec { 'make-apache-logrotate-world-readable':
         command => 'sed -i \'s/apache2\/\*.log/apache2\/*log/g\' /etc/logrotate.d/apache2 && sed -i \'s/create [0-9]\+ root adm/create 644 root adm/g\' /etc/logrotate.d/apache2',
-        unless  => 'grep "create 644 root adm" /etc/logrotate.d/apache2',
+        unless  => 'grep "create 0644 root adm" /etc/logrotate.d/apache2',
         require => Package['httpd'],
         notify  => Service['httpd']
     }
 
     exec { 'make-apache-logs-world-readable':
-        command     => 'find /var/log/apache2 -exec chmod 644 {} \; && chmod +x /var/log/apache2',
+        command     => 'find /var/log/apache2 -exec chmod 0644 {} \; && chmod +x /var/log/apache2',
         refreshonly => true,
         subscribe   => Exec['install-pimpmylog'],
         notify      => Service['httpd'],
@@ -49,21 +49,21 @@ class profiles::pimpmylog {
     }
 
     exec { 'make-mysql-logs-world-readable':
-        command => 'find /var/log/mysql -type f -exec chmod 644 {} \;',
+        command => 'find /var/log/mysql -type f -exec chmod 0644 {} \;',
         refreshonly => true,
         subscribe => Exec['install-pimpmylog'],
         notify  => Service['mysql']
     }
 
     exec { 'make-log-directories-world-readable':
-        command => 'find /var/log -type d -exec chmod 755 {} \;',
+        command => 'find /var/log -type d -exec chmod 0755 {} \;',
         refreshonly => true,
         subscribe => Exec['install-pimpmylog'],
         notify  => [Service['httpd'], Service['mysql']]
     }
 
     exec { 'make-system-logs-world-readable':
-        command => 'chmod 644 /var/log/syslog',
+        command => 'chmod 0644 /var/log/syslog',
         refreshonly => true,
         subscribe => Exec['install-pimpmylog'],
     }

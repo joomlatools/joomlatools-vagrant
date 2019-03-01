@@ -35,7 +35,6 @@ class profiles::webgrind {
   }
 
   apache::vhost { 'webgrind':
-    server_name   => 'webgrind',
     serveraliases => 'webgrind.joomla.box',
     docroot       => '/usr/share/webgrind',
     port          => 80,

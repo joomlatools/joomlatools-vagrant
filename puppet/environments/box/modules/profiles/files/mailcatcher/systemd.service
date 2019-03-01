@@ -1,0 +1,12 @@
+[Unit]
+Description=Mailcatcher
+After=network.target
+
+[Service]
+Type=simple
+User=vagrant
+Group=vagrant
+ExecStart=/home/vagrant/.gem/ruby/2.5.0/bin/mailcatcher --http-ip 0.0.0.0 -f
+
+[Install]
+WantedBy=multi-user.target

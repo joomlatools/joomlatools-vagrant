@@ -1,19 +1,21 @@
 class profiles::cloudcommander {
 
     include ::profiles::nodejs
+    include ::profiles::systemd::reload
 
     exec { 'npm-install-cloudcommander':
-        command => 'npm install cloudcmd@5.0.5 -g',
+        command => 'npm install cloudcmd@11.8.5 -g',
         unless  => 'which cloudcmd',
         environment => ['HOME=/home/vagrant'],
         require => Package['nodejs']
     }
 
-    file { '/etc/init/cloudcommander.conf':
-      ensure => file,
-      source => "puppet:///modules/profiles/cloudcommander/upstart.conf",
-      owner => root,
-      group => root,
+    file { '/lib/systemd/system/cloudcommander.service':
+      ensure  => file,
+      source  => "puppet:///modules/profiles/cloudcommander/systemd.service",
+      owner   => root,
+      group   => root,
+      notify  => [Class['::profiles::systemd::reload'], Service['cloudcommander']],
       require => Exec['npm-install-cloudcommander']
     }
 
@@ -25,7 +27,7 @@ class profiles::cloudcommander {
 
     service {'cloudcommander':
         ensure    => 'running',
-        provider  => 'upstart',
-        require   => File['/etc/init/cloudcommander.conf']
+        enable    => true,
+        require   => Class['::profiles::systemd::reload']
     }
 }

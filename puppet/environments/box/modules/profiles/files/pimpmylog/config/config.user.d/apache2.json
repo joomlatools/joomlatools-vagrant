@@ -33,7 +33,7 @@
   },
   "apache-vhost-access-logs": {
     "display": "[apache]",
-    "path": "/var/log/apache2/*-access_log",
+    "path": "/var/log/apache2/*_access.log",
     "tags" : ["Apache (access)"],
     "count": 50,
     "refresh": 10,
@@ -75,7 +75,7 @@
   },
   "apache-vhost-error-logs": {
     "display": "[apache]",
-    "path": "/var/log/apache2/*-error_log",
+    "path": "/var/log/apache2/*_error.log",
     "tags" : ["Apache (errors)"],
     "count": 50,
     "refresh": 10,

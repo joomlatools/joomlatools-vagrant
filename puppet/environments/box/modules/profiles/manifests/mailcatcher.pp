@@ -1,29 +1,36 @@
 class profiles::mailcatcher {
 
-  require ::profiles::rvm
+  require ::profiles::ruby
+  include ::profiles::systemd::reload
 
   package { ["sqlite3", "libsqlite3-dev"]: }
 
   exec {'install-mailcatcher-gem':
-        user    => vagrant,
-        command => 'bash -c "source ~/.rvm/scripts/rvm; gem install mailcatcher"',
-        environment => ['HOME=/home/vagrant'],
-        creates => '/home/vagrant/.rvm/gems/ruby-2.2.6/bin/mailcatcher',
-        timeout => 900,
-        require => [Package['sqlite3'], Package['libsqlite3-dev'], Exec['set-default-ruby-for-vagrant']]
+    user    => vagrant,
+    command => '/usr/bin/gem install --user-install --no-ri --no-rdoc mailcatcher',
+    environment => ['HOME=/home/vagrant'],
+    creates => '/home/vagrant/.gem/ruby/2.5.0/bin/mailcatcher',
+    timeout => 900,
+    path    => ['/usr/bin/', '/bin/', '/home/vagrant/.gem/ruby/2.5.0/bin/'],
+    require => [Package['sqlite3'], Package['libsqlite3-dev']],
+    tag     => ['rubygem']
   }
 
-  file { '/etc/init/mailcatcher.conf':
-    content => template('profiles/mailcatcher/upstart.conf.erb'),
+  file { '/lib/systemd/system/mailcatcher.service':
+    source  => "puppet:///modules/profiles/mailcatcher/systemd.service",
+    notify  => [Class['::profiles::systemd::reload'], Service['mailcatcher']],
     require => Exec['install-mailcatcher-gem']
   }
 
   service { 'mailcatcher':
     ensure   => running,
-    provider => upstart,
-    hasstatus => true,
-    subscribe => File['/etc/init/mailcatcher.conf'],
-    require => File['/etc/init/mailcatcher.conf']
+    enable   => true,
+    require  => Class['::profiles::systemd::reload']
+  }
+
+  file { '/usr/bin/catchmail':
+    ensure => link,
+    target => '/home/vagrant/.gem/ruby/2.5.0/bin/catchmail'
   }
 
 }
