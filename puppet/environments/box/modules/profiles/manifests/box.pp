@@ -20,6 +20,7 @@ class profiles::box {
     docroot             => '/var/www',
     override            => 'All',
     additional_includes => ['/etc/apache2/joomla.box-include.conf'],
+    access_log_env_var  => '!dontlog',
     require             => File['/etc/apache2/joomla.box-include.conf']
   }
 

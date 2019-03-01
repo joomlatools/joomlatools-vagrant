@@ -8,7 +8,7 @@ class profiles::apache {
 
   class { '::apache':
     package_ensure => latest,
-    default_vhost  => true,
+    default_vhost  => false,
     purge_configs  => false,
     mpm_module     => 'prefork'
   }
