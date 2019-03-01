@@ -16,7 +16,7 @@ class profiles::mysql(
     apt::source { 'mariadb':
         location   => 'http://mariadb.mirror.nucleus.be/repo/10.3/ubuntu',
         repos      => 'main',
-        key        => 'F1656F24C74CD1D8'
+        key        => '177F4010FE56CA3336300305F1656F24C74CD1D8'
     }
 
     class { '::mysql::server':

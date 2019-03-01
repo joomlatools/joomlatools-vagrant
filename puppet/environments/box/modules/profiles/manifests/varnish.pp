@@ -8,7 +8,7 @@ class profiles::varnish {
 
   apt::source { 'varnish':
     location   => "https://packagecloud.io/varnishcache/varnish60lts/ubuntu/",
-    key        => { 'id' => 'C4DEFFEB', 'source' => 'https://packagecloud.io/varnishcache/varnish60lts/gpgkey' }
+    key        => { 'id' => '48D81A24CB0456F5D59431D94CFCFD6BA750EDCD', 'source' => 'https://packagecloud.io/varnishcache/varnish60lts/gpgkey' }
   }
 
   package { 'varnish':

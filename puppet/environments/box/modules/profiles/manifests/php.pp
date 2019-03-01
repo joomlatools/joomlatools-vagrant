@@ -59,14 +59,14 @@ class profiles::php {
     notify => Service['php-fpm']
   }
 
-  ini_setting { 'php-fpm-no-daemonize':
-    ensure  => present,
-    value   => 'no',
-    path    => "/etc/php/${version}/fpm/php-fpm.conf",
-    section => 'global',
-    setting => 'daemonize',
-    require => Anchor['php::end'],
-    notify  => Service['php-fpm']
+  $fpm_config_override = @(EOT)
+    [global]
+    daemonize = no
+    | EOT
+
+  file { '/etc/php/7.1/fpm/pool.d/override.conf':
+    ensure  => file,
+    content => $fpm_config_override
   }
 
   service { 'php-fpm':
