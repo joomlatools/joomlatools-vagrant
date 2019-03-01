@@ -14,8 +14,8 @@ class profiles::box::scripts {
   }
 
   exec { 'add-scripts-to-path':
-    command => 'echo "export PATH=\$PATH:/home/vagrant/.composer/vendor/bin" >> /home/vagrant/.bash_profile',
-    unless  => 'grep ":/home/vagrant/.composer/vendor/bin" /home/vagrant/.bash_profile',
+    command => 'echo "export PATH=\$PATH:/home/vagrant/.composer/vendor/bin" >> /home/vagrant/.bashrc',
+    unless  => 'grep ":/home/vagrant/.composer/vendor/bin" /home/vagrant/.bashrc',
     require => Exec['make-scripts-executable']
   }
 
@@ -53,12 +53,12 @@ class profiles::box::scripts {
   file_line { 'joomlatools-console-updater':
     path    => '/home/vagrant/.bash_profile',
     line    => '/home/vagrant/scripts/updater/login.sh',
-    require => Exec['make-scripts-executable']
+    require => [Exec['make-scripts-executable'], File['/home/vagrant/.bash_profile']]
   }
 
   file_line { 'load-bashrc':
     path    => '/home/vagrant/.bash_profile',
-    line    => '[ -f ~/.bashrc ] && . ~/.bashrc',
+    line    => '[ -f /home/vagrant/.bashrc ] && . /home/vagrant/.bashrc',
     require => File['/home/vagrant/.bash_profile']
   }
 

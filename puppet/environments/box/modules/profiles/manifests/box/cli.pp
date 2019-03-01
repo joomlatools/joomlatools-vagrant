@@ -24,15 +24,14 @@ class profiles::box::cli {
   }
 
   exec { 'add-box-to-path':
-    command => 'echo "export PATH=\$PATH:/home/vagrant/box" >> /home/vagrant/.bash_profile',
-    unless  => 'grep ":/home/vagrant/box" /home/vagrant/.bash_profile',
+    command => 'echo "export PATH=\$PATH:/home/vagrant/box" >> /home/vagrant/.bashrc',
+    unless  => 'grep ":/home/vagrant/box" /home/vagrant/.bashrc',
     require => Exec['make-box-executable']
   }
 
   file_line { 'register-box-autocompletion':
-    path    => '/home/vagrant/.bash_profile',
-    line    => 'source <(/home/vagrant/box/box _completion --generate-hook --program=box) 2> /dev/null',
-    require => File['/home/vagrant/.bash_profile']
+    path    => '/home/vagrant/.bashrc',
+    line    => 'source <(/home/vagrant/box/box _completion --generate-hook --program=box) 2> /dev/null'
   }
 
   package {'bash-completion':

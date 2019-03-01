@@ -53,14 +53,8 @@ class profiles::box::phpmanager::install {
   }
 
   exec { 'add-phpmanager-to-path':
-    command => 'echo "export PATH=\$PATH:/home/vagrant/phpmanager" >> /home/vagrant/.bash_profile',
-    unless  => 'grep ":/home/vagrant/phpmanager" /home/vagrant/.bash_profile',
+    command => 'echo "export PATH=\$PATH:/home/vagrant/phpmanager" >> /home/vagrant/.bashrc',
+    unless  => 'grep ":/home/vagrant/phpmanager" /home/vagrant/.bashrc',
     require => Exec['make-phpmanager-executable']
-  }
-
-  file { "${phpmanager::installation_path}/php":
-    ensure => "directory",
-    owner   => "root",
-    group   => "root",
   }
 }

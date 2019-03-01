@@ -14,7 +14,7 @@ class profiles::ruby {
   }
 
   file_line { 'add-gem-bin-dir-to-path':
-    path    => '/home/vagrant/.bash_profile',
+    path    => '/home/vagrant/.bashrc',
     line    => 'export PATH=$PATH:/home/vagrant/.gem/ruby/2.5.0/bin/'
   }
 

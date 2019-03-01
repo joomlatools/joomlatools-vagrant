@@ -82,8 +82,8 @@ class profiles::box::tools {
   }
 
   exec { 'add-phpmetrics-to-path':
-    command => 'echo "export PATH=\$PATH:/usr/share/phpmetrics/vendor/bin" >> /home/vagrant/.bash_profile',
-    unless  => 'grep ":/usr/share/phpmetrics/vendor/bin" /home/vagrant/.bash_profile',
+    command => 'echo "export PATH=\$PATH:/usr/share/phpmetrics/vendor/bin" >> /home/vagrant/.bashrc',
+    unless  => 'grep ":/usr/share/phpmetrics/vendor/bin" /home/vagrant/.bashrc',
     user    => vagrant,
     require => Exec['install-phpmetrics']
   }
