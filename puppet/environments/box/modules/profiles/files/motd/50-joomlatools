@@ -1,0 +1,15 @@
+#!/bin/bash
+
+BOLD="\033[1m"
+NORMAL="\033[0m"
+
+echo -e " 
+To create a new Joomla site, run '${BOLD}joomla site:create sitename${NORMAL}'.
+For more options, see the output of the '${BOLD}joomla help${NORMAL}' command.
+
+You can control the server (PHP, Apache, ..) through the '${BOLD}box${NORMAL}' command.
+Type '${BOLD}box list${NORMAL}' to get an overview of available commands.
+
+For more information and usage options, please refer to the online
+documentation at http://developer.joomlatools.com/tools/vagrant/introduction.html
+"

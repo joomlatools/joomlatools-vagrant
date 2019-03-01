@@ -1,0 +1,9 @@
+#!/bin/sh
+
+[ -r /etc/lsb-release ] && . /etc/lsb-release
+
+if [ -z "$DISTRIB_DESCRIPTION" ] && [ -x /usr/bin/lsb_release ]; then
+	DISTRIB_DESCRIPTION=$(lsb_release -s -d)
+fi
+
+printf "Welcome to Joomlatools Vagrant box (running on %s)\n" "$DISTRIB_DESCRIPTION"

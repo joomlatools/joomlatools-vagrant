@@ -49,14 +49,12 @@ class profiles::base {
       ip => '127.0.1.1'
     }
 
-    file { '/etc/update-motd.d/999-joomlatools':
-      ensure => 'present',
-      mode   => 'ug+rwx,o+rx',
-      source => 'puppet:///modules/profiles/motd/joomlatools'
-    }
-
-    file { ['/etc/update-motd.d/10-help-text', '/etc/update-motd.d/91-release-upgrade', '/etc/update-motd.d/50-landscape-sysinfo', '/etc/update-motd.d/51-cloudguest', '/etc/update-motd.d/90-updates-available', '/etc/update-motd.d/98-cloudguest']:
-      ensure => absent
+    file { '/etc/update-motd.d/':
+      ensure  => directory,
+      source  => 'puppet:///modules/profiles/motd/',
+      recurse => true,
+      purge   => true,
+      source_permissions => use
     }
 
     file { '/etc/profile.d/joomlatools-box.sh':
