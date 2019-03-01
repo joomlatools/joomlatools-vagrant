@@ -16,12 +16,12 @@ describe '## PHP' do
 
         describe service('php-fpm') do
           it { should be_enabled }
-          it { should be_running.under('upstart') }
+          it { should be_running.under('systemd') }
         end
 
         describe '### PHP config parameters' do
             context php_config('sendmail_path') do
-              its(:value) { should match /\/home\/vagrant\/.rvm\/gems\/ruby-2.2.6\/bin\/catchmail -fnoreply@example.com/ }
+              its(:value) { should match /\/usr\/bin\/env catchmail -fnoreply@example.com/ }
             end
 
             context php_config('xdebug.profiler_output_dir') do
@@ -63,10 +63,10 @@ describe '## PHP' do
         describe file('/etc/apache2/sites-available/10-webgrind.conf') do
           it { should exist }
           its(:content) { should match /ServerAlias webgrind.joomla.box/ }
-          its(:content) { should match /DocumentRoot \/usr\/share\/webgrind/ }
+          its(:content) { should match /DocumentRoot "\/usr\/share\/webgrind"/ }
         end
 
-        describe file('/etc/apache2/conf-available/joomla.box.conf') do
+        describe file('/etc/apache2/joomla.box-include.conf') do
           its(:content) { should match /Alias \/apc \/home\/vagrant\/scripts\/apc-dashboard.php/ }
           its(:content) { should match /Alias \/phpinfo \/home\/vagrant\/scripts\/phpinfo.php/ }
         end
