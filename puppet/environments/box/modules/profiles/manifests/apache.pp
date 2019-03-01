@@ -6,13 +6,6 @@ class profiles::apache {
     ensure => 'directory',
   }
 
-  class { '::apache':
-    package_ensure => latest,
-    default_vhost  => false,
-    purge_configs  => false,
-    mpm_module     => 'prefork'
-  }
-
   ::openssl::certificate::x509 { 'server':
     country      => 'BE',
     organization => 'Joomlatools',
@@ -21,6 +14,14 @@ class profiles::apache {
     days         => 3650,
     base_dir     => '/etc/apache2/ssl',
     require      => File['/etc/apache2/ssl']
+  }
+
+  class { '::apache':
+    package_ensure => latest,
+    default_vhost  => false,
+    purge_configs  => false,
+    mpm_module     => 'prefork',
+    require        => Openssl::Certificate::X509['server']
   }
 
   class { 'apache::mod::rewrite': }
