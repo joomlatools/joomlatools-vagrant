@@ -4,10 +4,6 @@ class profiles::wetty {
 
     include ::profiles::systemd::reload
 
-    package { 'sshpass':
-      ensure => installed
-    }
-#
     exec { 'yarn-install-wetty':
         command     => '/usr/bin/yarn global add wetty.js',
         unless      => 'which wetty',
@@ -22,7 +18,15 @@ class profiles::wetty {
 
     service { 'wetty':
         ensure  => 'running',
+        enable  => true,
         require => Class['::profiles::systemd::reload']
+    }
+
+    exec { 'wetty-add-vagrant-pubkey-to-authorized_keys':
+      command => 'cat /home/vagrant/.ssh/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys',
+      unless  => 'grep "vagrant@joomlatools" /home/vagrant/.ssh/authorized_keys',
+      user    => vagrant,
+      require => Ssh_keygen['vagrant']
     }
 
 }

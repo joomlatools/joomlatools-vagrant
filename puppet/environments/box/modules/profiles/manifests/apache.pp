@@ -25,7 +25,8 @@ class profiles::apache {
 
   class { 'apache::mod::rewrite': }
   class { 'apache::mod::ssl': }
-  class { 'Apache::mod::proxy': }
+  class { 'apache::mod::proxy': }
+  class { 'apache::mod::proxy_http': }
   class { 'apache::mod::proxy_fcgi': }
   class { 'apache::mod::headers': }
 

@@ -73,6 +73,7 @@ class profiles::php {
     ensure     => running,
     hasrestart => true,
     hasstatus  => true,
+    enable     => true,
     require    => [Class['::profiles::systemd::reload'], Anchor['php::end']]
   }
 

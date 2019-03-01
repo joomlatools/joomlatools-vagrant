@@ -68,7 +68,7 @@
 
         <!-- Embedded terminal -->
         <div class="terminal">
-            <iframe src="http://joomla.box:3000/wetty/ssh/vagrant"></iframe>
+            <iframe src="http://joomla.box/wetty/"></iframe>
             <script>
                 var terminal = document.querySelector(".terminal");
                 var resizer = document.createElement("div");

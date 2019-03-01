@@ -12,9 +12,21 @@ SetEnvIf Request_URI "^/varnish-enabled" dontlog
 SetEnvIf Request_URI "^/(pimpmylog|assets)/" dontlog
 SetEnvIf Request_URI "^/(sites\.php|index\.php|pimpmylog|terminal|mailcatcher|apc|filebrowser|phpinfo)$" dontlog
 
-Redirect permanent /terminal http://joomla.box:3000/wetty/ssh/vagrant
+Redirect permanent /terminal http://joomla.box/wetty
 Redirect permanent /mailcatcher http://joomla.box:1080
 Redirect permanent /filebrowser http://joomla.box:8001/fs/var/www
+
+# Proxy Wetty
+RewriteCond %{REQUEST_URI}  ^/wetty/socket.io [NC]
+RewriteCond %{QUERY_STRING} transport=websocket [NC]
+RewriteRule /wetty/socket.io/(.*) ws://localhost:3000/wetty/socket.io/$1 [P,L]
+
+<LocationMatch ^/wetty/?(.*)>
+  DirectorySlash On
+  Require all granted
+  ProxyPassMatch http://127.0.0.1:3000
+  ProxyPassReverse /wetty/
+</LocationMatch>
 
 # When upgrading from 1.4 to 1.5,
 # the browser might still be redirecting
