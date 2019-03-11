@@ -20,4 +20,7 @@ class role::joomlatools inherits role {
 
   include ::profiles::box
 
+  include ::profiles::joomlatools
+  include ::profiles::foliolabs
+
 }
