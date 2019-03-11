@@ -16,7 +16,7 @@ describe '## Miscellaneous' do
           its(:exit_status) { should eq 0}
         end
 
-        describe file('/etc/apache2/conf-available/joomla.box.conf') do
+        describe file('/etc/apache2/joomla.box-include.conf') do
           it { should exist }
           its(:content) { should match /Redirect permanent \/filebrowser http:\/\/joomla.box:8001\/fs\/var\/www/ }
         end
@@ -32,17 +32,18 @@ describe '## Miscellaneous' do
           it { should be_listening }
         end
 
-        describe command('npm -g list wetty') do
-          its(:exit_status) { should eq 0}
+        describe command('sudo yarn global list') do
+          its(:exit_status) { should eq 0 }
+          its(:stdout) { should match /wetty.js@\d\.\d+\.\d+/ }
         end
 
-        describe file('/etc/apache2/conf-available/joomla.box.conf') do
-          its(:content) { should match /Redirect permanent \/terminal http:\/\/joomla.box:3000/ }
+        describe file('/etc/apache2/joomla.box-include.conf') do
+          its(:content) { should match /Redirect permanent \/terminal http:\/\/joomla.box\/wetty/ }
         end
      end
 
      describe '### PimpMyLog' do
-        describe file('/etc/apache2/conf-available/joomla.box.conf') do
+        describe file('/etc/apache2/joomla.box-include.conf') do
           its(:content) { should match /Alias \/pimpmylog \/usr\/share\/pimpmylog\// }
         end
 

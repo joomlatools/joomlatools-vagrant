@@ -5,11 +5,11 @@ describe '## Joomlatools' do
 
     describe '### joomlatools-console' do
 
-        describe command('joomla -V') do
+        describe command('/home/vagrant/.composer/vendor/bin/joomla -V') do
           its(:stdout) { should match /Joomla Console tools \d\.\d+\.\d+/ }
         end
 
-        describe command('joomla site:create serverspectest') do
+        describe command('/home/vagrant/.composer/vendor/bin/joomla site:create serverspectest') do
           its(:exit_status) { should eq 0 }
 
           describe command('mysql -s -N -uroot -proot -e "SHOW DATABASES;"') do
@@ -21,7 +21,7 @@ describe '## Joomlatools' do
           end
         end
 
-        describe command('joomla site:delete serverspectest') do
+        describe command('/home/vagrant/.composer/vendor/bin/joomla site:delete serverspectest') do
           its(:exit_status) { should eq 0 }
         end
     end

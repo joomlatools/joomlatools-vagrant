@@ -10,7 +10,7 @@ describe '## MailCatcher' do
       it { should be_listening }
     end
 
-    describe file('/etc/apache2/conf-available/joomla.box.conf') do
+    describe file('/etc/apache2/joomla.box-include.conf') do
       it { should exist }
       its(:content) { should match /Redirect permanent \/mailcatcher http:\/\/joomla.box:1080/ }
     end

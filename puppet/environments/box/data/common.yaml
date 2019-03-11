@@ -1,0 +1,4 @@
+---
+profiles::mysql::root_password: 'root'
+profiles::mysql::mysqld_config:
+  default-storage-engine: InnoDB

@@ -1,0 +1,13 @@
+[Unit]
+Description=Wetty Web Terminal
+After=network.target
+
+[Service]
+Type=simple
+User=vagrant
+Group=vagrant
+WorkingDirectory=/home/vagrant/
+ExecStart=/usr/local/bin/wetty -p 3000 --sshauth publickey,password --sshuser vagrant
+
+[Install]
+WantedBy=multi-user.target

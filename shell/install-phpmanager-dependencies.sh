@@ -113,7 +113,7 @@ echo "" > $LOGFILE
 mkdir -p $DESTINATION_DIR $WORK_DIR
 
 # Install all packages that are available via the repositories
-CMD="sudo apt-get -q -y install autoconf2.13 re2c apache2-dev bison g++-4.4 gcc-4.4 libcurl4-openssl-dev libmariadbclient-dev libmcrypt-dev libbz2-dev libjpeg-dev libpng12-dev libfreetype6-dev libicu-dev libxml2-dev libxslt1-dev libssl-dev"
+CMD="sudo apt-get -q -y install autoconf2.13 re2c apache2-dev bison g++ gcc libcurl4-openssl-dev libmariadb-dev-compat libmcrypt-dev libbz2-dev libjpeg-dev libpng-dev libfreetype6-dev libicu-dev libxml2-dev libxslt1-dev libssl-dev libreadline-dev libzip-dev"
 sub_execute "$CMD" "apt-get" "${LOGFILE}" "Install dependencies from Ubuntu repositories"
 
 # Download external packages
@@ -144,9 +144,8 @@ sub_build "flex-2.5.4"
 
 # Set-up symlinks
 sudo ln -fs /opt/openssl-1.0.2g/lib /opt/openssl-1.0.2g/lib/x86_64-linux-gnu
-
-sudo mkdir /usr/include/freetype2/freetype
-sudo ln -fs /usr/include/freetype2/freetype.h /usr/include/freetype2/freetype/freetype.h
+sudo ln -s /usr/include/x86_64-linux-gnu/curl /usr/include/curl
 
 # Install a default CA bundle into OpenSSL to verify the peer certificates
 sudo wget -nv http://curl.haxx.se/ca/cacert.pem -O /opt/openssl-1.0.2g/ssl/cert.pem
+
