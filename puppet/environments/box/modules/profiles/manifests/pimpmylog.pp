@@ -1,5 +1,8 @@
 class profiles::pimpmylog {
 
+    require ::profiles::apache
+    require ::profiles::mysql
+
     file { '/usr/share/pimpmylog':
         ensure => directory,
         owner  => vagrant,
@@ -40,21 +43,6 @@ class profiles::pimpmylog {
         notify  => Service['httpd']
     }
 
-    exec { 'make-apache-logs-world-readable':
-        command     => 'find /var/log/apache2 -exec chmod 0644 {} \; && chmod +x /var/log/apache2',
-        refreshonly => true,
-        subscribe   => Exec['install-pimpmylog'],
-        notify      => Service['httpd'],
-        require     => Package['httpd']
-    }
-
-    exec { 'make-mysql-logs-world-readable':
-        command => 'find /var/log/mysql -type f -exec chmod 0644 {} \;',
-        refreshonly => true,
-        subscribe => Exec['install-pimpmylog'],
-        notify  => Service['mysql']
-    }
-
     exec { 'make-log-directories-world-readable':
         command => 'find /var/log -type d -exec chmod 0755 {} \;',
         refreshonly => true,
@@ -62,9 +50,27 @@ class profiles::pimpmylog {
         notify  => [Service['httpd'], Service['mysql']]
     }
 
-    exec { 'make-system-logs-world-readable':
-        command => 'chmod 0644 /var/log/syslog',
-        refreshonly => true,
-        subscribe => Exec['install-pimpmylog'],
+    file { '/var/log/apache2/':
+      ensure  => directory,
+      recurse => true,
+      owner   => root,
+      group   => adm,
+      mode    => '0644'
     }
+
+    file { '/var/log/mysql/':
+      ensure  => directory,
+      recurse => true,
+      owner   => mysql,
+      group   => adm,
+      mode    => '0644'
+    }
+
+    file { '/var/log/syslog':
+      ensure => file,
+      mode   => '0644',
+      owner  => syslog,
+      group  => adm
+    }
+
 }
