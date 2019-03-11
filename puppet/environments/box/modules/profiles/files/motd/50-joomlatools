@@ -11,5 +11,4 @@ You can control the server (PHP, Apache, ..) through the '${BOLD}box${NORMAL}' c
 Type '${BOLD}box list${NORMAL}' to get an overview of available commands.
 
 For more information and usage options, please refer to the online
-documentation at http://developer.joomlatools.com/tools/vagrant/introduction.html
-"
+documentation at http://developer.joomlatools.com/tools/vagrant/introduction.html"

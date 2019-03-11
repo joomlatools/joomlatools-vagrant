@@ -203,8 +203,8 @@ command_install() {
     fi
 
     # Use g++ 4.4 to compile
-    export CC=gcc-4.4
-    export CXX=g++-4.4
+    export CC=gcc
+    export CXX=g++
 
     echo "Logging to ${LOGFILE}"
 
