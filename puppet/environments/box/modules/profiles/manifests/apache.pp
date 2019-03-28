@@ -16,6 +16,9 @@ class profiles::apache {
     require      => File['/etc/apache2/ssl']
   }
 
+  # @TODO use conf-available instead of conf.d?
+  # See: https://github.com/puppetlabs/puppetlabs-apache/pull/1851#issuecomment-452732192
+
   class { '::apache':
     package_ensure => latest,
     default_vhost  => false,
@@ -24,6 +27,7 @@ class profiles::apache {
     require        => Openssl::Certificate::X509['server']
   }
 
+  class { 'apache::mod::expires': }
   class { 'apache::mod::rewrite': }
   class { 'apache::mod::ssl': }
   class { 'apache::mod::proxy': }
@@ -38,6 +42,11 @@ class profiles::apache {
 
   ::apache::custom_config { 'shared_paths':
     content       => '',
+    verify_config => false
+  }
+
+  ::apache::custom_config { 'cache-control':
+    source        => "puppet:///modules/profiles/apache/cache-control.conf",
     verify_config => false
   }
 
