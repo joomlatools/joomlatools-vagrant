@@ -16,9 +16,6 @@ class profiles::apache {
     require      => File['/etc/apache2/ssl']
   }
 
-  # @TODO use conf-available instead of conf.d?
-  # See: https://github.com/puppetlabs/puppetlabs-apache/pull/1851#issuecomment-452732192
-
   class { '::apache':
     package_ensure => latest,
     default_vhost  => false,
@@ -50,4 +47,15 @@ class profiles::apache {
     verify_config => false
   }
 
+  # The puppetlabs/apache module relies on the conf.d directory instead of conf-available/conf-enable.
+  # The latter however are created by default by the Apache2 package on Ubuntu, so we want to
+  # make sure they're removed to avoid confusion.
+  #
+  # Also see: https://github.com/puppetlabs/puppetlabs-apache/pull/1851#issuecomment-452732192
+  file { ['/etc/apache2/conf-available', '/etc/apache2/conf-enabled']:
+    ensure  => absent,
+    recurse => true,
+    purge   => true,
+    force   => true
+  }
 }
