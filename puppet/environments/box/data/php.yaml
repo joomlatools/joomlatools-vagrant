@@ -86,3 +86,4 @@ php::extensions:
   yaml:
     package_prefix: php-
   zip: {}
+  soap: {}
