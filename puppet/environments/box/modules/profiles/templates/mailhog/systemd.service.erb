@@ -1,0 +1,12 @@
+[Unit]
+Description=MailHog
+After=network.service
+
+[Service]
+Type=simple
+Restart=on-failure
+User=mailhog
+ExecStart=/usr/local/bin/mailhog &> /var/log/mailhog/mailhog.log
+
+[Install]
+WantedBy=multi-user.target
