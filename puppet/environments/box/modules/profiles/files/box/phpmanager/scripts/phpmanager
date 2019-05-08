@@ -476,7 +476,7 @@ sub_getoptions() {
               --enable-fpm \
               --enable-exif \
               --enable-ftp \
-              --enable-intl \
+              --enable-intl --with-icu-dir="/opt/icu-60_2" \
               --enable-mbstring \
               --enable-soap \
               --enable-sockets \
@@ -485,7 +485,7 @@ sub_getoptions() {
               --with-bz2 \
               --with-config-file-scan-dir=/opt/php/${VERSION}/etc/conf.d/ \
               --with-curl \
-              --with-gd --with-jpeg-dir --with-png-dir --enable-gd-native-ttf --with-freetype-dir \
+              --with-gd --with-jpeg-dir --with-png-dir --enable-gd-native-ttf --with-freetype-dir=/usr/include/freetype2/ \
               --with-iconv \
               --with-libdir=lib/x86_64-linux-gnu \
               --with-mcrypt \
