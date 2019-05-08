@@ -490,6 +490,7 @@ sub_getoptions() {
               --with-libdir=lib/x86_64-linux-gnu \
               --with-mcrypt \
               --with-openssl=/opt/openssl-1.0.2g \
+              --enable-pcntl \
               --with-pcre-regex \
               --with-readline \
               --with-xmlrpc \
