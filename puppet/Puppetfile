@@ -1,8 +1,5 @@
 forge 'https://forgeapi.puppetlabs.com'
 
-mod 'camptocamp-archive',
-   :git => 'https://github.com/camptocamp/puppet-archive',
-   :ref => '0.9.1'
 mod 'camptocamp-openssl', '1.10.0'
 mod 'petems-swap_file', '4.0.0'
 mod 'puppetlabs/apache', '4.0.0'
