@@ -1,13 +1,5 @@
 class profiles::box::cockpit {
 
-  contain ::apt
-
-  ::apt::source { 'cockpit':
-    location => 'http://ppa.launchpad.net/cockpit-project/cockpit/ubuntu',
-    repos    => 'main',
-    before   => Class['apt::update']
-  }
-
   package { 'cockpit': }
 
   ini_setting { 'Cockpit LoginTitle':
