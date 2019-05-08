@@ -1,19 +1,4 @@
 class role::joomlatools inherits role {
-  
-  exec { 'install cockpit':
-    path => '/bin:/usr/bin/:/sbin:/usr/sbin',
-    command => 'apt-get install cockpit'
-  }
-
-  exec { 'create start up':
-    path => '/bin:/usr/bin/:/sbin:/usr/sbin',
-    command => 'systemctl start cockpit.socket'
-  }
-
-  exec { 'enable start up':
-    path => '/bin:/usr/bin/:/sbin:/usr/sbin',
-    command => 'systemctl enable cockpit.socket'
-  }
 
   include ::profiles::apache
   include ::profiles::nginx
@@ -34,5 +19,4 @@ class role::joomlatools inherits role {
   include ::profiles::pimpmylog
 
   include ::profiles::box
-
 }
