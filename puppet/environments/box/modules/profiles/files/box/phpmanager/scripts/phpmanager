@@ -217,7 +217,13 @@ command_install() {
         echo "Configure arguments: $OPTIONS"
 	fi
 
-    CMD="./configure ${OPTIONS}"
+    ENVVARS=""
+
+    if [[ "$SHORT" -le 7000 ]]; then
+      ENVVARS="PHP_AUTOCONF=/usr/bin/autoconf2.13"
+    fi
+
+    CMD="${ENVVARS} ./configure ${OPTIONS}"
     sub_execute "$CMD" "configure" "$LOGFILE" "Configuring makefile"
 
     if [[ "$SHORT" -le 5400 ]]; then
