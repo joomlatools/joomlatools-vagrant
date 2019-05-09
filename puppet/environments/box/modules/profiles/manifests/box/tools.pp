@@ -89,7 +89,7 @@ class profiles::box::tools {
   }
 
   exec { 'install-phing':
-    command     => '/usr/local/bin/composer global require phing/phing:">=3.0.0-alpha1" --no-interaction',
+    command     => '/usr/local/bin/composer global require phing/phing:"2.*" --no-interaction',
     creates     => "/home/vagrant/.composer/vendor/phing/phing",
     user        => vagrant,
     environment => "COMPOSER_HOME=/home/vagrant/.composer",
