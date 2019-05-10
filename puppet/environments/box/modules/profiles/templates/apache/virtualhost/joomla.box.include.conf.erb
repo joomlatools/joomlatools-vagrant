@@ -10,9 +10,10 @@ Alias /varnish-enabled /home/vagrant/scripts/varnish-enabled
 
 SetEnvIf Request_URI "^/varnish-enabled" dontlog
 SetEnvIf Request_URI "^/(pimpmylog|assets)/" dontlog
-SetEnvIf Request_URI "^/(sites\.php|index\.php|pimpmylog|terminal|mailcatcher|apc|filebrowser|phpinfo)$" dontlog
+SetEnvIf Request_URI "^/(sites\.php|index\.php|pimpmylog|terminal|mailcatcher|cockpit|apc|filebrowser|phpinfo)$" dontlog
 SetEnvIf Request_URI "^/wetty" dontlog
 
+Redirect permanent /cockpit http://joomla.box:9090
 Redirect permanent /terminal http://joomla.box/wetty
 Redirect permanent /mailcatcher http://joomla.box:1080
 Redirect permanent /filebrowser http://joomla.box:8001/fs/var/www
