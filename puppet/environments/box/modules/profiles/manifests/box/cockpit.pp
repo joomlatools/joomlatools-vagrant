@@ -9,7 +9,8 @@ class profiles::box::cockpit {
     setting   => 'LoginTitle',
     value     => $::fqdn,
     show_diff => true,
-    require => Package['cockpit']
+    require => Package['cockpit'],
+    notify => Service['cockpit']
   }
 
   ini_setting { 'Cockpit MaxStartups':
@@ -19,7 +20,8 @@ class profiles::box::cockpit {
     setting   => 'MaxStartups',
     value     => 10,
     show_diff => true,
-    require => Package['cockpit']
+    require => Package['cockpit'],
+    notify => Service['cockpit']
   }
 
   ini_setting { 'Cockpit AllowUnencrypted':
