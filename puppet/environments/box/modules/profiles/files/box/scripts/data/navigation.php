@@ -37,10 +37,10 @@ $navigation['phpmyadmin']['source'] = 'http://phpmyadmin.joomla.box';
 $navigation['phpmyadmin']['type'] = 'iframe';
 $navigation['phpmyadmin']['status'] = 'active';
 
-$navigation['mailcatcher']['title'] = 'MailCatcher';
-$navigation['mailcatcher']['source'] = '/mailcatcher';
-$navigation['mailcatcher']['type'] = 'page';
-$navigation['mailcatcher']['status'] = 'active';
+$navigation['mailhog']['title'] = 'Mailhog';
+$navigation['mailhog']['source'] = 'http://joomla.box:8025';
+$navigation['mailhog']['type'] = 'iframe';
+$navigation['mailhog']['status'] = 'active';
 
 $navigation['apc-dashboard']['title'] = 'APC Dashboard';
 $navigation['apc-dashboard']['source'] = '/apc';
