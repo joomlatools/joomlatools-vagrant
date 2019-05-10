@@ -96,4 +96,10 @@ class profiles::box::tools {
     require     => Anchor['php::end']
   }
 
+  archive { '/tmp/ngrok.zip':
+    source       => 'https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip',
+    extract      => true,
+    extract_path => '/usr/local/bin',
+    creates      => "/usr/local/bin/ngrok",
+  }
 }
