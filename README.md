@@ -68,17 +68,17 @@ For more details refer to our [FAQ](https://www.joomlatools.com/developer/tools/
 
 ### HTTP
 
-One of the great features of Vagrant is [Vagrant Share](https://docs.vagrantup.com/v2/share/index.html). Note that Vagrant Share requires [ngrok](https://ngrok.com/) to work. We recommend you follow these set up steps first:
+Open source is all about collaboration, so there will be times you will want to share your work with others. In order to achieve this you will need [ngrok](https://ngrok.com/). We recommend you follow these set up steps first:
 
 1. Upgrade Vagrant to the latest version.
-1. Create your (free) [account](https://dashboard.ngrok.com/user/signup) on ngrok.
+1. Create your (free) [account](https://dashboard.ngrok.com/signup) on ngrok.
 1. [Download](https://ngrok.com/download) and install ngrok.
 1. Set up the authentication token on your machine as described in the [ngrok documentation](https://ngrok.com/docs/2#authtoken).
 
-Now you're ready to start sharing access. Run this command and share the resulting Ngrok HTTP URL:
+Now you're ready to start sharing access. Run this command and share the resulting ngrok HTTP URL:
 
 ```
-vagrant share --http 80
+ngrok http joomla.box:80
 ```
 
 For more options and background please refer to the [Vagrant docs](https://docs.vagrantup.com/v2/share/index.html).
