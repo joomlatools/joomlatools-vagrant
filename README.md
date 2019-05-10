@@ -81,8 +81,6 @@ Now you're ready to start sharing access. Run this command and share the resulti
 ngrok http joomla.box:80
 ```
 
-For more options and background please refer to the [Vagrant docs](https://docs.vagrantup.com/v2/share/index.html).
-
 ### Terminal
 
 You can also share access to the terminal via SSH. There are two methods:
