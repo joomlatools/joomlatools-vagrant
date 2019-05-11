@@ -36,11 +36,12 @@ class Share extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->www = $input->getOption('www');
-        $this->site = $input->getArgument('site');
         $this->vhost_dir = '/etc/apache2/sites-available';
         $this->vhost_file = '2-ngrok.conf';
         $this->tmp_dir = '/tmp';
+
+        $this->www = $input->getOption('www');
+        $this->site = $input->getArgument('site');
 
         //going to need to port anything www or site related
 
@@ -66,5 +67,21 @@ class Share extends Command
         `sudo a2ensite $this->vhost_file`;
         `sudo /etc/init.d/apache2 restart > /dev/null 2>&1`;
         `rm -f $this->tmp_dir/$this->vhost_file`;
+
+
+        //hmm can't seem to allow ngrok to process normally
+        //because the default is to listen to new resources and update screen
+        //the command never completes to return output to console
+        //so launch in the background
+        `screen -d -m ngrok http $this->site.test:80`;
+
+        //then take advantage of the api to return connection details
+        $result = shell_exec("curl -s localhost:4040/api/tunnels");
+        $json = json_decode($result);
+
+        //https
+        $output->writeln($json->tunnels[0]->public_url);
+        //http
+        $output->writeln($json->tunnels[1]->public_url);
     }
 }
