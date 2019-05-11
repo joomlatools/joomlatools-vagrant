@@ -1,7 +1,7 @@
 {# templates/ngrok_vhost.twig #}
 <VirtualHost *:80>
     ServerAdmin webmaster@testing.test
-    DocumentRoot /var/www/testing
+    DocumentRoot {{ path_to_site }}
     ServerAlias *ngrok.io
 
     <Directory {{ path_to_site }}>
