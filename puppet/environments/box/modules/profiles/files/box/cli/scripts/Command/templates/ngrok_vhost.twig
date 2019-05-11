@@ -10,6 +10,6 @@
     Require all granted
     </Directory>
 
-    ErrorLog  /var/log/apache2/testing.test-error_log
-    CustomLog /var/log/apache2/testing.test-access_log common
+    ErrorLog  /var/log/apache2/{{ site }}.test-error_log
+    CustomLog /var/log/apache2/{{ site }}.test-access_log common
 </VirtualHost>

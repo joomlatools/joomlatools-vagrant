@@ -10,20 +10,37 @@ use \Twig\Environment;
 
 class Share extends Command
 {
+    protected $site;
+    protected $www;
+    protected $vhost_dir;
+    protected $vhost_file;
+    protected $tmp_dir;
+
     protected function configure()
     {
         $this->setName('share:site')
              ->setDescription('Share a local site with a colleague')
             ->addArgument('site',
                 InputArgument::REQUIRED,
-                'provide the site name');
+                'provide the site name')
+            ->addOption(
+                'www',
+                null,
+                InputOption::VALUE_REQUIRED,
+                "Web server root",
+                '/var/www'
+            );
 
         //add optional run in background
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $site = $input->getArgument('site');
+        $this->www = $input->getOption('www');
+        $this->site = $input->getArgument('site');
+        $this->vhost_dir = '/etc/apache2/sites-available';
+        $this->vhost_file = '2-ngrok.conf';
+        $this->tmp_dir = '/tmp';
 
         //going to need to port anything www or site related
 
@@ -32,33 +49,22 @@ class Share extends Command
         $loader = new \Twig\Loader\FilesystemLoader('Command/templates/');
         $this->twig = new \Twig\Environment($loader);
 
-
-
-        //remove existing 2-ngrok.conf override
-            //restart apache
-
-        if (file_exists('/etc/apache2/sites-available/2-ngrok.conf')){
-            //unlink('/etc/apache2/sites-available/2-ngrok.conf');
+        if (file_exists($this->vhost_dir . '/' . $this->vhost_file))
+        {
+            `sudo rm -f $this->vhost_dir/$this->vhost_file`;
+            `sudo /etc/init.d/apache2 restart > /dev/null 2>&1`;
         }
-
-
-        //create new 2-ngrok.conf override
-            //restart apache
 
         $template = $this->twig->load('ngrok_vhost.twig');
 
+        $vhost_config = $template->render(['path_to_site' => $this->www . "/" . $this->site, 'site' => $this->site]);
 
-        var_dump($template->render(['path_to_site' => '/var/www/testing/']));
-        exit();
+        file_put_contents($this->tmp_dir . "/" . $this->vhost_file, $vhost_config);
 
-        $archive = $input->getOption('archive');
+        `sudo tee /etc/apache2/sites-available/$this->vhost_file < $this->tmp_dir/$this->vhost_file`;
 
-        if ((file_exists($archive) && !is_writable($archive)) || !is_writable(dirname($archive))) {
-            throw new \RuntimeException('Backup destination ' . $archive . ' is not writable.');
-        }
-
-        $output->writeln('Creating backup archive <comment>' . basename($archive) . '</comment>');
-
-        passthru("/bin/bash /home/vagrant/backup/backup.sh $archive");
+        `sudo a2ensite $this->vhost_file`;
+        `sudo /etc/init.d/apache2 restart > /dev/null 2>&1`;
+        `rm -f $this->tmp_dir/$this->vhost_file`;
     }
 }
