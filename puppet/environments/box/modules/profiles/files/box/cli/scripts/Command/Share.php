@@ -7,6 +7,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use \Twig\Environment;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class Share extends Command
 {
@@ -76,12 +78,34 @@ class Share extends Command
         `screen -d -m ngrok http $this->site.test:80`;
 
         //then take advantage of the api to return connection details
-        $result = shell_exec("curl -s localhost:4040/api/tunnels");
-        $json = json_decode($result);
+        do
+        {
+            $result = shell_exec("curl -s localhost:4040/api/tunnels");
+            $json = json_decode($result);
+        } while (!isset($json->tunnels[0]->public_url));
+
 
         //https
         $output->writeln($json->tunnels[0]->public_url);
         //http
         $output->writeln($json->tunnels[1]->public_url);
+
+        //exec("ngrok http $this->site.test:80");
+
+        /*$process = new Process("ngrok http $this->site.test:80");
+        $process->run(function ($type, $buffer) {
+            if (Process::ERR === $type) {
+                echo 'ERR > '.$buffer;
+            } else {
+                echo 'OUT > '.$buffer;
+            }
+        });
+
+// executes after the command finishes
+        if (!$process->isSuccessful()) {
+            throw new ProcessFailedException($process);
+        }
+
+        echo $process->getOutput();*/
     }
 }
