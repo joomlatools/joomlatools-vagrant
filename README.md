@@ -68,18 +68,9 @@ For more details refer to our [FAQ](https://www.joomlatools.com/developer/tools/
 
 ### HTTP
 
-Open source is all about collaboration, so there will be times you will want to share your work with others. In order to achieve this you will need [ngrok](https://ngrok.com/). We recommend you follow these set up steps first:
+Open source is all about collaboration, so there will be times you will want to share your work with others. Luckily for you, we've pre-configured [ngrok](https://ngrok.com/) to run within the vagrant box. 
 
-1. Upgrade Vagrant to the latest version.
-1. Create your (free) [account](https://dashboard.ngrok.com/signup) on ngrok.
-1. [Download](https://ngrok.com/download) and install ngrok.
-1. Set up the authentication token on your machine as described in the [ngrok documentation](https://ngrok.com/docs/2#authtoken).
-
-Now you're ready to start sharing access. Run this command and share the resulting ngrok HTTP URL:
-
-```
-ngrok http joomla.box:80
-```
+We've also created a new box command `box share:site` to help you share your websites.
 
 ### Terminal
 
