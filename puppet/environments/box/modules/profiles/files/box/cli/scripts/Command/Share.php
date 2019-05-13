@@ -71,13 +71,10 @@ class Share extends Command
         `rm -f $this->tmp_dir/$this->vhost_file`;
 
 
-        //hmm can't seem to allow ngrok to process normally
-        //because the default is to listen to new resources and update screen
-        //the command never completes to return output to console
         //so launch in the background
         `screen -d -m ngrok http $this->site.test:80`;
 
-        //then take advantage of the api to return connection details
+        //wait for the api to return connection details
         do
         {
             $result = shell_exec("curl -s localhost:4040/api/tunnels");
@@ -85,27 +82,7 @@ class Share extends Command
         } while (!isset($json->tunnels[0]->public_url));
 
 
-        //https
-        $output->writeln($json->tunnels[0]->public_url);
-        //http
-        $output->writeln($json->tunnels[1]->public_url);
-
-        //exec("ngrok http $this->site.test:80");
-
-        /*$process = new Process("ngrok http $this->site.test:80");
-        $process->run(function ($type, $buffer) {
-            if (Process::ERR === $type) {
-                echo 'ERR > '.$buffer;
-            } else {
-                echo 'OUT > '.$buffer;
-            }
-        });
-
-// executes after the command finishes
-        if (!$process->isSuccessful()) {
-            throw new ProcessFailedException($process);
-        }
-
-        echo $process->getOutput();*/
+        //then switch screens for the user
+        `screen -r`;
     }
 }
