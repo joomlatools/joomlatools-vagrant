@@ -63,7 +63,7 @@ class Share extends Command
 
     protected function _generateVhost()
     {
-        $loader = new \Twig\Loader\FilesystemLoader('Command/templates/');
+        $loader = new \Twig\Loader\FilesystemLoader('/home/vagrant/box/templates');
         $this->twig = new \Twig\Environment($loader);
 
         $template = $this->twig->load('ngrok_vhost.twig');
