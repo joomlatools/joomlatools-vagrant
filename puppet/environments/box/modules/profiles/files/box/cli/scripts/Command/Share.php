@@ -47,8 +47,10 @@ class Share extends Command
 
         //going to need to port anything www or site related
 
-        //going to need to check (site exists)
 
+        //going to need to check (site exists)
+        $this->check($input, $output);
+        
         $loader = new \Twig\Loader\FilesystemLoader('Command/templates/');
         $this->twig = new \Twig\Environment($loader);
 
@@ -70,7 +72,6 @@ class Share extends Command
         `sudo /etc/init.d/apache2 restart > /dev/null 2>&1`;
         `rm -f $this->tmp_dir/$this->vhost_file`;
 
-
         //so launch in the background
         `screen -d -m ngrok http $this->site.test:80`;
 
@@ -84,5 +85,12 @@ class Share extends Command
 
         //then switch screens for the user
         `screen -r`;
+    }
+
+    protected function check(InputInterface $input, OutputInterface $output)
+    {
+        if (!file_exists($this->www . "/" . $this->site)) {
+            throw new \RuntimeException(sprintf('Site not found: %s', $this->site));
+        }
     }
 }
