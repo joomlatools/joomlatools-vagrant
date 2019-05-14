@@ -7,6 +7,7 @@ class profiles::box {
   include ::profiles::box::tools
   include ::profiles::box::cli
   include ::profiles::box::phpmanager
+  include ::profiles::box::cockpit
 
   file { '/etc/apache2/joomla.box-include.conf':
     content => template('profiles/apache/virtualhost/joomla.box.include.conf.erb')

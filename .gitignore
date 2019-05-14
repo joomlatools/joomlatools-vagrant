@@ -4,6 +4,7 @@
 /packer_cache
 /output-virtualbox-iso
 /puppet/.librarian
+/puppet/.tmp
 
 /config.custom.yaml
 
