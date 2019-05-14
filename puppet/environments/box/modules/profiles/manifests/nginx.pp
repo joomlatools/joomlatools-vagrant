@@ -15,7 +15,7 @@ class profiles::nginx {
         recurse => true,
         require => Package['nginx'],
         notify  => Service['nginx'],
-        before  => [File['/etc/nginx/sites-available/00-joomla.box.conf'], File['/etc/nginx/sites-enabled/00-joomla.box.conf']]
+        before  => [File['/etc/nginx/sites-available/joomla.box.conf'], File['/etc/nginx/sites-enabled/joomla.box.conf']]
     }
 
     user { 'nginx':
@@ -39,19 +39,19 @@ class profiles::nginx {
       require => Package['nginx']
     }
 
-    file { '/etc/nginx/sites-available/00-joomla.box.conf':
+    file { '/etc/nginx/sites-available/joomla.box.conf':
       ensure  => file,
       owner   => vagrant,
       group   => vagrant,
       mode    => '0644',
-      source  => 'puppet:///modules/profiles/nginx/vhost/00-joomla.box.conf',
+      source  => 'puppet:///modules/profiles/nginx/vhost/joomla.box.conf',
       notify  => Service['nginx'],
       require => Package['nginx']
     }
 
-    file { '/etc/nginx/sites-enabled/00-joomla.box.conf':
+    file { '/etc/nginx/sites-enabled/joomla.box.conf':
       ensure  => link,
-      target  => '/etc/nginx/sites-available/00-joomla.box.conf',
+      target  => '/etc/nginx/sites-available/joomla.box.conf',
       notify  => Service['nginx']
     }
 
