@@ -6,7 +6,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use \Twig\Environment;
 
 class Share extends Command
 {
@@ -18,14 +17,17 @@ class Share extends Command
 
     protected function configure()
     {
-        $this->setName('share:site')
+        $this->setName('share')
              ->setDescription('Share a local site with a colleague')
-            ->addArgument('site',
-                InputArgument::REQUIRED,
-                'provide the site name')
+            ->addArgument(
+                'site',
+                InputArgument::OPTIONAL,
+            'Provide the site name of the website you wish to share',
+                ''
+            )
             ->addOption(
                 'www',
-                null,
+                'd',
                 InputOption::VALUE_REQUIRED,
                 "Web server root",
                 '/var/www'
@@ -43,20 +45,49 @@ class Share extends Command
 
         $this->_check();
 
-        $this->_generateVhost();
+        //in order to share joomla.box there can't be a vhost override
+        $this->_removeVhostOverride();
+
+        //so as long we are dealing with a site name we create the override
+        if (strlen($this->site)){
+            $this->_generateVhost();
+        }
 
         $this->_launchNgrok();
     }
 
     protected function _check()
     {
-        if (!file_exists($this->www . "/" . $this->site)) {
+        if (strlen($this->site) && !file_exists($this->www . "/" . $this->site)) {
             throw new \RuntimeException(sprintf('Site not found: %s', $this->site));
         }
 
         if (file_exists($this->vhost_dir . '/' . $this->vhost_file))
         {
             `sudo rm -f $this->vhost_dir/$this->vhost_file`;
+            `sudo /etc/init.d/apache2 restart > /dev/null 2>&1`;
+        }
+    }
+
+    protected function _removeVhostOverride()
+    {
+        $site_enabled = '/etc/apache2/sites-enabled/2-ngrok.conf';
+        $site_available = '/etc/apache2/sites-available/2-ngrok.conf';
+        $restart = false;
+
+        if (file_exists($site_enabled))
+        {
+            `sudo rm /etc/apache2/sites-enabled/2-ngrok.conf`;
+            $restart = true;
+        }
+
+        if (file_exists($site_available))
+        {
+            `sudo rm /etc/apache2/sites-available/2-ngrok.conf`;
+            $restart = true;
+        }
+
+        if ($restart){
             `sudo /etc/init.d/apache2 restart > /dev/null 2>&1`;
         }
     }
@@ -84,8 +115,14 @@ class Share extends Command
 
     protected function _launchNgrok()
     {
+        $ngrok_command = "ngrok http joomla.box:80";
+
+        if (strlen($this->site)){
+            $ngrok_command = "ngrok http $this->site.test:80";
+        }
+
         //launch ngrok and create a new screen to keep the user on the foreground
-        `screen -d -m ngrok http $this->site.test:80`;
+        `screen -d -m $ngrok_command`;
 
         //wait for the api to return connection details
         do
