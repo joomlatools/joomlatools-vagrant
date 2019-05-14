@@ -217,7 +217,13 @@ command_install() {
         echo "Configure arguments: $OPTIONS"
 	fi
 
-    CMD="./configure ${OPTIONS}"
+    ENVVARS=""
+
+    if [[ "$SHORT" -le 7000 ]]; then
+      ENVVARS="PHP_AUTOCONF=/usr/bin/autoconf2.13"
+    fi
+
+    CMD="${ENVVARS} ./configure ${OPTIONS}"
     sub_execute "$CMD" "configure" "$LOGFILE" "Configuring makefile"
 
     if [[ "$SHORT" -le 5400 ]]; then
@@ -476,7 +482,7 @@ sub_getoptions() {
               --enable-fpm \
               --enable-exif \
               --enable-ftp \
-              --enable-intl \
+              --enable-intl --with-icu-dir="/opt/icu-60_2" \
               --enable-mbstring \
               --enable-soap \
               --enable-sockets \
@@ -485,11 +491,12 @@ sub_getoptions() {
               --with-bz2 \
               --with-config-file-scan-dir=/opt/php/${VERSION}/etc/conf.d/ \
               --with-curl \
-              --with-gd --with-jpeg-dir --with-png-dir --enable-gd-native-ttf --with-freetype-dir \
+              --with-gd --with-jpeg-dir --with-png-dir --enable-gd-native-ttf --with-freetype-dir=/usr/include/freetype2/ \
               --with-iconv \
               --with-libdir=lib/x86_64-linux-gnu \
               --with-mcrypt \
               --with-openssl=/opt/openssl-1.0.2g \
+              --enable-pcntl \
               --with-pcre-regex \
               --with-readline \
               --with-xmlrpc \
