@@ -4,7 +4,8 @@
 /packer_cache
 /output-virtualbox-iso
 /puppet/.librarian
-puppet/environments/box/modules/profiles/files/box/cli/scripts/vendor
+/puppet/environments/box/modules/profiles/files/box/cli/scripts/vendor
+/puppet/.tmp
 
 /config.custom.yaml
 
