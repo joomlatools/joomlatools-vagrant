@@ -51,3 +51,8 @@ $navigation['webgrind']['title'] = 'Webgrind';
 $navigation['webgrind']['source'] = 'http://webgrind.joomla.box';
 $navigation['webgrind']['type'] = 'iframe';
 $navigation['webgrind']['status'] = extension_loaded('xdebug') ? 'active' : 'disabled';
+
+$navigation['cockpit']['title'] = 'Cockpit';
+$navigation['cockpit']['source'] = 'http://joomla.box/cockpit';
+$navigation['cockpit']['type'] = 'iframe';
+$navigation['cockpit']['status'] = 'active';

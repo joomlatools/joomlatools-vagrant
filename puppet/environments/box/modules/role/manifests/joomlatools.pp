@@ -19,5 +19,4 @@ class role::joomlatools inherits role {
   include ::profiles::pimpmylog
 
   include ::profiles::box
-
 }
