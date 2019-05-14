@@ -63,7 +63,7 @@ class Share extends Command
 
     protected function _generateVhost()
     {
-        $loader = new \Twig\Loader\FilesystemLoader('/home/vagrant/box/templates');
+        $loader = new \Twig\Loader\FilesystemLoader(realpath(__DIR__ .'/../templates'));
         $this->twig = new \Twig\Environment($loader);
 
         $template = $this->twig->load('ngrok_vhost.twig');
@@ -84,14 +84,14 @@ class Share extends Command
 
     protected function _launchNgrok()
     {
-        //so launch in the background
+        //launch ngrok and create a new screen to keep the user on the foreground
         `screen -d -m ngrok http $this->site.test:80`;
 
         //wait for the api to return connection details
         do
         {
-            $result = shell_exec("curl -s localhost:4040/api/tunnels");
-            $json = json_decode($result);
+            $results = @file_get_contents('http://localhost:4040/api/tunnels');
+            $json = json_decode($results);
         } while (!isset($json->tunnels[0]->public_url));
 
         //then switch screens for the user
