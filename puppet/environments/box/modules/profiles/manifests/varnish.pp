@@ -33,6 +33,12 @@ class profiles::varnish {
     require => Class['::profiles::systemd::reload']
   }
 
+  file { '/etc/varnish':
+    ensure => directory,
+    owner  => vagrant,
+    group  => vagrant
+  }
+  ->
   file { '/etc/varnish/default.vcl':
     ensure  => present,
     owner   => vagrant,
@@ -41,6 +47,13 @@ class profiles::varnish {
     source  => "puppet:///modules/profiles/varnish/joomla.box.vcl",
     require => Package['varnish'],
     notify  => Service['varnish']
+  }
+
+  exec { 'varnish-secret':
+    command => '/bin/dd if=/dev/random of=/etc/varnish/secret count=1',
+    creates => '/etc/varnish/secret',
+    notify  => Service['varnish'],
+    require =>  File['/etc/varnish']
   }
 
   file_line { 'apache-listen-port-80':

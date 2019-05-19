@@ -68,20 +68,14 @@ For more details refer to our [FAQ](https://www.joomlatools.com/developer/tools/
 
 ### HTTP
 
-One of the great features of Vagrant is [Vagrant Share](https://docs.vagrantup.com/v2/share/index.html). Note that Vagrant Share requires [ngrok](https://ngrok.com/) to work. We recommend you follow these set up steps first:
+We generally use the [ngrok](https://ngrok.com/download) tool to share HTTP access. This makes it easy to share either to the main domain (`joomla.box`) or directly to your created sites' domain (for example `mysite.test`). The commands to use are:
 
-1. Upgrade Vagrant to the latest version.
-1. Create your (free) [account](https://dashboard.ngrok.com/user/signup) on ngrok.
-1. [Download](https://ngrok.com/download) and install ngrok.
-1. Set up the authentication token on your machine as described in the [ngrok documentation](https://ngrok.com/docs/2#authtoken).
+* `ngrok http joomla.box:80`
+* `ngrok http -host-header=rewrite mysite.test:80`
 
-Now you're ready to start sharing access. Run this command and share the resulting Ngrok HTTP URL:
+Please refer to the [ngrok docs](https://ngrok.com/docs) for a complete guide.
 
-```
-vagrant share --http 80
-```
-
-For more options and background please refer to the [Vagrant docs](https://docs.vagrantup.com/v2/share/index.html).
+Alternativately you can use the [Vagrant Share](https://www.vagrantup.com/docs/share/index.html) plugin. For more options and background please visit to the [Vagrant docs](https://docs.vagrantup.com/v2/share/index.html).
 
 ### Terminal
 
@@ -163,6 +157,7 @@ The version number is defined in the variables section and can be found at the t
     ```
     
 1. Once finished a `joomlatools-0.0.0.box` file will be created with the correct version number. Upload it to [Vagrant Cloud](https://app.vagrantup.com/) to make it available to everyone else.
+1. After publishing the new version, make sure to update the commands on the Joomlatools Developer site. See [wiki](https://github.com/joomlatools/www.joomlatools.com/wiki/Importing-console-commands).
 
 ### Run ServerSpec tests
 

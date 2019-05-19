@@ -84,6 +84,10 @@ sub_build() {
 
     cd "${DESTINATION_DIR}/${PACKAGE}"
 
+    if [[ $PACKAGE == "icu-60_2" ]]; then
+        cd "${DESTINATION_DIR}/${PACKAGE}/source"
+    fi
+
     CONFIG_SCRIPT="./configure"
     if [[ $PACKAGE == openssl-* ]]; then
         CONFIG_SCRIPT="./config"
@@ -113,7 +117,7 @@ echo "" > $LOGFILE
 mkdir -p $DESTINATION_DIR $WORK_DIR
 
 # Install all packages that are available via the repositories
-CMD="sudo apt-get -q -y install autoconf2.13 re2c apache2-dev bison g++ gcc libcurl4-openssl-dev libmariadb-dev-compat libmcrypt-dev libbz2-dev libjpeg-dev libpng-dev libfreetype6-dev libicu-dev libxml2-dev libxslt1-dev libssl-dev libreadline-dev libzip-dev"
+CMD="sudo apt-get -q -y install autoconf2.13 re2c apache2-dev bison g++ gcc libcurl4-openssl-dev libmariadb-dev libmariadb-dev-compat libmcrypt-dev libbz2-dev libjpeg-dev libpng-dev libfreetype6-dev libicu-dev libxml2-dev libxslt1-dev libssl-dev libreadline-dev libzip-dev libreadline-dev"
 sub_execute "$CMD" "apt-get" "${LOGFILE}" "Install dependencies from Ubuntu repositories"
 
 # Download external packages
@@ -124,6 +128,7 @@ URLS=(
   'https://www.openssl.org/source/openssl-1.0.2g.tar.gz'
   'ftp://xmlsoft.org/libxml2/libxml2-2.7.8.tar.gz'
   'ftp://xmlsoft.org/libxslt/libxslt-1.1.26.tar.gz'
+  'http://download.icu-project.org/files/icu4c/60.2/icu4c-60_2-src.tgz'
 )
 
 for URL in "${URLS[@]}"
@@ -131,16 +136,19 @@ do
     sub_download $URL
 done
 
+mv "${DESTINATION_DIR}/icu" "${DESTINATION_DIR}/icu-60_2"
+
 # Build the downloaded dependencies
 sub_build "bison-2.2"
 sub_build "bison-2.4"
 sub_build "libxml2-2.7.8"
 sub_build "libxslt-1.1.26" "--with-libxml-prefix=/opt/libxml2-2.7.8/ --with-libxml-libs-prefix=/opt/libxml2-2.7.8/ --with-libxml-include-prefix=/opt/libxml2-2.7.8/"
+sub_build "icu-60_2"
 
 sub_build "openssl-1.0.2g" "-fPIC no-gost"
 
 PATH="${PATH}:${INSTALL_DIR}/bison-2.2/bin"
-sub_build "flex-2.5.4"
+#sub_build "flex-2.5.4"
 
 # Set-up symlinks
 sudo ln -fs /opt/openssl-1.0.2g/lib /opt/openssl-1.0.2g/lib/x86_64-linux-gnu

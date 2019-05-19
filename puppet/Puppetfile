@@ -1,14 +1,11 @@
 forge 'https://forgeapi.puppetlabs.com'
 
-mod 'camptocamp-archive',
-   :git => 'https://github.com/camptocamp/puppet-archive',
-   :ref => '0.9.1'
 mod 'camptocamp-openssl', '1.10.0'
 mod 'petems-swap_file', '4.0.0'
-mod 'puppetlabs/apache', '4.0.0'
-mod 'puppetlabs/apt', '6.2.1'
-mod 'puppetlabs/concat', '5.1.0'
-mod 'puppetlabs/mysql', '7.0.0'
+mod 'puppetlabs-apache', '4.0.0'
+mod 'puppetlabs-apt', '6.2.1'
+mod 'puppetlabs-concat', '5.1.0'
+mod 'puppetlabs-mysql', '7.0.0'
 mod 'puppetlabs-stdlib', '4.25.1'
 mod 'puppet-php', '6.0.2'
 mod 'puppet-ssh_keygen', '3.0.1'

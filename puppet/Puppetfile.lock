@@ -3,10 +3,10 @@ FORGE
   specs:
     camptocamp-openssl (1.10.0)
       puppetlabs-stdlib (< 5.0.0, >= 2.0.0)
-    herculesteam-augeasproviders_core (2.3.0)
+    herculesteam-augeasproviders_core (2.4.0)
       puppetlabs-stdlib (< 6.0.0, >= 3.2.0)
-    herculesteam-augeasproviders_sysctl (2.2.1)
-      herculesteam-augeasproviders_core (< 3.0.0, >= 2.1.0)
+    herculesteam-augeasproviders_sysctl (2.3.1)
+      herculesteam-augeasproviders_core (< 3.0.0, >= 2.4.0)
     petems-swap_file (4.0.0)
       herculesteam-augeasproviders_core (< 3.0.0, >= 2.1.0)
       herculesteam-augeasproviders_sysctl (< 3.0.0, >= 2.1.0)
@@ -38,15 +38,7 @@ FORGE
     puppetlabs-stdlib (4.25.1)
     puppetlabs-translate (1.2.0)
 
-GIT
-  remote: https://github.com/camptocamp/puppet-archive
-  ref: 0.9.1
-  sha: 3a73b6ef4ab36f4905f5fbc6b36971df4ae2dc20
-  specs:
-    camptocamp-archive (0.9.1)
-
 DEPENDENCIES
-  camptocamp-archive (>= 0)
   camptocamp-openssl (= 1.10.0)
   petems-swap_file (= 4.0.0)
   puppet-php (= 6.0.2)
