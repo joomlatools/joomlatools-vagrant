@@ -152,6 +152,7 @@ The version number is defined in the variables section and can be found at the t
     ```
     
 1. Once finished a `joomlatools-0.0.0.box` file will be created with the correct version number. Upload it to [Vagrant Cloud](https://app.vagrantup.com/) to make it available to everyone else.
+1. After publishing the new version, make sure to update the commands on the Joomlatools Developer site. See [wiki](https://github.com/joomlatools/www.joomlatools.com/wiki/Importing-console-commands).
 
 ### Run ServerSpec tests
 
