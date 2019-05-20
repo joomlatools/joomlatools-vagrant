@@ -18,7 +18,7 @@ class Share extends Command
     protected function configure()
     {
         $this->setName('share')
-             ->setDescription('Share a local site with a colleague')
+             ->setDescription('You need to SSH into the box with `vagrant ssh` first to run this command. This command does not work in the web terminal. This command will start a [ngrok](https://ngrok.com/) session and it will give you a URL to share with your colleagues. Press `ctrl`+`c` to stop ngrok and close the session.')
             ->addArgument(
                 'site',
                 InputArgument::OPTIONAL,
@@ -65,7 +65,7 @@ class Share extends Command
         if (file_exists($this->vhost_dir . '/' . $this->vhost_file))
         {
             `sudo rm -f $this->vhost_dir/$this->vhost_file`;
-            `sudo /etc/init.d/apache2 restart > /dev/null 2>&1`;
+            `sudo systemctl restart apache2 > /dev/null 2>&1`;
         }
     }
 
@@ -77,7 +77,7 @@ class Share extends Command
 
         if (file_exists($site_enabled))
         {
-            `sudo rm /etc/apache2/sites-enabled/2-ngrok.conf`;
+            `sudo a2dissite $this->vhost_file`;
             $restart = true;
         }
 
@@ -88,7 +88,7 @@ class Share extends Command
         }
 
         if ($restart){
-            `sudo /etc/init.d/apache2 restart > /dev/null 2>&1`;
+            `sudo systemctl restart apache2 > /dev/null 2>&1`;
         }
     }
 
@@ -110,7 +110,7 @@ class Share extends Command
         `rm -f $this->tmp_dir/$this->vhost_file`;
 
         `sudo a2ensite $this->vhost_file`;
-        `sudo /etc/init.d/apache2 restart > /dev/null 2>&1`;
+        `sudo systemctl restart apache2 > /dev/null 2>&1`;
     }
 
     protected function _launchNgrok()
