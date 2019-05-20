@@ -18,7 +18,14 @@ class Share extends Command
     protected function configure()
     {
         $this->setName('share')
-             ->setDescription('You need to SSH into the box with `vagrant ssh` first to run this command. This command does not work in the web terminal. This command will start a [ngrok](https://ngrok.com/) session and it will give you a URL to share with your colleagues. Press `ctrl`+`c` to stop ngrok and close the session.')
+             ->setDescription('Share a local site with a colleague')
+             ->setHelp(<<<EOF
+This command will start an Ngrok (https://ngrok.com/) session which will give you a URL to share with your colleagues. 
+When you're finished, press `ctrl`+`c` to stop ngrok and close the session.
+
+<info>Note:</info> you need to SSH into the box with `vagrant ssh` first to run this command. This command does not work in the web terminal!
+EOF
+            )
             ->addArgument(
                 'site',
                 InputArgument::OPTIONAL,
