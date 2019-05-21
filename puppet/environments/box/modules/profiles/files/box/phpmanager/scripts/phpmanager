@@ -210,7 +210,7 @@ command_install() {
 
     unset $PHP_AUTOCONF
 
-    if [[ "$SHORT" -lt 5401 ]]; then
+    if [[ "$SHORT" -lt 5400 ]]; then
       export PHP_AUTOCONF=/usr/bin/autoconf2.13
     fi
 
