@@ -208,6 +208,12 @@ command_install() {
 
     echo "Logging to ${LOGFILE}"
 
+    unset $PHP_AUTOCONF
+
+    if [[ "$SHORT" -lt 5401 ]]; then
+      export PHP_AUTOCONF=/usr/bin/autoconf2.13
+    fi
+
     # Run configure
     ./buildconf --force  >> "$LOGFILE" 2>&1
 
@@ -216,12 +222,6 @@ command_install() {
     if [ "$SHOW_CONFIGURE" == true ] ; then
         echo "Configure arguments: $OPTIONS"
 	fi
-
-    unset $PHP_AUTOCONF
-
-    if [[ "$SHORT" -lt 7000 ]]; then
-      export PHP_AUTOCONF=/usr/bin/autoconf2.13
-    fi
 
     CMD="./configure ${OPTIONS}"
     sub_execute "$CMD" "configure" "$LOGFILE" "Configuring makefile"
