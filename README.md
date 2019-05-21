@@ -68,14 +68,9 @@ For more details refer to our [FAQ](https://www.joomlatools.com/developer/tools/
 
 ### HTTP
 
-We generally use the [ngrok](https://ngrok.com/download) tool to share HTTP access. This makes it easy to share either to the main domain (`joomla.box`) or directly to your created sites' domain (for example `mysite.test`). The commands to use are:
+Open source is all about collaboration, so there will be times you will want to share your work with others. Luckily for you, we've pre-configured [ngrok](https://ngrok.com/) to run within the vagrant box. 
 
-* `ngrok http joomla.box:80`
-* `ngrok http -host-header=rewrite mysite.test:80`
-
-Please refer to the [ngrok docs](https://ngrok.com/docs) for a complete guide.
-
-Alternativately you can use the [Vagrant Share](https://www.vagrantup.com/docs/share/index.html) plugin. For more options and background please visit to the [Vagrant docs](https://docs.vagrantup.com/v2/share/index.html).
+We've also created a new box command `box share:site` to help you share your websites.
 
 ### Terminal
 

@@ -1,0 +1,15 @@
+{# templates/ngrok_vhost.twig #}
+<VirtualHost *:80>
+    ServerAdmin webmaster@testing.test
+    DocumentRoot {{ path_to_site }}
+    ServerAlias *ngrok.io
+
+    <Directory {{ path_to_site }}>
+    Options Indexes FollowSymLinks
+    AllowOverride All
+    Require all granted
+    </Directory>
+
+    ErrorLog  /var/log/apache2/{{ site }}.test-error_log
+    CustomLog /var/log/apache2/{{ site }}.test-access_log common
+</VirtualHost>

@@ -8,7 +8,7 @@ class profiles::box::cli {
   }
 
   exec { 'fetch-box-dependencies':
-    command => 'composer require symfony/console:2.7.* stecman/symfony-console-completion --no-interaction',
+    command => 'composer require symfony/console:2.7.* stecman/symfony-console-completion twig/twig:^2.0 --no-interaction',
     cwd     => '/home/vagrant/box',
     unless  => 'test -d /home/vagrant/box/vendor/symfony',
     path    => ['/usr/local/bin', '/usr/bin'],
