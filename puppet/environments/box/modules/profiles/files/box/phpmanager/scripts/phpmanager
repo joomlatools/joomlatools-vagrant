@@ -217,13 +217,13 @@ command_install() {
         echo "Configure arguments: $OPTIONS"
 	fi
 
-    ENVVARS=""
+    unset $PHP_AUTOCONF
 
-    if [[ "$SHORT" -le 7000 ]]; then
-      ENVVARS="PHP_AUTOCONF=/usr/bin/autoconf2.13"
+    if [[ "$SHORT" -lt 7000 ]]; then
+      export PHP_AUTOCONF=/usr/bin/autoconf2.13
     fi
 
-    CMD="${ENVVARS} ./configure ${OPTIONS}"
+    CMD="./configure ${OPTIONS}"
     sub_execute "$CMD" "configure" "$LOGFILE" "Configuring makefile"
 
     if [[ "$SHORT" -le 5400 ]]; then
@@ -237,6 +237,8 @@ command_install() {
 
     # Install the new binaries
     sub_execute "sudo make install" "install" "$LOGFILE" "Installing ${VERSION}"
+
+    unset PHP_AUTOCONF
 
     # Create the extension directories
     EXTENSION=$(sub_getextensionnumber $VERSION)
@@ -450,7 +452,7 @@ sub_apcu() {
     echo -n "Building APCu .. "
 
     APC="APCu"
-    if [[ $SHORT -lt 7000 ]]; then
+    if [[ "$SHORT" -lt 7000 ]]; then
         APC="APCu-4.0.7"
     fi
 

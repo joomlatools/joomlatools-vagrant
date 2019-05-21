@@ -117,7 +117,7 @@ echo "" > $LOGFILE
 mkdir -p $DESTINATION_DIR $WORK_DIR
 
 # Install all packages that are available via the repositories
-CMD="sudo apt-get -q -y install autoconf2.13 re2c apache2-dev bison g++ gcc libcurl4-openssl-dev libmariadb-dev libmariadb-dev-compat libmcrypt-dev libbz2-dev libjpeg-dev libpng-dev libfreetype6-dev libicu-dev libxml2-dev libxslt1-dev libssl-dev libreadline-dev libzip-dev libreadline-dev"
+CMD="sudo apt-get -q -y install autoconf2.13 re2c bison g++ gcc libcurl4-openssl-dev libmariadb-dev libmariadb-dev-compat libmcrypt-dev libbz2-dev libjpeg-dev libpng-dev libfreetype6-dev libicu-dev libxml2-dev libxslt1-dev libssl-dev libreadline-dev libzip-dev libreadline-dev"
 sub_execute "$CMD" "apt-get" "${LOGFILE}" "Install dependencies from Ubuntu repositories"
 
 # Download external packages
@@ -148,12 +148,11 @@ sub_build "icu-60_2"
 sub_build "openssl-1.0.2g" "-fPIC no-gost"
 
 PATH="${PATH}:${INSTALL_DIR}/bison-2.2/bin"
-#sub_build "flex-2.5.4"
+sub_build "flex-2.5.4"
 
 # Set-up symlinks
 sudo ln -fs /opt/openssl-1.0.2g/lib /opt/openssl-1.0.2g/lib/x86_64-linux-gnu
-sudo ln -s /usr/include/x86_64-linux-gnu/curl /usr/include/curl
+sudo ln -fs /usr/include/x86_64-linux-gnu/curl /usr/include/curl
 
 # Install a default CA bundle into OpenSSL to verify the peer certificates
-sudo wget -nv http://curl.haxx.se/ca/cacert.pem -O /opt/openssl-1.0.2g/ssl/cert.pem
-
+sudo wget -q http://curl.haxx.se/ca/cacert.pem -O /opt/openssl-1.0.2g/ssl/cert.pem
