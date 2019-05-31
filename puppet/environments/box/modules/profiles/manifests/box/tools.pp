@@ -30,7 +30,7 @@ class profiles::box::tools {
     tag     => ['rubygem']
   }
 
-  exec { 'npm-install-yarn':
+  /*exec { 'npm-install-yarn':
     command => 'npm install -g yarn',
     unless  => 'which yarn',
     require => Package['nodejs']
@@ -52,7 +52,7 @@ class profiles::box::tools {
     command => 'npm install -g autoless',
     unless  => 'which autoless',
     require => Package['nodejs'],
-  }
+  }*/
 
   package { 'git-ftp':
     ensure => latest

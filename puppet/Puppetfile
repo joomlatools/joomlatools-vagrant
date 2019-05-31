@@ -1,5 +1,6 @@
 forge 'https://forgeapi.puppetlabs.com'
 
+mod 'artberri-nvm', '1.1.1'
 mod 'camptocamp-openssl', '1.10.0'
 mod 'petems-swap_file', '4.0.0'
 mod 'puppetlabs-apache', '4.0.0'
