@@ -14,6 +14,10 @@ describe '## Apache' do
       it { should be_listening }
     end
 
+    describe port(443) do
+      it { should be_listening }
+    end
+
     describe file('/etc/apache2/sites-enabled/00-joomla.box-http.conf') do
       it { should exist }
       its(:content) { should match /Include "\/etc\/apache2\/joomla.box-include.conf"/ }
@@ -24,13 +28,10 @@ describe '## Apache' do
       its(:content) { should match /Include "\/etc\/apache2\/joomla.box-include.conf"/ }
     end
 
-    describe file('/etc/apache2/conf.d/25-custom.conf') do
+    describe file('/etc/apache2/conf.d/1-box.conf') do
       it { should exist }
       its(:content) { should match /ServerName joomlatools/ }
-    end
-
-    describe file('/etc/apache2/conf.d/25-custom.conf') do
-      it { should exist }
       its(:content) { should match /SetEnv JOOMLATOOLS_BOX \d\.\d\.\d/ }
+      its(:content) { should match /Protocols h2 h2c http\/1.1/ }
     end
 end

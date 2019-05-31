@@ -14,6 +14,10 @@ describe '## Nginx' do
       it { should be_listening }
     end
 
+    describe port(8443) do
+      it { should be_listening }
+    end
+
     describe file('/etc/nginx/php.conf') do
       it { should exist }
       its(:content) { should match /\/opt\/php\/php-fpm\.sock/ }
@@ -24,7 +28,16 @@ describe '## Nginx' do
       its(:content) { should match /joomla\.box/ }
     end
 
+    describe file('/etc/nginx/sites-available/joomla.box-ssl.conf') do
+      it { should exist }
+      its(:content) { should match /joomla\.box/ }
+    end
+
     describe file('/etc/nginx/sites-enabled/joomla.box.conf') do
+      it { should be_symlink }
+    end
+
+    describe file('/etc/nginx/sites-enabled/joomla.box-ssl.conf') do
       it { should be_symlink }
     end
 end
