@@ -34,4 +34,9 @@ describe '## Apache' do
       its(:content) { should match /SetEnv JOOMLATOOLS_BOX \d\.\d\.\d/ }
       its(:content) { should match /Protocols h2 h2c http\/1.1/ }
     end
+
+    describe command("curl --http2 -sI -k https://joomla.box/ -o/dev/null -w '%{http_version}'") do
+        its(:stdout) { should eq "2" }
+    end
+
 end

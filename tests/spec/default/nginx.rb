@@ -40,4 +40,8 @@ describe '## Nginx' do
     describe file('/etc/nginx/sites-enabled/joomla.box-ssl.conf') do
       it { should be_symlink }
     end
+
+    describe command("curl --http2 -sI -k https://joomla.box:8443/ -o/dev/null -w \'%{http_version}\'") do
+        its(:stdout) { should eq "2" }
+    end
 end
