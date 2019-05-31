@@ -39,20 +39,24 @@ class profiles::nginx {
       require => Package['nginx']
     }
 
-    file { '/etc/nginx/sites-available/joomla.box.conf':
-      ensure  => file,
-      owner   => vagrant,
-      group   => vagrant,
-      mode    => '0644',
-      source  => 'puppet:///modules/profiles/nginx/vhost/joomla.box.conf',
-      notify  => Service['nginx'],
-      require => Package['nginx']
-    }
+    $vhosts = ['joomla.box', 'joomla.box-ssl']
 
-    file { '/etc/nginx/sites-enabled/joomla.box.conf':
-      ensure  => link,
-      target  => '/etc/nginx/sites-available/joomla.box.conf',
-      notify  => Service['nginx']
+    $vhosts.each |String $vhost| {
+      file { "/etc/nginx/sites-available/${vhost}.conf":
+        ensure  => file,
+        owner   => vagrant,
+        group   => vagrant,
+        mode    => '0644',
+        source  => "puppet:///modules/profiles/nginx/vhost/${vhost}.conf",
+        notify  => Service['nginx'],
+        require => Package['nginx']
+      }
+
+      file { "/etc/nginx/sites-enabled/${vhost}.conf":
+        ensure  => link,
+        target  => "/etc/nginx/sites-available/${vhost}.conf",
+        notify  => Service['nginx']
+      }
     }
 
 }
