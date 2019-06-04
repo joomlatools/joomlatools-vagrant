@@ -20,7 +20,7 @@ class profiles::apache {
     package_ensure => latest,
     default_vhost  => false,
     purge_configs  => false,
-    mpm_module     => 'worker',
+    mpm_module     => 'event',
     require        => Openssl::Certificate::X509['server']
   }
 
