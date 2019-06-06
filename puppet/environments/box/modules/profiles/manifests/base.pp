@@ -23,6 +23,14 @@ class profiles::base {
 
     user { 'vagrant': }
 
+    file { '/home/vagrant/.config/':
+      ensure => directory,
+      owner => vagrant,
+      group => vagrant,
+      recurse => true,
+      purge   => true
+    }
+
     file { '/home/vagrant/.bash_aliases':
       ensure => 'present',
       owner  => vagrant,
