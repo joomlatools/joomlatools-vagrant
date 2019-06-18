@@ -20,21 +20,23 @@ class profiles::apache {
     package_ensure => latest,
     default_vhost  => false,
     purge_configs  => false,
-    mpm_module     => 'prefork',
+    mpm_module     => 'event',
     require        => Openssl::Certificate::X509['server']
   }
 
   class { 'apache::mod::expires': }
-  class { 'apache::mod::rewrite': }
-  class { 'apache::mod::ssl': }
+  class { 'apache::mod::headers': }
+  class { 'apache::mod::http2': }
   class { 'apache::mod::proxy': }
   class { 'apache::mod::proxy_http': }
   class { 'apache::mod::proxy_fcgi': }
-  class { 'apache::mod::headers': }
+  class { 'apache::mod::rewrite': }
+  class { 'apache::mod::ssl': }
 
-  ::apache::custom_config { 'custom':
-    content       => template('profiles/apache/custom.conf.erb'),
-    verify_config => false
+  ::apache::custom_config { 'box':
+    content       => template('profiles/apache/box.conf.erb'),
+    verify_config => false,
+    priority      => 1
   }
 
   ::apache::custom_config { 'shared_paths':
