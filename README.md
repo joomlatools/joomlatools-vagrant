@@ -19,6 +19,17 @@
 
     ```
     vagrant init joomlatools/box
+    ```
+    
+1. _Only for Ubuntu users_ - start the NFS service to be able to mount directories:
+
+    ```
+    sudo service nfs-kernel-server start
+    ```
+    
+1. Start the box:
+
+    ```
     vagrant up
     ```
 
