@@ -30,28 +30,9 @@ class profiles::box::tools {
     tag     => ['rubygem']
   }
 
-  exec { 'npm-install-yarn':
-    command => 'npm install -g yarn',
-    unless  => 'which yarn',
-    require => Package['nodejs']
-  }
-
-  exec { 'npm-install-uglify-js':
-    command => 'npm install -g uglify-js@1',
-    unless  => 'which uglifyjs',
-    require => Package['nodejs']
-  }
-
-  exec { 'npm-install-less':
-    command => 'npm install -g less',
-    unless  => 'which lessc',
-    require => Package['nodejs'],
-  }
-
-  exec { 'npm-install-autoless':
-    command => 'npm install -g autoless',
-    unless  => 'which autoless',
-    require => Package['nodejs'],
+  package { ['yarn', 'less', 'autoless', 'uglify-js']:
+    ensure   => present,
+    provider => 'npm',
   }
 
   package { 'git-ftp':

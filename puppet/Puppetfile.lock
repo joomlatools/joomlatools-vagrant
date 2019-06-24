@@ -13,6 +13,8 @@ FORGE
       puppetlabs-stdlib (< 5.0.0, >= 4.7.0)
     puppet-archive (3.2.1)
       puppetlabs-stdlib (< 6.0.0, >= 4.13.1)
+    puppet-nodejs (7.0.1)
+      puppetlabs-stdlib (< 7.0.0, >= 4.25.0)
     puppet-php (6.0.2)
       puppet-archive (< 4.0.0, >= 1.0.0)
       puppet-zypprepo (< 3.0.0, >= 2.0.0)
@@ -41,6 +43,7 @@ FORGE
 DEPENDENCIES
   camptocamp-openssl (= 1.10.0)
   petems-swap_file (= 4.0.0)
+  puppet-nodejs (= 7.0.1)
   puppet-php (= 6.0.2)
   puppet-ssh_keygen (= 3.0.1)
   puppetlabs-apache (= 5.0.0)

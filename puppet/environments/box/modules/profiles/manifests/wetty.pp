@@ -7,7 +7,7 @@ class profiles::wetty {
     exec { 'yarn-install-wetty':
         command     => '/usr/bin/yarn global add wetty.js',
         unless      => 'which wetty',
-        require     => Exec['npm-install-yarn']
+        require     => Package['yarn']
     }
 
     file { '/lib/systemd/system/wetty.service':

@@ -1,15 +1,9 @@
-class profiles::nodejs {
-  include ::apt
+class profiles::nodejs(
+  Array[String] $packages = ['yarn', 'uglify-js@1']
+) {
 
-  exec { 'nodejs-setup-source':
-    command => '/usr/bin/curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -',
-    creates => '/etc/apt/sources.list.d/nodesource.list',
-    require => Package['curl']
-  }
-
-  package { 'nodejs':
-    ensure  => latest,
-    require => Exec['nodejs-setup-source']
+  class { '::nodejs':
+    repo_url_suffix => '10.x',
   }
 
 }
