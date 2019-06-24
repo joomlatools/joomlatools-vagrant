@@ -14,8 +14,8 @@ class role::joomlatools inherits role {
   include ::profiles::phpmyadmin
   include ::profiles::mailhog
   include ::profiles::webgrind
-  # include ::profiles::wetty
-  # include ::profiles::cloudcommander
+  include ::profiles::wetty
+  include ::profiles::cloudcommander
   include ::profiles::pimpmylog
 
   include ::profiles::box
