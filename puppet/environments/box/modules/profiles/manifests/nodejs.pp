@@ -1,8 +1,9 @@
-class profiles::nodejs {
+class profiles::nodejs(
+  Array[String] $packages = ['yarn', 'uglify-js@1']
+) {
 
-  class { '::nvm':
-    user         => 'vagrant',
-    install_node => '10.15.3',
+  class { '::nodejs':
+    repo_url_suffix => '10.x',
   }
 
 }
