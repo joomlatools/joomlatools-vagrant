@@ -50,6 +50,9 @@ EOF
         $this->www = $input->getOption('www');
         $this->site = $input->getArgument('site');
 
+        //first lets clear any existing ngrok screens
+        `screen -S ngrokShare -X quit`;
+
         $this->_check();
 
         //in order to share joomla.box there can't be a vhost override
@@ -128,8 +131,8 @@ EOF
             $ngrok_command = "ngrok http $this->site.test:80";
         }
 
-        //launch ngrok and create a new screen to keep the user on the foreground
-        `screen -d -m $ngrok_command`;
+        //launch ngrok and create a new screen (with screen name) to keep the user on the foreground
+        `screen -S ngrokShare -d -m $ngrok_command`;
 
         //wait for the api to return connection details
         do
