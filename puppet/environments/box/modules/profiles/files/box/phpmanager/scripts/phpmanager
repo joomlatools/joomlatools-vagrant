@@ -678,7 +678,12 @@ sub_checksource() {
         echo -e "\033[33mOlder versions of PHP require extra dependencies.\e[0m"
         echo -e "Please wait while we set up all build dependencies. This can take a couple of minutes .. \n"
 
-        CMD="wget -nv https://developer.joomlatools.com/vagrant/phpmanager/dependencies -O /tmp/install-phpmanager-dependencies.sh"
+        if [[ -f "/vagrant/shell/install-phpmanager-dependencies.sh" ]] ; then
+            CMD="cp /vagrant/shell/install-phpmanager-dependencies.sh /tmp/install-phpmanager-dependencies.sh"
+        else
+            CMD="wget -nv https://developer.joomlatools.com/vagrant/phpmanager/dependencies -O /tmp/install-phpmanager-dependencies.sh"
+        fi
+
         sub_execute "$CMD" "download" "/tmp/install-phpmanager-dependencies.log" "Downloading install script"
 
         chmod +x /tmp/install-phpmanager-dependencies.sh
