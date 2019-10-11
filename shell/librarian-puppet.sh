@@ -3,6 +3,8 @@
 
 export PATH=$PATH:/opt/puppetlabs/bin/
 
+export DEBIAN_FRONTEND=noninteractive
+
 # Directory in which librarian-puppet should manage its modules directory
 PUPPET_DIR=/vagrant/puppet/
 
