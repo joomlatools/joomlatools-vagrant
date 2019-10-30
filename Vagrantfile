@@ -2,10 +2,10 @@ require "yaml"
 require "json"
 
 # Check for required plugins and install if missing
-#required_plugins = %w( vagrant-puppet-install )
-#required_plugins.each do |plugin|
-#    exec "vagrant plugin install #{plugin} && vagrant #{ARGV.join(" ")}" unless Vagrant.has_plugin? plugin || ARGV[0] == 'plugin'
-#end
+required_plugins = %w( vagrant-puppet-install )
+required_plugins.each do |plugin|
+    exec "vagrant plugin install #{plugin} && vagrant #{ARGV.join(" ")}" unless Vagrant.has_plugin? plugin || ARGV[0] == 'plugin'
+end
 
 # Initialize config
 def deep_merge!(target, data)
