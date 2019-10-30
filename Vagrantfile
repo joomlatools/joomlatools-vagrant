@@ -19,7 +19,15 @@ _config = {
         "/var/www" => File.join(Dir.pwd, "www"),
         "/home/vagrant/Projects" => File.join(Dir.pwd, "Projects")
     },
-    "nfs" => !!(RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/)
+    "nfs" => !!(RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/),
+    "virtualbox" => {
+        "name"   => "joomlatools-box-build",
+        "memory" => 1024,
+        "cpus"   => 1,
+        "natdnshostresolver1" => "on",
+        "uartmode1" => "disconnected"
+    },
+    "ip" => "33.33.33.58"
 }
 
 # Local-specific/not-git-managed config -- config.custom.yaml
@@ -35,14 +43,19 @@ Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/bionic64"
   config.vm.hostname = "joomlatools" # Important: we use this in joomla-console to determine if we are being run in the Vagrant box or not!
 
-  config.vm.network :private_network, ip: "33.33.33.58"
+  config.vm.network :private_network, ip: CONF["ip"]
   config.ssh.forward_agent = true
 
-  config.vm.provider :virtualbox do |v|
-    v.customize ["modifyvm", :id, "--memory", 1024]
-    v.customize ["modifyvm", :id, "--name", "joomlatools-box-build"]
-    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-    v.customize ["modifyvm", :id, "--uartmode1", "disconnected"]
+  if CONF.has_key?('virtualbox')
+    parameters = Array['name', 'memory', 'cpus', 'natdnshostresolver1', 'uartmode1']
+
+    config.vm.provider :virtualbox do |v|
+      parameters.each { |parameter|
+        if (CONF['virtualbox'].has_key?(parameter) && !CONF['virtualbox'][parameter].to_s.empty?)
+          v.customize ["modifyvm", :id, "--" + parameter, CONF['virtualbox'][parameter]]
+        end
+      }
+    end
   end
 
   if CONF.has_key?('synced_folders')
@@ -62,7 +75,7 @@ Vagrant.configure("2") do |config|
     paths = 'SetEnv BOX_SHARED_PATHS \"' + json + '\"'
     shell_cmd = '[ -d /etc/apache2/conf.d/ ] && { echo "' + paths + '" > /etc/apache2/conf.d/25-shared_paths.conf && service apache2 restart; } || echo "Apache2 is not installed yet"'
 
-    # config.vm.provision :shell, :inline => shell_cmd, :run => "always"
+    config.vm.provision :shell, :inline => shell_cmd, :run => "always"
   end
 
   config.puppet_install.puppet_version = '5.5.8'
