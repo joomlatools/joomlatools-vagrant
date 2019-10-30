@@ -19,6 +19,17 @@
 
     ```
     vagrant init joomlatools/box
+    ```
+    
+1. _Only for Ubuntu users_ - start the NFS service to be able to mount directories:
+
+    ```
+    sudo service nfs-kernel-server start
+    ```
+    
+1. Start the box:
+
+    ```
     vagrant up
     ```
 
@@ -68,14 +79,9 @@ For more details refer to our [FAQ](https://www.joomlatools.com/developer/tools/
 
 ### HTTP
 
-We generally use the [ngrok](https://ngrok.com/download) tool to share HTTP access. This makes it easy to share either to the main domain (`joomla.box`) or directly to your created sites' domain (for example `mysite.test`). The commands to use are:
+Open source is all about collaboration, so there will be times you will want to share your work with others. Luckily for you, we've pre-configured [ngrok](https://ngrok.com/) to run within the vagrant box. 
 
-* `ngrok http joomla.box:80`
-* `ngrok http -host-header=rewrite mysite.test:80`
-
-Please refer to the [ngrok docs](https://ngrok.com/docs) for a complete guide.
-
-Alternativately you can use the [Vagrant Share](https://www.vagrantup.com/docs/share/index.html) plugin. For more options and background please visit to the [Vagrant docs](https://docs.vagrantup.com/v2/share/index.html).
+We've also created a new box command `box share:site` to help you share your websites.
 
 ### Terminal
 
@@ -157,7 +163,7 @@ The version number is defined in the variables section and can be found at the t
     ```
     
 1. Once finished a `joomlatools-0.0.0.box` file will be created with the correct version number. Upload it to [Vagrant Cloud](https://app.vagrantup.com/) to make it available to everyone else.
-1. After publishing the new version, make sure to update the commands on the Joomlatools Developer site. See [wiki](https://github.com/joomlatools/www.joomlatools.com/wiki/Importing-console-commands).
+1. After publishing the new version, make sure to update the commands on the Joomlatools Developer site (see [wiki](https://github.com/joomlatools/www.joomlatools.com/wiki/Importing-console-commands)) and update the phpmanager dependency installation script.
 
 ### Run ServerSpec tests
 

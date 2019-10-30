@@ -3,11 +3,9 @@ class profiles::cloudcommander {
     include ::profiles::nodejs
     include ::profiles::systemd::reload
 
-    exec { 'npm-install-cloudcommander':
-        command => 'npm install cloudcmd@11.8.5 -g',
-        unless  => 'which cloudcmd',
-        environment => ['HOME=/home/vagrant'],
-        require => Package['nodejs']
+    package { 'cloudcmd':
+      ensure   => present,
+      provider => npm
     }
 
     file { '/lib/systemd/system/cloudcommander.service':
@@ -16,7 +14,7 @@ class profiles::cloudcommander {
       owner   => root,
       group   => root,
       notify  => [Class['::profiles::systemd::reload'], Service['cloudcommander']],
-      require => Exec['npm-install-cloudcommander']
+      require => Package['cloudcmd']
     }
 
     file { '/root/.cloudcmd.json':

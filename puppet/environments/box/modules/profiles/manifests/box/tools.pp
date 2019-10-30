@@ -30,28 +30,9 @@ class profiles::box::tools {
     tag     => ['rubygem']
   }
 
-  exec { 'npm-install-yarn':
-    command => 'npm install -g yarn',
-    unless  => 'which yarn',
-    require => Package['nodejs']
-  }
-
-  exec { 'npm-install-uglify-js':
-    command => 'npm install -g uglify-js@1',
-    unless  => 'which uglifyjs',
-    require => Package['nodejs']
-  }
-
-  exec { 'npm-install-less':
-    command => 'npm install -g less',
-    unless  => 'which lessc',
-    require => Package['nodejs'],
-  }
-
-  exec { 'npm-install-autoless':
-    command => 'npm install -g autoless',
-    unless  => 'which autoless',
-    require => Package['nodejs'],
+  package { ['yarn', 'less', 'autoless', 'uglify-js']:
+    ensure   => present,
+    provider => 'npm',
   }
 
   package { 'git-ftp':
@@ -89,11 +70,17 @@ class profiles::box::tools {
   }
 
   exec { 'install-phing':
-    command     => '/usr/local/bin/composer global require phing/phing:">=3.0.0-alpha1" --no-interaction',
+    command     => '/usr/local/bin/composer global require phing/phing:"2.*" --no-interaction',
     creates     => "/home/vagrant/.composer/vendor/phing/phing",
     user        => vagrant,
     environment => "COMPOSER_HOME=/home/vagrant/.composer",
     require     => Anchor['php::end']
   }
 
+  archive { '/tmp/ngrok.zip':
+    source       => 'https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip',
+    extract      => true,
+    extract_path => '/usr/local/bin',
+    creates      => "/usr/local/bin/ngrok",
+  }
 }
