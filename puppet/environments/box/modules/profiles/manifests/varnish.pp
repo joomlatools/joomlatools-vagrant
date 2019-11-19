@@ -16,15 +16,16 @@ class profiles::varnish {
     require => Apt::Source['varnish']
   }
 
-  file { '/etc/systemd/system/varnish.service.d':
-    ensure => directory
+  file { '/etc/systemd/system/varnish.service.d/':
+    ensure  => directory,
+    require => Package['varnish']
   }
 
   file { '/etc/systemd/system/varnish.service.d/override.conf':
     ensure  => file,
     source  => "puppet:///modules/profiles/varnish/override.conf",
     notify  => [Class['::profiles::systemd::reload'], Service['varnish']],
-    require => Package['varnish']
+    require => File['/etc/systemd/system/varnish.service.d/']
   }
 
   service {'varnish':
