@@ -14,6 +14,14 @@ _config = {
         "/home/vagrant/Projects" => File.join(Dir.pwd, "Projects")
     },
     "nfs" => !!(RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/),
+    "virtualbox" => {
+        "name"   => "joomlatools-box-build",
+        "memory" => 1024,
+        "cpus"   => 1,
+        "natdnshostresolver1" => "on",
+        "uartmode1" => "disconnected"
+    },
+    "ip" => "33.33.33.58"
     "mount_options" => ["vers=3", "rw", "tcp", "nolock", "noacl", "async"],
     "linux_nfs_options" => ['rw', 'no_subtree_check', 'all_squash','async']
 }
@@ -28,14 +36,20 @@ end
 CONF = _config
 
 Vagrant.configure("2") do |config|
-  config.vm.network :private_network, ip: "33.33.33.58"
+  config.vm.network :private_network, ip: CONF["ip"]
   config.ssh.forward_agent = true
   config.vm.hostname = "joomlatools" # Important: we use this in joomla-console to determine if we are being run in the Vagrant box or not!
 
-  config.vm.provider :virtualbox do |v|
-    v.customize ["modifyvm", :id, "--name", "joomlatools-box"]
-    v.customize ["modifyvm", :id, "--memory", 1024]
-    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+  if CONF.has_key?('virtualbox')
+    parameters = Array['name', 'memory', 'cpus', 'natdnshostresolver1', 'uartmode1']
+
+    config.vm.provider :virtualbox do |v|
+      parameters.each { |parameter|
+        if (CONF['virtualbox'].has_key?(parameter) && !CONF['virtualbox'][parameter].to_s.empty?)
+          v.customize ["modifyvm", :id, "--" + parameter, CONF['virtualbox'][parameter]]
+        end
+      }
+    end
   end
 
   if CONF.has_key?('synced_folders')
