@@ -1,6 +1,19 @@
 <?php
-$result   = `/home/vagrant/.composer/vendor/bin/joomla site:list --format=json`;
-$response = json_decode($result);
+$sites = [];
+
+foreach (['joomla', 'folioshell'] as $command)
+{
+    $result   = `/home/vagrant/.composer/vendor/bin/$command site:list --format=json`;
+    $response = json_decode($result);
+
+    if (!is_null($response) && is_array($response->data)) {
+        $sites = array_merge($sites, $response->data);
+    }
+}
+
+usort($sites, function($a, $b) {
+   return strcmp($a->name, $b->name);
+});
 
 $docroot = function($site) {
   $path = $site->name;
@@ -33,8 +46,7 @@ $docroot = function($site) {
       </tr>
     </thead>
     <tbody>
-    <?php if (is_array($response->data)): ?>
-    <?php foreach ($response->data as $site) : ?>
+    <?php foreach ($sites as $site) : ?>
       <tr>
         <td>
           <a target="_blank" href="<?php echo '/'.rtrim($docroot($site), "/").'/'; ?>">
@@ -46,7 +58,6 @@ $docroot = function($site) {
         </td>
       </tr>
     <?php endforeach; ?>
-    <?php endif; ?>
     </tbody>
   </table>
 </body>

@@ -19,4 +19,8 @@ class role::joomlatools inherits role {
   include ::profiles::pimpmylog
 
   include ::profiles::box
+
+  include ::profiles::joomlatools
+  include ::profiles::foliolabs
+
 }

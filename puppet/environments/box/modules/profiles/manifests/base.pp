@@ -12,6 +12,7 @@ class profiles::base {
         'build-essential',
         'curl',
         'git',
+        'symlinks',
         'unzip',
         'vim',
         'zip'
