@@ -37,14 +37,15 @@ class profiles::box::tools {
 
   package { [
     'libjpeg-dev',
-    'libfontconfig'
+    'libfontconfig1'
   ]:
-    ensure  => latest
+    ensure  => latest,
+    before  => Package['yellowlabtools']
   }
 
-  exec { 'npm install yellowlabtools' :
-    command => 'npm install -g yellowlabtools --unsafe-perm=true --allow-root',
-    path => ['/usr/bin']
+  package { 'yellowlabtools':
+    provider => 'npm',
+    install_options => ['--unsafe-perm=true', '--allow-root']
   }
 
   package { 'git-ftp':
