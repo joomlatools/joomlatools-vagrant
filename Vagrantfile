@@ -27,7 +27,7 @@ _config = {
         "natdnshostresolver1" => "on",
         "uartmode1" => "disconnected"
     },
-    "ip" => "33.33.33.58"
+    "ip" => "33.33.33.58",
     "mount_options" => ["vers=3", "rw", "tcp", "nolock", "noacl", "async"],
     "linux_nfs_options" => ['rw', 'no_subtree_check', 'all_squash','async']
 }
