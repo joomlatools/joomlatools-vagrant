@@ -28,6 +28,8 @@ _config = {
         "uartmode1" => "disconnected"
     },
     "ip" => "33.33.33.58"
+    "mount_options" => ["vers=3", "rw", "tcp", "nolock", "noacl", "async"],
+    "linux_nfs_options" => ['rw', 'no_subtree_check', 'all_squash','async']
 }
 
 # Local-specific/not-git-managed config -- config.custom.yaml
@@ -61,7 +63,7 @@ Vagrant.configure("2") do |config|
   if CONF.has_key?('synced_folders')
     CONF['synced_folders'].each { |target, source|
       if source
-        config.vm.synced_folder source, target, :nfs => CONF['nfs'], :linux__nfs_options => ['rw', 'no_subtree_check', 'all_squash','async'], :mount_options => ["vers=3", "rw", "tcp", "nolock", "noacl", "async"], :create => true
+        config.vm.synced_folder source, target, :nfs => CONF['nfs'], :linux__nfs_options => CONF['linux_nfs_options'], :mount_options => CONF["mount_options"], :create => true
       end
     }
 
