@@ -14,4 +14,8 @@ describe '## NodeJS' do
       its(:exit_status) { should eq 0}
     end
 
+    describe command('npm -g list yellowlabtools') do
+      its(:exit_status) { should eq 0}
+    end
+
 end

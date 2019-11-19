@@ -53,8 +53,7 @@ class profiles::base {
       ensure  => directory,
       source  => 'puppet:///modules/profiles/motd/',
       recurse => true,
-      purge   => true,
-      source_permissions => use
+      purge   => true
     }
 
     file { '/etc/profile.d/joomlatools-box.sh':
