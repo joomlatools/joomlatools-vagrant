@@ -3,3 +3,10 @@
 
 synced_folders:
   /home/vagrant/Projects: /path/in/your/computer
+
+virtualbox:
+  name: joomlatools-box-build
+  memory: 1024
+  cpus: 1
+
+ip: 33.33.33.58
