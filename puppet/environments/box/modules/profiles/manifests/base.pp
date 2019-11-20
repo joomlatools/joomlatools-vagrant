@@ -69,4 +69,10 @@ class profiles::base {
       home    => '/home/vagrant',
     }
 
+    exec { 'enable ntp sync':
+      command => 'timedatectl set-ntp true && systemctl restart systemd-timesyncd',
+      onlyif => 'timedatectl status | grep "systemd-timesyncd.service active: no"',
+      path => ['/bin', '/usr/bin']
+    }
+
 }

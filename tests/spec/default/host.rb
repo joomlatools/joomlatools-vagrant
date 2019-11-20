@@ -23,4 +23,8 @@ describe '## System' do
          )
        end
     end
+
+    describe command("timedatectl status") do
+        its(:stdout) { should match /systemd-timesyncd.service active: yes/ }
+    end
 end
