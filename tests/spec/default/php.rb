@@ -3,11 +3,11 @@ require 'spec_helper'
 describe '## PHP' do
 
     describe '### Core PHP installation' do
-        describe package('php7.1-cli'), :if => os[:family] == 'ubuntu' do
+        describe package('php7.3-cli'), :if => os[:family] == 'ubuntu' do
           it { should be_installed }
         end
 
-        modules = ['php-apcu', 'php7.1-cli', 'php7.1-curl', 'php7.1-dev', 'php7.1-gd', 'php-imagick', 'php7.1-intl', 'php7.1-json', 'php7.1-mcrypt', 'php7.1-mysql', 'php-pear', 'php7.1-readline', 'php7.1-sqlite3', 'php-xdebug', 'php-oauth', 'php-yaml']
+        modules = ['php-apcu', 'php7.3-cli', 'php7.3-curl', 'php7.3-dev', 'php7.3-gd', 'php-imagick', 'php7.3-intl', 'php7.3-json', 'php7.3-mysql', 'php-pear', 'php7.3-readline', 'php7.3-sqlite3', 'php-xdebug', 'php-oauth', 'php-yaml']
         modules.each { |package|
           describe package(package), :if => os[:family] == 'ubuntu' do
             it { should be_installed }

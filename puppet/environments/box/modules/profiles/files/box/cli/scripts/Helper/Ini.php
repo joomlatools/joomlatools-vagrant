@@ -52,11 +52,11 @@ class Ini
             if (file_exists("/opt/php/php-$version/etc/conf.d")) {
                 $paths = array("/opt/php/php-$version/etc/conf.d");
             }
-            else $paths = array('/etc/php/7.1/mods-available/');
+            else $paths = array('/etc/php/7.3/mods-available/');
         }
         else
         {
-            $paths = array('/etc/php/7.1/mods-available/');
+            $paths = array('/etc/php/7.3/mods-available/');
 
             $installs = glob('/opt/php/php-*/etc/conf.d', GLOB_ONLYDIR);
             $installs = array_unique(array_filter($installs));

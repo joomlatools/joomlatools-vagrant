@@ -6,7 +6,7 @@ class profiles::php {
   include ::profiles::php::composer
   include ::profiles::systemd::reload
 
-  $version = hiera('php::globals::php_version', '7.1')
+  $version = hiera('php::globals::php_version', '7.3')
 
   file { '/opt/php/':
     ensure => directory
@@ -14,7 +14,7 @@ class profiles::php {
   ->
   file { '/opt/php/php-fpm.sock':
     ensure => link,
-    target => '/run/php/php7.1-fpm.sock',
+    target => '/run/php/php7.3-fpm.sock',
     notify => Service['httpd']
   }
 
@@ -64,7 +64,7 @@ class profiles::php {
     daemonize = no
     | EOT
 
-  file { '/etc/php/7.1/fpm/pool.d/override.conf':
+  file { '/etc/php/7.3/fpm/pool.d/override.conf':
     ensure  => file,
     content => $fpm_config_override
   }
