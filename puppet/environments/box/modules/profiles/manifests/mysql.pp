@@ -13,10 +13,23 @@ class profiles::mysql(
 
     $mysqld_options = merge($default_mysqld_config, $mysqld_config)
 
+    # Little workaround to deal with apt failing to retrieve
+    # GPG keys from the keyservers.
+    # It fails randomly on different machines and using a different
+    # key server didn't solve it either.
+    #
+    # Errors received are either
+    # - gpg: keyserver receive failed: Invalid argument
+    # - gpg: keyserver receive failed: Server indicated a failure
+    exec { 'download-mariadb-gpg-key':
+      command => '/usr/bin/wget https://keyserver.ubuntu.com/pks/lookup?op=get\&search=0x177F4010FE56CA3336300305F1656F24C74CD1D8 -O /tmp/mariadb.gpg.key && apt-key add /tmp/mariadb.gpg.key',
+      unless => 'apt-key list 2> /dev/null | grep mariadb'
+    }
+
     apt::source { 'mariadb':
         location   => 'http://mariadb.mirror.nucleus.be/repo/10.4/ubuntu',
         repos      => 'main',
-        key        => '177F4010FE56CA3336300305F1656F24C74CD1D8'
+        require    => Exec['download-mariadb-gpg-key']
     }
 
     class { '::mysql::server':
