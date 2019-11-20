@@ -2,7 +2,7 @@
   "variables": {
     "guest_additions_url": "https://download.virtualbox.org/virtualbox/5.2.12/VBoxGuestAdditions_5.2.12.iso",
     "guest_additions_sha256": "b81d283d9ef88a44e7ac8983422bead0823c825cbfe80417423bd12de91b8046",
-    "version": "1.5.1"
+    "version": "1.6.0"
   },
   "push": {
     "name": "joomlatools/box",
