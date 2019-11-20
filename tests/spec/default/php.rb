@@ -21,7 +21,7 @@ describe '## PHP' do
 
         describe '### PHP config parameters' do
             context php_config('sendmail_path') do
-              its(:value) { should match /\/usr\/bin\/env catchmail -fnoreply@example.com/ }
+              its(:value) { should match /\/usr\/local\/bin\/mhsendmail/ }
             end
 
             context php_config('xdebug.profiler_output_dir') do

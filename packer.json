@@ -84,6 +84,7 @@
       "type": "shell",
       "execute_command": "echo 'vagrant'|sudo -S sh '{{.Path}}'",
       "scripts": [
+        "packer/scripts/update.sh",
         "packer/scripts/cleanup.sh",
         "packer/scripts/zerodisk.sh"
       ]
