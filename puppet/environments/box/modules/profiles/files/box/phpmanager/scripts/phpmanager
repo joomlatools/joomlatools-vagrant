@@ -308,7 +308,7 @@ command_restore() {
     done
 
     sudo rm -f /opt/php/php-fpm.sock
-    sudo ln -s "/run/php/php7.1-fpm.sock" /opt/php/php-fpm.sock
+    sudo ln -s "/run/php/php7.3-fpm.sock" /opt/php/php-fpm.sock
     sudo service php-fpm start > /dev/null 2>&1
 
     echo -e "Restored PHP, version is now: \n"
@@ -496,7 +496,6 @@ sub_getoptions() {
               --with-gd --with-jpeg-dir --with-png-dir --enable-gd-native-ttf --with-freetype-dir=/usr/include/freetype2/ \
               --with-iconv \
               --with-libdir=lib/x86_64-linux-gnu \
-              --with-mcrypt \
               --with-openssl=/opt/openssl-1.0.2g \
               --enable-pcntl \
               --with-pcre-regex \
