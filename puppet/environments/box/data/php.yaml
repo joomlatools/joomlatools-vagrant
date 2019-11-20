@@ -1,15 +1,15 @@
 ---
-php::globals::php_version: '7.1'
+php::globals::php_version: '7.3'
 php::repo::ubuntu::ppa: 'ondrej/php'
 php::manage_repos: true
-php::package_prefix: 'php7.1-'
+php::package_prefix: 'php7.3-'
 php::ensure: 'latest'
-php::config_root_ini: '/etc/php/7.1/mods-available'
-php::fpm_service_name: 'php7.1-fpm'
+php::config_root_ini: '/etc/php/7.3/mods-available'
+php::fpm_service_name: 'php7.3-fpm'
 php::fpm_service_enable: false
 php::fpm_service_ensure: stopped
-php::ext_tool_enable: '/usr/sbin/phpenmod -v 7.1'
-php::ext_tool_query: '/usr/sbin/phpquery -v 7.1'
+php::ext_tool_enable: '/usr/sbin/phpenmod -v 7.3'
+php::ext_tool_query: '/usr/sbin/phpquery -v 7.3'
 php::phpunit: true
 php::settings:
   PHP/upload_max_filesize: '128M'
@@ -43,17 +43,17 @@ php::settings:
 php::cli::settings:
   apc/apc.enable_cli: On
 
-php::fpm::inifile: '/etc/php/7.1/fpm/php.ini'
-php::fpm::config::pool_base_dir: '/etc/php/7.1/fpm/pool.d/'
-php::fpm::config::config_file: '/etc/php/7.1/fpm/php-fpm.conf'
+php::fpm::inifile: '/etc/php/7.3/fpm/php.ini'
+php::fpm::config::pool_base_dir: '/etc/php/7.3/fpm/pool.d/'
+php::fpm::config::config_file: '/etc/php/7.3/fpm/php-fpm.conf'
 php::fpm::config::emergency_restart_threshold: 5
 php::fpm::config::emergency_restart_interval: '1m'
 
-php::cli::inifile: '/etc/php/7.1/cli/php.ini'
+php::cli::inifile: '/etc/php/7.3/cli/php.ini'
 
 php::fpm::pools:
   www:
-    listen: '/run/php/php7.1-fpm.sock'
+    listen: '/run/php/php7.3-fpm.sock'
     listen_owner: 'www-data'
     listen_group: 'www-data'
     pm: ondemand
@@ -72,7 +72,6 @@ php::extensions:
   json: {}
   ldap: {}
   mbstring: {}
-  mcrypt: {}
   mysql:
     settings:
       extension: ~ # Prevent mysql.so from being loaded. See https://github.com/voxpupuli/puppet-php/pull/330#issuecomment-319694939
