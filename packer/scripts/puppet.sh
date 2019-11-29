@@ -10,3 +10,7 @@ dpkg -i puppet5-release-bionic.deb
 
 apt-get update
 apt-get install -y puppet
+
+# Disable Puppet Agent
+systemctl disable puppet
+systemctl disable mcollective
