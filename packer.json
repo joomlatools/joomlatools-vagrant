@@ -68,14 +68,15 @@
     },
     {
       "type": "file",
-      "source": "puppet/hiera",
+      "source": "puppet/environments",
       "destination": "/tmp/"
     },
     {
       "type": "puppet-masterless",
-      "manifest_file": "puppet/manifests",
-      "module_paths": ["puppet/modules/common", "puppet/modules/custom"],
-      "hiera_config_path": "puppet/hiera-packer.yaml",
+      "manifest_file": "puppet/environments/box/manifests",
+      "module_paths": ["puppet/modules", "puppet/environments/box/modules"],
+      "extra_arguments": ["--environment=box", "--environmentpath /tmp/environments/"],
+      "hiera_config_path": "puppet/environments/box/hiera.yaml",
       "facter": {
         "fqdn": "joomlatools.box"
       }
