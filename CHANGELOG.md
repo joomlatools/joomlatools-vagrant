@@ -7,6 +7,26 @@ in 1.x versions.
 To get the diff for a specific change, go to https://github.com/joomlatools/joomlatools-vagrant/commit/xxx where xxx is the change hash.
 To view the diff between two versions, go to https://github.com/joomlatools/joomlatools-vagrant/compare/v1.0.0...v1.0.1
 
+* 1.6.0 (2019-12-01)
+  * Improved - Upgrade to Ubuntu 18.04 LTS [#111](https://github.com/joomlatools/joomlatools-vagrant/issues/111)
+  * Improved - Use PHP 7.3 by default [#165](https://github.com/joomlatools/joomlatools-vagrant/issues/165)
+  * Improved - Updated PHPManager EXTRA_CONFIGURE_ARGUMENTS variable [#130](https://github.com/joomlatools/joomlatools-vagrant/issues/130)
+  * Improved - Use local phpmanager dependencies installer during development [#154](https://github.com/joomlatools/joomlatools-vagrant/issues/154)
+  * Improved - Run two vagrant boxes simultaneously [#37](https://github.com/joomlatools/joomlatools-vagrant/issues/37)
+  * Improved - Make mount options configurable [#77](https://github.com/joomlatools/joomlatools-vagrant/issues/77)
+  * Improved - Set joomla.box as default Nginx vhost [#117](https://github.com/joomlatools/joomlatools-vagrant/issues/117)
+  * Improved - Update Nodejs version [#138](https://github.com/joomlatools/joomlatools-vagrant/issues/138)
+  * Added - Install YellowLab tools CLI [#157](https://github.com/joomlatools/joomlatools-vagrant/issues/157)
+  * Added - Install MailHog instead of MailCatcher [#87](https://github.com/joomlatools/joomlatools-vagrant/issues/87)
+  * Added - Use ngrok to share websites [#88](https://github.com/joomlatools/joomlatools-vagrant/issues/88)
+  * Added - Enable http/2 [#146](https://github.com/joomlatools/joomlatools-vagrant/issues/146)
+  * Added - Install Cockpit [#139](https://github.com/joomlatools/joomlatools-vagrant/issues/139)
+  * Added - Install folioshell [#134](https://github.com/joomlatools/joomlatools-vagrant/issues/134)
+  * Fixed - Installing packages requires user input [#156](https://github.com/joomlatools/joomlatools-vagrant/issues/156) 
+  * Fixed - Incorrect host permissions over site files [#150](https://github.com/joomlatools/joomlatools-vagrant/issues/150)
+  * Fixed - Downgrade phing [#133](https://github.com/joomlatools/joomlatools-vagrant/issues/133)
+  * Fixed - Make sure static assets are revalidated [#136](https://github.com/joomlatools/joomlatools-vagrant/issues/136)
+
 * 1.5.1 (2018-06-19)
   * Added - Install php-ldap extension [#123](https://github.com/joomlatools/joomlatools-vagrant/issues/123)
   * Added - Install `tmate` to share terminal [#120](https://github.com/joomlatools/joomlatools-vagrant/issues/120)
