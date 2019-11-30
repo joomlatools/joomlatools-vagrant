@@ -1,7 +1,7 @@
 {
   "variables": {
-    "guest_additions_url": "https://download.virtualbox.org/virtualbox/5.2.12/VBoxGuestAdditions_5.2.12.iso",
-    "guest_additions_sha256": "b81d283d9ef88a44e7ac8983422bead0823c825cbfe80417423bd12de91b8046",
+    "guest_additions_url": "https://download.virtualbox.org/virtualbox/6.0.14/VBoxGuestAdditions_6.0.14.iso",
+    "guest_additions_sha256": "cb82f43a71f91a50b97aa27063c5c8743772a623eb0073ab8daf77e840d73eb1",
     "version": "1.6.0"
   },
   "push": {
@@ -41,9 +41,9 @@
       "guest_additions_url": "{{user `guest_additions_url`}}",
       "guest_additions_sha256": "{{user `guest_additions_sha256`}}",
       "http_directory": "packer/http",
-      "iso_checksum": "07e4bb5569814eab41fafac882ba127893e3ff0bdb7ec931c9b2d040e3e94e7a",
+      "iso_checksum": "7a1c2966f82268c14560386fbc467d58c3fbd2793f3b1f657baee609b80d39a8",
       "iso_checksum_type": "sha256",
-      "iso_url": "http://old-releases.ubuntu.com/releases/14.04.4/ubuntu-14.04.4-server-amd64.iso",
+      "iso_url": "http://old-releases.ubuntu.com/releases/bionic/ubuntu-18.04-live-server-amd64.iso",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
       "ssh_port": 22,
@@ -73,9 +73,10 @@
     },
     {
       "type": "puppet-masterless",
+      "puppet_bin_dir": "/opt/puppetlabs/bin",
       "manifest_file": "puppet/environments/box/manifests",
       "module_paths": ["puppet/modules", "puppet/environments/box/modules"],
-      "extra_arguments": ["--environment=box", "--environmentpath /tmp/environments/"],
+      "extra_arguments": ["--environmentpath=/tmp/environments/", "--environment=box"],
       "hiera_config_path": "puppet/environments/box/hiera.yaml",
       "facter": {
         "fqdn": "joomlatools.box"
