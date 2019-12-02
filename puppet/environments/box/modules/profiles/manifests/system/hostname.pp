@@ -17,7 +17,7 @@ define profiles::system::hostname(
       "$hostname" => undef,
       default     => $alias
     },
-    before => Exec['service hostname restart'],
+    before => Exec['set-hostname'],
   }
 
   file { '/etc/mailname':
@@ -34,10 +34,11 @@ define profiles::system::hostname(
     group   => 'root',
     mode    => '0644',
     content => "${name}\n",
-    notify  => Exec['service hostname restart'],
+    notify  => Exec['set-hostname'],
   }
 
-  exec { 'service hostname restart':
+  exec { 'set-hostname':
+    command => "/usr/bin/hostnamectl set-hostname ${name}",
     refreshonly => true
   }
 }
