@@ -2,7 +2,7 @@
 
 set -e
 
-apt-get install -y software-properties-common python-software-properties
+apt-get install -y software-properties-common
 
 cd /tmp
 wget https://apt.puppetlabs.com/puppet5-release-bionic.deb
@@ -13,4 +13,3 @@ apt-get install -y puppet
 
 # Disable Puppet Agent
 systemctl disable puppet
-systemctl disable mcollective
