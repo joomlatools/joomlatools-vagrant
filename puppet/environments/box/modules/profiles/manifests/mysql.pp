@@ -27,8 +27,9 @@ class profiles::mysql(
     }
 
     apt::source { 'mariadb':
-        location   => 'http://mariadb.mirror.nucleus.be/repo/10.4/ubuntu',
+        location   => 'http://ams2.mirrors.digitalocean.com/mariadb/repo/10.4/ubuntu',
         repos      => 'main',
+        architecture => 'amd64',
         require    => Exec['download-mariadb-gpg-key']
     }
 
