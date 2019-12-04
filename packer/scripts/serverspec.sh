@@ -2,14 +2,9 @@
 
 set -e
 
-if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then
-  source "$HOME/.rvm/scripts/rvm"
-else
-  echo "ERROR: An RVM installation was not found for user $USER"
-  exit 1
-fi
+export PATH=$PATH:/home/vagrant/.gem/ruby/2.5.0/bin/
 
-gem install bundler --no-ri --no-rdoc
+sudo gem install bundler --no-ri --no-rdoc
 
 cd /tmp/tests
 
