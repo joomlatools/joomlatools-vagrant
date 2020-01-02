@@ -34,7 +34,7 @@ describe '## Miscellaneous' do
 
         describe command('sudo yarn global list') do
           its(:exit_status) { should eq 0 }
-          its(:stdout) { should match /wetty.js@\d\.\d+\.\d+/ }
+          its(:stdout) { should match /wetty@\d\.\d+\.\d+/ }
         end
 
         describe file('/etc/apache2/joomla.box-include.conf') do
