@@ -1,6 +1,6 @@
 class profiles::box::tools {
 
-  rbenv::gem { ['capistrano', 'bundle', 'sass']:
+  rbenv::gem { ['capistrano', 'sass']:
     ruby_version => $::profiles::ruby::version,
     skip_docs    => true,
     timeout      => 900
