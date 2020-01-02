@@ -7,6 +7,8 @@ FORGE
       puppetlabs-stdlib (< 6.0.0, >= 3.2.0)
     herculesteam-augeasproviders_sysctl (2.3.1)
       herculesteam-augeasproviders_core (< 3.0.0, >= 2.4.0)
+    jdowning-rbenv (2.5.0)
+      puppetlabs-stdlib (< 7.0.0, >= 4.1.0)
     petems-swap_file (4.0.0)
       herculesteam-augeasproviders_core (< 3.0.0, >= 2.1.0)
       herculesteam-augeasproviders_sysctl (< 3.0.0, >= 2.1.0)
@@ -42,6 +44,7 @@ FORGE
 
 DEPENDENCIES
   camptocamp-openssl (= 1.10.0)
+  jdowning-rbenv (= 2.5.0)
   petems-swap_file (= 4.0.0)
   puppet-nodejs (= 7.0.1)
   puppet-php (= 6.0.2)

@@ -30,11 +30,10 @@ describe '## Command Line Tools' do
       it { should be_installed }
     end
 
-    describe command('ls -lah /home/vagrant/.gem/ruby/2.5.0/gems/') do
-       its(:stdout) { should match /capistrano-3\.\d+\.\d+/ }
-       its(:stdout) { should match /sass-\d+\.\d+\.\d+/ }
-       its(:stdout) { should match /compass-core-\d+\.\d+\.\d+/ }
-       its(:stdout) { should match /bundler-\d+\.\d+\.\d+/ }
+    describe command('gem list') do
+       its(:stdout) { should match /capistrano \(3\.\d+\.\d+/ }
+       its(:stdout) { should match /sass \(\d+\.\d+\.\d+/ }
+       its(:stdout) { should match /bundler \(\d+\.\d+\.\d+/ }
     end
 
     describe package('git') do
@@ -43,7 +42,6 @@ describe '## Command Line Tools' do
 
     describe file('/home/vagrant/.bashrc') do
        it { should exist }
-       its(:content) { should match '/home/vagrant/.gem/ruby/2.5.0/bin' }
        its(:content) { should match '/home/vagrant/.composer/vendor/bin' }
        its(:content) { should match '/home/vagrant/box' }
        its(:content) { should match '/home/vagrant/phpmanager' }
