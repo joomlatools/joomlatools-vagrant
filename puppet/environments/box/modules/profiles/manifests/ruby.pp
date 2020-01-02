@@ -9,7 +9,8 @@ class profiles::ruby(
   }
 
   rbenv::build { $version:
-    global => true
+    global          => true,
+    bundler_version => '>2.0'
   }
 
   file_line { 'add-gem-bin-dir-to-path':
