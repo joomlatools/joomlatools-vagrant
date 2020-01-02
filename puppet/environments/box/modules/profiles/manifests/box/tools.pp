@@ -1,33 +1,9 @@
 class profiles::box::tools {
 
-  exec {'install-capistrano-gem':
-    user    => vagrant,
-    command => '/usr/bin/gem install --user-install --no-ri --no-rdoc capistrano',
-    environment => ['HOME=/home/vagrant'],
-    unless  => 'test -x /home/vagrant/.gem/ruby/2.5.0/bin/cap',
-    path    => ['/usr/bin/', '/bin/', '/home/vagrant/.gem/ruby/2.5.0/bin/'],
-    timeout => 900,
-    tag     => ['rubygem']
-  }
-
-  exec {'install-bundler-gem':
-    user    => vagrant,
-    command => 'gem install --user-install --no-ri --no-rdoc bundler',
-    environment => ['HOME=/home/vagrant'],
-    unless  => 'test -x /home/vagrant/.gem/ruby/2.5.0/bin/bundle',
-    path    => ['/usr/bin/', '/bin/', '/home/vagrant/.gem/ruby/2.5.0/bin/'],
-    timeout => 900,
-    tag     => ['rubygem']
-  }
-
-  exec {'install-sass-gem':
-    user    => vagrant,
-    command => '/usr/bin/gem install --user-install --no-ri --no-rdoc sass compass',
-    environment => ['HOME=/home/vagrant'],
-    unless  => 'test -x /home/vagrant/.gem/ruby/2.5.0/bin/sass',
-    path    => ['/usr/bin/', '/bin/', '/home/vagrant/.gem/ruby/2.5.0/bin/'],
-    timeout => 900,
-    tag     => ['rubygem']
+  rbenv::gem { ['capistrano', 'bundle', 'sass']:
+    ruby_version => $::profiles::ruby::version,
+    skip_docs    => true,
+    timeout      => 900
   }
 
   package { ['yarn', 'less', 'autoless', 'uglify-js']:
