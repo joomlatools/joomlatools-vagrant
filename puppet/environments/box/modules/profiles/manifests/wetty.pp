@@ -3,9 +3,9 @@ class profiles::wetty {
     include ::profiles::nodejs
 
     include ::profiles::systemd::reload
-
+  
     exec { 'yarn-install-wetty':
-        command     => '/usr/bin/yarn global add wetty.js',
+        command     => '/usr/bin/yarn global add wetty',
         unless      => 'which wetty',
         notify      => Service['wetty'],
         require     => Package['yarn']
