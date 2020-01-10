@@ -6,7 +6,7 @@ class profiles::box::cockpit {
 
   package { ['cockpit', 'cockpit-ws', 'cockpit-bridge', 'cockpit-dashboard', 'cockpit-networkmanager', 'cockpit-packagekit', 'cockpit-storaged', 'cockpit-system']:
     ensure => '210-1~ubuntu18.04.1',
-    notify => Service['cockpit']
+    notify => [Service['cockpit'], File['/usr/share/cockpit/static/login.min.html']]
   }
 
   ini_setting { 'Cockpit LoginTitle':
@@ -46,6 +46,12 @@ class profiles::box::cockpit {
     ensure => 'running',
     enable => true,
     require => [Package['cockpit'], File['/etc/cockpit/ws-certs.d']]
+  }
+
+  file { '/usr/share/cockpit/static/login.min.html':
+    ensure  => file,
+    source  => "puppet:///modules/profiles/cockpit/login.min.html",
+    notify  => Service['cockpit']
   }
 
 }
