@@ -4,7 +4,10 @@ class profiles::box::cockpit {
     ensure => directory
   }
 
-  package { 'cockpit': }
+  package { ['cockpit', 'cockpit-ws', 'cockpit-bridge', 'cockpit-dashboard', 'cockpit-networkmanager', 'cockpit-packagekit', 'cockpit-storaged', 'cockpit-system']:
+    ensure => '210-1~ubuntu18.04.1',
+    notify => Service['cockpit']
+  }
 
   ini_setting { 'Cockpit LoginTitle':
     ensure    => present,
@@ -42,6 +45,7 @@ class profiles::box::cockpit {
   service { 'cockpit':
     ensure => 'running',
     enable => true,
-    require => [Package['cockpit'], File['/etc/cockpit/ws-certs.d']
+    require => [Package['cockpit'], File['/etc/cockpit/ws-certs.d']]
   }
+
 }
