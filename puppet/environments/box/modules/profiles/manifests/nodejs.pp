@@ -3,7 +3,7 @@ class profiles::nodejs(
 ) {
 
   class { '::nodejs':
-    repo_url_suffix => '10.x',
+    repo_url_suffix => '12.x',
   }
 
 }
