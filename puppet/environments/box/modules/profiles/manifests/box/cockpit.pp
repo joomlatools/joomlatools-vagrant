@@ -1,5 +1,9 @@
 class profiles::box::cockpit {
 
+  file { ['/etc/cockpit', '/etc/cockpit/ws-certs.d']:
+    ensure => directory
+  }
+
   package { 'cockpit': }
 
   ini_setting { 'Cockpit LoginTitle':
@@ -9,7 +13,7 @@ class profiles::box::cockpit {
     setting   => 'LoginTitle',
     value     => $::fqdn,
     show_diff => true,
-    require => Package['cockpit'],
+    require => File['/etc/cockpit'],
     notify => Service['cockpit']
   }
 
@@ -20,7 +24,7 @@ class profiles::box::cockpit {
     setting   => 'MaxStartups',
     value     => 10,
     show_diff => true,
-    require => Package['cockpit'],
+    require => File['/etc/cockpit'],
     notify => Service['cockpit']
   }
 
@@ -31,13 +35,13 @@ class profiles::box::cockpit {
     setting   => 'AllowUnencrypted',
     value     => true,
     show_diff => true,
-    require => Package['cockpit'],
+    require => File['/etc/cockpit'],
     notify => Service['cockpit']
   }
 
   service { 'cockpit':
     ensure => 'running',
     enable => true,
-    require => Package['cockpit']
+    require => [Package['cockpit'], File['/etc/cockpit/ws-certs.d']
   }
 }
