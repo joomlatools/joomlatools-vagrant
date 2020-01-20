@@ -52,15 +52,9 @@ describe '## Miscellaneous' do
             its(:content) { should match /pimpmylog/ }
         end
 
-        ['apache2', 'mysql', 'syslog'].each do |conf|
+        ['apache2', 'mysql'].each do |conf|
             describe file("/usr/share/pimpmylog/config.user.d/#{conf}.json") do
                 it { should exist }
-            end
-        end
-
-        ['/var/log/syslog'].each do |log|
-            describe file(log) do
-              it { should be_mode 644 }
             end
         end
      end

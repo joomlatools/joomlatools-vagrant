@@ -66,11 +66,4 @@ class profiles::pimpmylog {
       mode    => '0644'
     }
 
-    file { '/var/log/syslog':
-      ensure => file,
-      mode   => '0644',
-      owner  => syslog,
-      group  => adm
-    }
-
 }

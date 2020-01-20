@@ -81,7 +81,7 @@ For more details refer to our [FAQ](https://www.joomlatools.com/developer/tools/
 
 Open source is all about collaboration, so there will be times you will want to share your work with others. Luckily for you, we've pre-configured [ngrok](https://ngrok.com/) to run within the vagrant box. 
 
-We've also created a new box command `box share:site` to help you share your websites.
+We've also created a new box command `box share` to help you share your websites.
 
 ### Terminal
 

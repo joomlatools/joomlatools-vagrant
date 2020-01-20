@@ -4,7 +4,7 @@ set -e
 
 export PATH=$PATH:/home/vagrant/.gem/ruby/2.5.0/bin/
 
-sudo gem install bundler --no-ri --no-rdoc
+sudo gem install bundler --no-document
 
 cd /tmp/tests
 

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe '## Cockpit' do
-    describe service('cockpit'), :if => os[:family] == 'ubuntu' do
+    describe service('cockpit.socket'), :if => os[:family] == 'ubuntu' do
       it { should be_enabled }
       it { should be_running }
     end

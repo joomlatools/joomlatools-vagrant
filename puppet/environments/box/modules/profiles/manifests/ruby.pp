@@ -2,10 +2,18 @@ class profiles::ruby(
   $version = '2.6.5'
 ) {
 
+  Package <| title == 'git' |>
+    -> Exec <| title == 'git-clone-rbenv' |>
+    -> Rbenv::Plugin <| |>
+    -> Rbenv::Gem <| |>
+
+  Package <| title == 'git' |>
+    -> Rbenv::Plugin <| |>
+
   class { '::rbenv': }
 
   rbenv::plugin { 'rbenv/ruby-build':
-    latest => true
+    latest  => true
   }
 
   rbenv::build { $version:

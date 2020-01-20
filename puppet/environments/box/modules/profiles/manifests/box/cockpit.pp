@@ -43,9 +43,11 @@ class profiles::box::cockpit {
   }
 
   service { 'cockpit':
-    ensure => 'running',
-    enable => true,
-    require => [Package['cockpit'], File['/etc/cockpit/ws-certs.d']]
+    name     => 'cockpit.socket',
+    ensure   => 'running',
+    enable   => true,
+    provider => 'systemd',
+    require  => [Package['cockpit'], File['/etc/cockpit/ws-certs.d']]
   }
 
   file { '/usr/share/cockpit/static/login.min.html':
