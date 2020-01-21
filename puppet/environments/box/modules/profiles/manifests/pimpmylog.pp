@@ -10,11 +10,12 @@ class profiles::pimpmylog {
     }
 
     exec { 'install-pimpmylog':
-        command => 'composer create-project potsky/pimp-my-log:1.7.* /usr/share/pimpmylog/ --no-interaction',
+        command => 'composer create-project potsky/pimp-my-log:1.7.14 /usr/share/pimpmylog/ --no-interaction',
         cwd     => '/usr/share/pimpmylog',
         unless  => 'test -d /usr/share/pimpmylog/vendor',
         path    => ['/usr/local/bin', '/usr/bin'],
         user    => vagrant,
+        timeout => 3600,
         environment => 'COMPOSER_HOME=/home/vagrant/.composer',
         require => [File['/usr/share/pimpmylog'], Anchor['php::end']]
     }
