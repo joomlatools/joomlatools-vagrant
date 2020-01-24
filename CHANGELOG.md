@@ -7,7 +7,7 @@ in 1.x versions.
 To get the diff for a specific change, go to https://github.com/joomlatools/joomlatools-vagrant/commit/xxx where xxx is the change hash.
 To view the diff between two versions, go to https://github.com/joomlatools/joomlatools-vagrant/compare/v1.0.0...v1.0.1
 
-* 1.6.0 (2019-12-01)
+* 1.6.0 (2020-01-24)
   * Improved - Upgrade to Ubuntu 18.04 LTS [#111](https://github.com/joomlatools/joomlatools-vagrant/issues/111)
   * Improved - Use PHP 7.3 by default [#165](https://github.com/joomlatools/joomlatools-vagrant/issues/165)
   * Improved - Updated PHPManager EXTRA_CONFIGURE_ARGUMENTS variable [#130](https://github.com/joomlatools/joomlatools-vagrant/issues/130)
