@@ -10,3 +10,7 @@ virtualbox:
   cpus: 1
 
 ip: 33.33.33.58
+
+mount_options: 
+  - dmode=777
+  - fmode=777
