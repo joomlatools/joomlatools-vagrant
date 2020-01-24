@@ -13,6 +13,7 @@ class profiles::base {
         'curl',
         'git',
         'symlinks',
+        'screen',
         'unzip',
         'vim',
         'zip'
