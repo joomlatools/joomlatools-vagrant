@@ -1,6 +1,7 @@
 forge 'https://forgeapi.puppetlabs.com'
 
 mod 'camptocamp-openssl', '1.10.0'
+mod 'jdowning-rbenv', '2.5.0'
 mod 'petems-swap_file', '4.0.0'
 mod 'puppetlabs-apache', '5.0.0'
 mod 'puppetlabs-apt', '6.2.1'

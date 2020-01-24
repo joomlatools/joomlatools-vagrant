@@ -1,21 +1,29 @@
-class profiles::ruby {
+class profiles::ruby(
+  $version = '2.6.5'
+) {
 
-  Package <| tag == 'ruby' |>
-    -> Exec <| tag == 'rubygem' |>
+  Package <| title == 'git' |>
+    -> Exec <| title == 'git-clone-rbenv' |>
+    -> Rbenv::Plugin <| |>
+    -> Rbenv::Gem <| |>
 
-  package { 'ruby':
-    ensure => '1:2.5.1',
-    tag    => ['ruby']
+  Package <| title == 'git' |>
+    -> Rbenv::Plugin <| |>
+
+  class { '::rbenv': }
+
+  rbenv::plugin { 'rbenv/ruby-build':
+    latest  => true
   }
 
-  package { 'ruby-dev':
-    ensure => installed,
-    tag    => ['ruby']
+  rbenv::build { $version:
+    global          => true,
+    bundler_version => '>2.0'
   }
 
   file_line { 'add-gem-bin-dir-to-path':
     path    => '/home/vagrant/.bashrc',
-    line    => 'export PATH=$PATH:/home/vagrant/.gem/ruby/2.5.0/bin/'
+    line    => "export PATH=/usr/local/rbenv/versions/${version}/bin:\$PATH"
   }
 
 }

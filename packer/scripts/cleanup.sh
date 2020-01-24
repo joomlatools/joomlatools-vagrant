@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "removing puppet"
-sudo apt-get -y purge --auto-remove puppet-common
+sudo apt-get -y purge --auto-remove puppet-agent
 
 echo "cleaning up apt"
 apt-get -y autoremove

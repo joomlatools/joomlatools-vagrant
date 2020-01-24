@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe '## MailCatcher' do
-    describe service('mailcatcher'), :if => os[:family] == 'ubuntu' do
+describe '## Mailhog' do
+    describe service('mailhog'), :if => os[:family] == 'ubuntu' do
       it { should be_enabled }
       it { should be_running }
     end
@@ -12,10 +12,10 @@ describe '## MailCatcher' do
 
     describe file('/etc/apache2/joomla.box-include.conf') do
       it { should exist }
-      its(:content) { should match /Redirect permanent \/mailcatcher http:\/\/joomla.box:1080/ }
+      its(:content) { should match /Redirect permanent \/mailhog http:\/\/joomla.box:8025/ }
     end
 
-    describe port(1080) do
+    describe port(8025) do
       it { should be_listening }
     end
 end

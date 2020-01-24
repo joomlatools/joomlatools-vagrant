@@ -34,11 +34,15 @@ describe '## Miscellaneous' do
 
         describe command('sudo yarn global list') do
           its(:exit_status) { should eq 0 }
-          its(:stdout) { should match /wetty.js@\d\.\d+\.\d+/ }
+          its(:stdout) { should match /wetty@\d\.\d+\.\d+/ }
         end
 
         describe file('/etc/apache2/joomla.box-include.conf') do
           its(:content) { should match /Redirect permanent \/terminal http:\/\/joomla.box\/wetty/ }
+        end
+
+        describe file('/home/vagrant/.ssh/config') do
+          its(:content) { should match /StrictHostKeyChecking no/ }
         end
      end
 
@@ -52,15 +56,9 @@ describe '## Miscellaneous' do
             its(:content) { should match /pimpmylog/ }
         end
 
-        ['apache2', 'mysql', 'syslog'].each do |conf|
+        ['apache2', 'mysql'].each do |conf|
             describe file("/usr/share/pimpmylog/config.user.d/#{conf}.json") do
                 it { should exist }
-            end
-        end
-
-        ['/var/log/syslog'].each do |log|
-            describe file(log) do
-              it { should be_mode 644 }
             end
         end
      end

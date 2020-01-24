@@ -24,6 +24,7 @@ class profiles::box {
     override            => 'All',
     additional_includes => ['/etc/apache2/joomla.box-include.conf'],
     access_log_env_var  => '!dontlog',
+    notify              => Service['httpd'],
     require             => File['/etc/apache2/joomla.box-include.conf']
   }
 
@@ -41,6 +42,7 @@ class profiles::box {
     override            => 'All',
     additional_includes => ['/etc/apache2/joomla.box-include.conf'],
     access_log_env_var  => '!dontlog',
+    notify              => Service['httpd'],
     require             => File['/etc/apache2/joomla.box-include.conf']
   }
 

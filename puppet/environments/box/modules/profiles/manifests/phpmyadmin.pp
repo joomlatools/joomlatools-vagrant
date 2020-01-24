@@ -13,8 +13,9 @@ class profiles::phpmyadmin {
   }
 
   exec { 'install-phpmyadmin':
-    command => 'composer create-project phpmyadmin/phpmyadmin /usr/share/phpmyadmin "^4.7.0" -q --repository-url=https://www.phpmyadmin.net/packages.json --no-dev --no-interaction',
+    command => 'composer create-project phpmyadmin/phpmyadmin . "^4.7.0" -q --repository-url=https://www.phpmyadmin.net/packages.json --no-dev --no-interaction',
     unless  => 'test -f /usr/share/phpmyadmin/composer.json',
+    cwd     => '/usr/share/phpmyadmin/',
     path    => ['/usr/local/bin', '/usr/bin'],
     user    => vagrant,
     environment => 'COMPOSER_HOME=/home/vagrant/.composer',

@@ -1,8 +1,8 @@
 {
   "variables": {
-    "guest_additions_url": "https://download.virtualbox.org/virtualbox/5.2.12/VBoxGuestAdditions_5.2.12.iso",
-    "guest_additions_sha256": "b81d283d9ef88a44e7ac8983422bead0823c825cbfe80417423bd12de91b8046",
-    "version": "1.5.1"
+    "guest_additions_url": "https://download.virtualbox.org/virtualbox/6.0.14/VBoxGuestAdditions_6.0.14.iso",
+    "guest_additions_sha256": "cb82f43a71f91a50b97aa27063c5c8743772a623eb0073ab8daf77e840d73eb1",
+    "version": "1.6.0"
   },
   "push": {
     "name": "joomlatools/box",
@@ -28,8 +28,9 @@
         " keyboard-configuration/layout=USA<wait>",
         " keyboard-configuration/variant=USA<wait>",
         " locale=en_US<wait>",
-        " netcfg/get_hostname=joomlatools<wait>",
-        " netcfg/get_domain=vagrantup.com<wait>",
+        " netcfg/get_domain=vm<wait>",
+        " netcfg/get_hostname=vagrant<wait>",
+        " grub-installer/bootdev=/dev/sda<wait>",
         " noapic<wait>",
         " preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<wait>",
         " -- <wait>",
@@ -41,9 +42,9 @@
       "guest_additions_url": "{{user `guest_additions_url`}}",
       "guest_additions_sha256": "{{user `guest_additions_sha256`}}",
       "http_directory": "packer/http",
-      "iso_checksum": "07e4bb5569814eab41fafac882ba127893e3ff0bdb7ec931c9b2d040e3e94e7a",
+      "iso_checksum": "7d8e0055d663bffa27c1718685085626cb59346e7626ba3d3f476322271f573e",
       "iso_checksum_type": "sha256",
-      "iso_url": "http://old-releases.ubuntu.com/releases/14.04.4/ubuntu-14.04.4-server-amd64.iso",
+      "iso_url": "http://cdimage.ubuntu.com/ubuntu/releases/bionic/release/ubuntu-18.04.3-server-amd64.iso",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
       "ssh_port": 22,
@@ -68,14 +69,15 @@
     },
     {
       "type": "file",
-      "source": "puppet/hiera",
+      "source": "puppet/environments",
       "destination": "/tmp/"
     },
     {
       "type": "puppet-masterless",
-      "manifest_file": "puppet/manifests",
-      "module_paths": ["puppet/modules/common", "puppet/modules/custom"],
-      "hiera_config_path": "puppet/hiera-packer.yaml",
+      "manifest_file": "puppet/environments/box/manifests",
+      "module_paths": ["puppet/modules", "puppet/environments/box/modules"],
+      "extra_arguments": ["--environmentpath=/tmp/environments/", "--environment=box"],
+      "hiera_config_path": "puppet/environments/box/hiera.yaml",
       "facter": {
         "fqdn": "joomlatools.box"
       }
@@ -84,6 +86,7 @@
       "type": "shell",
       "execute_command": "echo 'vagrant'|sudo -S sh '{{.Path}}'",
       "scripts": [
+        "packer/scripts/update.sh",
         "packer/scripts/cleanup.sh",
         "packer/scripts/zerodisk.sh"
       ]

@@ -15,7 +15,7 @@ _config = {
     },
     "nfs" => !!(RUBY_PLATFORM =~ /darwin/ || RUBY_PLATFORM =~ /linux/),
     "virtualbox" => {
-        "name"   => "joomlatools-box-build",
+        "name"   => "joomlatools-box",
         "memory" => 1024,
         "cpus"   => 1,
         "natdnshostresolver1" => "on",

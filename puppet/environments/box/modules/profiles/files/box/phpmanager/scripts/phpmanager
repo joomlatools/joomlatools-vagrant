@@ -132,7 +132,7 @@ command_use() {
         command_install $VERSION
     fi
 
-    sudo service php-fpm stop > /dev/null 2>&1
+    sudo systemctl stop php-fpm > /dev/null 2>&1
 
     # Install the binaries
     for BINARY in "${BINARIES[@]}"
@@ -148,7 +148,7 @@ command_use() {
     sudo rm -f /opt/php/php-fpm.sock
     sudo ln -s "/run/php/${VERSION}-fpm.sock" /opt/php/php-fpm.sock
 
-    sudo service php-fpm start > /dev/null 2>&1
+    sudo systemctl start php-fpm > /dev/null 2>&1
 
     echo -e "Installed binaries. PHP version is now:\n"
     php -v
@@ -295,7 +295,7 @@ command_restore() {
         exit 0
     fi
 
-    sudo service php-fpm stop > /dev/null 2>&1
+    sudo systemctl stop php-fpm > /dev/null 2>&1
 
     for BINARY in "${BINARIES[@]}"
     do
@@ -309,7 +309,7 @@ command_restore() {
 
     sudo rm -f /opt/php/php-fpm.sock
     sudo ln -s "/run/php/php7.3-fpm.sock" /opt/php/php-fpm.sock
-    sudo service php-fpm start > /dev/null 2>&1
+    sudo systemctl start php-fpm > /dev/null 2>&1
 
     echo -e "Restored PHP, version is now: \n"
     php -v

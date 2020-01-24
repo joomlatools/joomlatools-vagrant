@@ -8,6 +8,8 @@ User=vagrant
 Group=vagrant
 WorkingDirectory=/home/vagrant/
 ExecStart=/usr/local/bin/wetty -p 3000 --sshauth publickey,password --sshuser vagrant
+Restart=on-failure
+RestartSec=3
 
 [Install]
 WantedBy=multi-user.target

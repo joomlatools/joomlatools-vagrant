@@ -3,10 +3,11 @@ class profiles::wetty {
     include ::profiles::nodejs
 
     include ::profiles::systemd::reload
-
+  
     exec { 'yarn-install-wetty':
-        command     => '/usr/bin/yarn global add wetty.js',
+        command     => '/usr/bin/yarn global add wetty',
         unless      => 'which wetty',
+        notify      => Service['wetty'],
         require     => Package['yarn']
     }
 
@@ -27,6 +28,12 @@ class profiles::wetty {
       unless  => 'grep "vagrant@joomlatools" /home/vagrant/.ssh/authorized_keys',
       user    => vagrant,
       require => Ssh_keygen['vagrant']
+    }
+
+    file { '/home/vagrant/.ssh/config':
+      content => "Host localhost\n\tStrictHostKeyChecking no\n",
+      owner => vagrant,
+      group => vagrant
     }
 
 }
