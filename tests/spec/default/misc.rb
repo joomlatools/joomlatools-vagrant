@@ -40,6 +40,10 @@ describe '## Miscellaneous' do
         describe file('/etc/apache2/joomla.box-include.conf') do
           its(:content) { should match /Redirect permanent \/terminal http:\/\/joomla.box\/wetty/ }
         end
+
+        describe file('/home/vagrant/.ssh/config') do
+          its(:content) { should match /StrictHostKeyChecking no/ }
+        end
      end
 
      describe '### PimpMyLog' do

@@ -30,4 +30,10 @@ class profiles::wetty {
       require => Ssh_keygen['vagrant']
     }
 
+    file { '/home/vagrant/.ssh/config':
+      content => "Host localhost\n\tStrictHostKeyChecking no\n",
+      owner => vagrant,
+      group => vagrant
+    }
+
 }
