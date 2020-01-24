@@ -5,7 +5,7 @@ class profiles::box::cockpit {
   }
 
   package { ['cockpit', 'cockpit-ws', 'cockpit-bridge', 'cockpit-dashboard', 'cockpit-networkmanager', 'cockpit-packagekit', 'cockpit-storaged', 'cockpit-system']:
-    ensure => '210-1~ubuntu18.04.1',
+    ensure => '211-1~ubuntu18.04.1',
     notify => [Service['cockpit'], File['/usr/share/cockpit/static/login.min.html']]
   }
 
