@@ -117,6 +117,8 @@ echo "" > $LOGFILE
 mkdir -p $DESTINATION_DIR $WORK_DIR
 
 # Install all packages that are available via the repositories
+sudo apt-get update
+
 CMD="sudo apt-get -q -y install autoconf2.13 re2c bison libcurl4-openssl-dev libmariadb-dev libmariadb-dev-compat libmcrypt-dev libbz2-dev libjpeg-dev libpng-dev libfreetype6-dev libicu-dev libxml2-dev libxslt1-dev libssl-dev libreadline-dev libzip-dev libreadline-dev"
 sub_execute "$CMD" "apt-get" "${LOGFILE}" "Install dependencies from Ubuntu repositories"
 
