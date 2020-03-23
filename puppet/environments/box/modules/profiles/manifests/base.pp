@@ -40,7 +40,7 @@ class profiles::base {
 
     swap_file::files { 'default':
       ensure   => present,
-      swapfilesize => '512 MB'
+      swapfilesize => '1024 MB'
     }
 
     profiles::system::hostname { 'joomlatools':
