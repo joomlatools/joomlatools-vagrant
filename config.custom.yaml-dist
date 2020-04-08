@@ -6,7 +6,7 @@ synced_folders:
 
 virtualbox:
   name: joomlatools-box-build
-  memory: 1024
+  memory: 2048
   cpus: 1
 
 ip: 33.33.33.58
