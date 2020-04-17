@@ -128,7 +128,7 @@ URLS=(
   'https://ftp.openssl.org/source/old/1.0.2/openssl-1.0.2g.tar.gz'
   'ftp://xmlsoft.org/libxml2/libxml2-2.7.8.tar.gz'
   'ftp://xmlsoft.org/libxslt/libxslt-1.1.26.tar.gz'
-  'http://download.icu-project.org/files/icu4c/60.2/icu4c-60_2-src.tgz'
+  'https://ftp.osuosl.org/pub/blfs/conglomeration/icu/icu4c-60_2-src.tgz'
 )
 
 for URL in "${URLS[@]}"
