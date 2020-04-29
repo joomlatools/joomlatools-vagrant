@@ -8,6 +8,7 @@ virtualbox:
   name: joomlatools-box-build
   memory: 2048
   cpus: 1
+  cpuexecutioncap: 75
 
 ip: 33.33.33.58
 
