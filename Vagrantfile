@@ -25,7 +25,8 @@ _config = {
         "memory" => 1024,
         "cpus"   => 1,
         "natdnshostresolver1" => "on",
-        "uartmode1" => "disconnected"
+        "uartmode1" => "disconnected",
+        "cpuexecutioncap" => "90"
     },
     "ip" => "33.33.33.58",
     "mount_options" => ["vers=3", "rw", "tcp", "nolock", "noacl", "async"],
@@ -49,7 +50,7 @@ Vagrant.configure("2") do |config|
   config.ssh.forward_agent = true
 
   if CONF.has_key?('virtualbox')
-    parameters = Array['name', 'memory', 'cpus', 'natdnshostresolver1', 'uartmode1']
+    parameters = Array['name', 'memory', 'cpus', 'natdnshostresolver1', 'uartmode1', 'cpuexecutioncap']
 
     config.vm.provider :virtualbox do |v|
       parameters.each { |parameter|
