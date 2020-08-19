@@ -12,13 +12,4 @@ class profiles::php::composer (
     require => Anchor['php::end']
   }
 
-  exec { "composer-plugin-prestissimo":
-    command => "composer global require hirak/prestissimo",
-    path    => ['/usr/bin' , '/bin', '/usr/local/bin'],
-    creates => '/home/vagrant/.composer/vendor/hirak/prestissimo',
-    user    => vagrant,
-    environment => 'COMPOSER_HOME=/home/vagrant/.composer',
-    require => Anchor['php::end']
-  }
-
 }

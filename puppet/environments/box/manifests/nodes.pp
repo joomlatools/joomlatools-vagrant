@@ -1,4 +1,4 @@
-node 'joomlatools.box' {
+node 'joomlatools' {
 
   include role::joomlatools
 
